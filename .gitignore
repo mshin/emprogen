@@ -1,0 +1,35 @@
+# Git
+.gitignore
+.gitattributes
+
+# Eclipse
+.project
+.settings
+.classpath
+.settings/**
+.factorypath
+
+# Netbeans
+/nbproject
+
+# Misc IDE
+/*.ipr
+/*.iws
+*.iwsout/
+.aws/
+
+# Intellij IDEA
+.idea
+/*.iml
+
+# Mac OS 
+.DS_Store
+
+# Maven
+**/target/*
+#**/bin/*
+/local
+dependency-reduced-pom.xml
+/target/
+/.apt_generated/
+/.apt_generated_tests/
