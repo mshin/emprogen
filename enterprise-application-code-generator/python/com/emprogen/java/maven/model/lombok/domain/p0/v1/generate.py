@@ -3,6 +3,7 @@
 import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf
 import com.emprogen.java.maven.field_functions as ff
+from com.emprogen.java.maven.models import Gav
 
 # for each document in the yaml file
  # generate the Maven project (build existing java file url.)
@@ -14,16 +15,18 @@ import com.emprogen.java.maven.field_functions as ff
  # delete placeholder model
 
 
-def generateDomainModel(domainModelDescriptor: 'dict') -> None:
+def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-domain-p0-archetype', '0.0.1')) -> None:
 
     # Do all 1 time loads and calculations up front.
-    archGav = yf.getArchetypeGav(domainModelDescriptor)
+    # define archetype Gav used for this generator within script.
+    archGav = archetypeGav
+    # yf.getArchetypeGav(domainModelDescriptor)
     projGav = yf.getGeneratedProjectGav(domainModelDescriptor)
     projPomPath = projGav.artifactId + '/pom.xml'
     modelPath = jmf.getModelPath(projGav)
     templateFile = modelPath + '/class0.java'
     enumTemplateFile = modelPath + '/class1.java'
-    typToPkgtyp = ff.getTypeToPkgtypeDict(str(jmf.getFilePath(__file__)) + '/java_type.properties')
+    typToPkgtyp = ff.getTypeToPkgtypeDict(str(jmf.getFilePath(__file__)) + '/../../../../../java_type.properties')
     # Geneate Maven project.
     jmf.generateMavenProject(archGav, projGav, domainModelDescriptor['author'])
 

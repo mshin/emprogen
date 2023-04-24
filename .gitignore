@@ -33,3 +33,6 @@ dependency-reduced-pom.xml
 /target/
 /.apt_generated/
 /.apt_generated_tests/
+
+# python3
+__pycache__

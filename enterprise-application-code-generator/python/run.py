@@ -1,20 +1,36 @@
 #!/usr/local/bin/python3
 
-import com.emprogen.java.maven.functions as jmf
+#import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf
-import com.emprogen.java.maven.field_functions as ff
-import com.emprogen.java.maven.model.lombok.domain.p0.v1.generate as gdm
+#import com.emprogen.java.maven.field_functions as ff
 import os
 import pathlib
+from sys import argv
+import importlib
 
-def getFilePath():
-    return pathlib.Path(__file__).parent.resolve()
 
-yamlList= yf.loadYamlDocs('descriptor.yaml')
+if not len(argv) > 1:
+    raise ValueError('Must pass yaml descriptor for generating code as arg.')
+
+descriptor = argv[1]
+# TODO if directory passed in, iterate over every .yaml and .yml file in the directory and get the documents out to scan.
+yamlList= yf.loadYamlDocs(descriptor)
+
 for documentDict in yamlList:
-    # check if the 1st document is a stack descriptor. If so, run 
-docDict = yamlList[0]
-gdm.generateDomainModel(docDict)
+    pass
+    # TODO check if the 1st document is a stack descriptor. If so, run
+    # TODO validate each document against the 
+
+for documentDict in yamlList:
+
+    # if not a stack descriptor,
+    # find the script to run and run it.
+    scriptPath = documentDict['id'] + '.generate'
+    gdm = importlib.import_module(scriptPath)
+    gdm.generate(documentDict)
+    
+
+
 quit()
 
 jmf.replaceTextInFile('abcd', '!!!!', str(getFilePath()) + '/testtmp.txt')
