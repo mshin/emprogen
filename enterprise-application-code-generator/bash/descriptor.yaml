@@ -1,0 +1,170 @@
+# This descriptor would generate 5 projects.
+
+#---
+#archetypeGAV: com.github.mshin:jaxrms-rs-api-archetype:0.0.1
+#generatedGav: com.github.mshin:jaxrms-emprogen-crud-rs-api:1.0.0
+#author: MunChul Shin
+#serviceInterfaceName: JaxrmsEmprogenCrudService
+#method:
+#    - http: POST
+#      path: post
+#      description: 'This API method will be used to create a name record.'
+#      consumes: MediaType.APPLICATION_JSON
+#      produces: MediaType.APPLICATION_JSON
+#      returnType: PostNameResponse
+#      method: postName
+#      throws:
+#          - throwable: ExceptionResponses
+#      args:
+#          - var: postNameRequest
+#            type: PostNameRequest
+#            required: true
+#            description: 'The request to create a name record.'
+#            displayName: PostNameRequest
+#---
+#archetypeGAV: com.github.mshin:archetype-mapper:0.0.1
+#generatedGav: com.github.mshin:example-jaxrs-domain-mapper:1.0.0
+#author: MunChul Shin
+# TODO
+archetypeGAV: com.github.mshin:archetype-domain-model:0.0.2
+generatedGav: com.github.mshin:example-domain-model
+author: MunChul Shin
+model:
+    - name: DomainModel0
+      fields:
+          - String:field1
+          - String:field2
+          - Integer:field3
+    - name: DomainModel1
+      fields:
+          - Integer:field1
+          - String:field2
+          - boolean:field3
+          - int:field4
+    - name: Cookies
+      fields:
+          - String:tastiness
+          - String:type
+          - boolean:isGood
+          - int:calories
+    - name: Stock
+      fields:
+          - Date:acquired
+          - Integer:value
+          - Integer:quantity
+enum:
+    - name: Enum1
+      values:
+          - GREASE
+          - BUTTER
+          - OLIVE
+---
+archetypeGAV: com.github.mshin:archetype-jaxrs-model:0.0.1
+generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
+author: MunChul Shin
+model:
+    - name: JaxrsModel0
+      fields:
+          - Map<BigDecimal, List<BigDecimal>>:field3
+          - ArrayList:field2
+          - BigDecimal:field1
+    - name: JaxrsModel1
+      fields:
+          - Integer:field1
+          - String:field2
+          - Date:field3
+---
+archetypeGAV: com.github.mshin:jaxrms-springboot-camel-archetype:1.0.1
+generatedGav: com.github.mshin:example-service-impl
+author: MunChul Shin
+serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
+serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
+
+---
+archetypeGAV: com.github.mshin:archetype-entity:0.0.1
+generatedGav: com.github.mshin:example-entity
+author: MunChul Shin
+model:
+    - name: AccountEntity
+      pk: id
+      fields:
+          - Long:id
+          - LocalDate:dateCreated
+          - LocalDateTime:lastLoginTimestamp
+          - BigDecimal:accountBalance
+    - name: QuestionnaireEntity
+      pk: id
+      fields:
+          - Long:id
+          - String:field1
+          - Integer:field2
+    - name: FormEntity
+      pk: id
+      fields:
+          - Long:id
+          - String:addressLine1
+          - String:addressLine2
+    - name: UserEntity
+      pk: id
+      fields:
+          - Long:id
+          - String:firstName
+          - String:lastName
+          - LocalDate:birthDate
+          - Boolean:isAdmin
+    - name: TransactionEntity
+      pk: transactionId
+      fields:
+          - BigDecimal:amount
+          - String:transactionId
+          - LocalDateTime:timestampTransactionInitiated
+          - LocalDateTime:timestampTransactionCompleted
+    - name: AppEntity
+      pk: id
+      fields:
+          - Long:id
+          - String:name
+          - Integer:hitsCounter
+# owner is on many side, on reference side if only one, second entity mentioned... in that order
+# < next to an entity means it has a reference to the other.
+# format is "- ${Entity.class} **-** ${OtherEntity.class}" Where first * is <|- second * is 1|n third * is 1|n and fourth star is >|-.
+# valid join instructions are:  <1-1> | -1-1> | <1-1- | <n-1> | <n-1- | <1-n> | -1-n> | <n-n> | -n-n> | <n-n- 
+joins:
+    - FormEntity <1-1> AccountEntity
+    - FormEntity <1-1- QuestionnaireEntity
+    - UserEntity <n-1> AccountEntity
+    - FormEntity <1-n> TransactionEntity
+    - AppEntity <n-n> UserEntity
+---
+archetypeGAV: com.github.mshin:archetype-domain-model:0.0.2
+generatedGav: com.github.mshin:example-domain-model
+author: MunChul Shin
+model:
+    - name: DomainModel0
+      fields:
+          - String:field1
+          - String:field2
+          - Integer:field3
+    - name: DomainModel1
+      fields:
+          - Integer:field1
+          - String:field2
+          - boolean:field3
+          - int:field4
+    - name: Cookies
+      fields:
+          - String:tastiness
+          - String:type
+          - boolean:isGood
+          - int:calories
+    - name: Stock
+      fields:
+          - Date:acquired
+          - Integer:value
+          - Integer:quantity
+enum:
+    - name: Enum1
+      values:
+          - GREASE
+          - BUTTER
+          - OLIVE
