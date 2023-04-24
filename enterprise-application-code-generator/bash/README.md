@@ -1,0 +1,1 @@
+This code is broken. Uses an old version of yq and the archetypes under a different name and version scheme. Those archetypes can be found in a different repo in github.com/mshin.

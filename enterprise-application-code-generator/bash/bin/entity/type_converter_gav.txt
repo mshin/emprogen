@@ -1,0 +1,6 @@
+        <dependency>
+            <groupId>com.github.mshin</groupId>
+            <artifactId>jpa-type-converter</artifactId>
+            <version>1.0.0</version>
+            <optional>true</optional>
+        </dependency>
