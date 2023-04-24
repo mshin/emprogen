@@ -3,11 +3,15 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.emprogen</groupId>
-    <artifactId>service-jaxrs-springboot-camel-p0-example</artifactId>
-    <version>0.0.1</version>
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <version>${version}</version>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <version.fuse>7.8.0.fuse-sb2-780038-redhat-00001</version.fuse>
@@ -41,20 +45,12 @@
         </dependencies>
     </dependencyManagement>
 
-
-
-
     <dependencies>
-        <dependency>
-            <groupId>com.github.mshin</groupId>
-            <artifactId>jaxrms-rs-api</artifactId>
-            <version>1.0.3</version>
-        </dependency>
 
         <dependency>
-            <groupId>com.github.mshin</groupId>
-            <artifactId>exception-response-handler</artifactId>
-            <version>1.0.3</version>
+            <groupId>${api_groupId}</groupId>
+            <artifactId>${api_artifactId}</artifactId>
+            <version>${api_version}</version>
         </dependency>
 
         <dependency>
@@ -90,9 +86,6 @@
             <artifactId>jackson-jaxrs-json-provider</artifactId>
         </dependency>
 
-        <!-- <dependency> <groupId>com.sun.xml.bind</groupId> <artifactId>jaxb-impl</artifactId> 
-            </dependency> -->
-
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-service-description-swagger</artifactId>
@@ -102,13 +95,13 @@
             <artifactId>swagger-jaxrs</artifactId>
             <version>1.5.24</version>
         </dependency>
-
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
             <version>3.38.0</version>
         </dependency>
 
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -117,7 +110,12 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test-spring</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -143,4 +141,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
