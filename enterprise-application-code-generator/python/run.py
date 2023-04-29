@@ -19,15 +19,15 @@ yamlList= yf.loadYamlDocs(descriptor)
 for documentDict in yamlList:
     pass
     # TODO check if the 1st document is a stack descriptor. If so, run
-    # TODO validate each document against the 
+    # TODO validate each document against the schema.yaml.
 
 for documentDict in yamlList:
 
     # if not a stack descriptor,
     # find the script to run and run it.
     scriptPath = documentDict['id'] + '.generate'
-    gdm = importlib.import_module(scriptPath)
-    gdm.generate(documentDict)
+    script = importlib.import_module(scriptPath)
+    script.generate(documentDict)
     
 
 
