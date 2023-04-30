@@ -27,8 +27,8 @@ for documentDict in yamlList:
     # find the script to run and run it.
     scriptPath = documentDict['id'] + '.generate'
     script = importlib.import_module(scriptPath)
-    script.generate(documentDict)
-    
+    #script.generate(documentDict)
+    script.generate(documentDict, yf.getArchetypeGav(documentDict))
 
 
 quit()
