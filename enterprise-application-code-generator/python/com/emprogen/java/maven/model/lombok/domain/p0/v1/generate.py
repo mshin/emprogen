@@ -26,9 +26,14 @@ def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.empro
     modelPath = jmf.getModelPath(projGav)
     templateFile = modelPath + '/class0.java'
     enumTemplateFile = modelPath + '/class1.java'
-    typToPkgtyp = ff.getTypeToPkgtypeDict(str(jmf.getFilePath(__file__)) + '/../../../../../java_type.properties')
+    typToPkgtyp = ff.getTypeToPkgtypeDict(jmf.getJavaMavenPath() + '/java_type.properties')
     # Geneate Maven project.
-    jmf.generateMavenProject(archGav, projGav, domainModelDescriptor['author'])
+    opts = {}
+    opts['class0'] = 'class0'
+    opts['class1'] = 'class1'
+    opts['fields'] = 'fields'
+    opts['enumerations'] = 'enumerations'
+    jmf.generateMavenProject(archGav, projGav, domainModelDescriptor['author'], **opts)
 
     # for each model file
     for model in domainModelDescriptor['model']:

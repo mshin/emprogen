@@ -1,13 +1,12 @@
 #!/usr/local/bin/python3
 
-#import com.emprogen.java.maven.functions as jmf
+import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf
 #import com.emprogen.java.maven.field_functions as ff
 import os
 import pathlib
 from sys import argv
 import importlib
-
 
 if not len(argv) > 1:
     raise ValueError('Must pass yaml descriptor for generating code as arg.')
@@ -27,8 +26,8 @@ for documentDict in yamlList:
     # find the script to run and run it.
     scriptPath = documentDict['id'] + '.generate'
     script = importlib.import_module(scriptPath)
-    #script.generate(documentDict)
-    script.generate(documentDict, yf.getArchetypeGav(documentDict))
+    script.generate(documentDict)
+    #script.generate(documentDict, yf.getArchetypeGav(documentDict))
 
 
 quit()

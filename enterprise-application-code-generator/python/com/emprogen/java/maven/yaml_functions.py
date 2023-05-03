@@ -2,7 +2,6 @@
 from com.emprogen.java.maven.models import Gav
 import yaml
 
-
 def loadYamlDocs(projDescLoc: 'str') -> 'list:dict': 
     with open(projDescLoc) as f:
         gen=yaml.safe_load_all(f)
@@ -10,16 +9,19 @@ def loadYamlDocs(projDescLoc: 'str') -> 'list:dict':
         return list(gen)
 
 def getArchetypeGav(yaml: 'dict') -> 'Gav':
-    gav=yaml['archetypeGAV']
-    gavList=gav.split(':')
-    return Gav(gavList[0], gavList[1], gavList[2])
+    gavStr = yaml['archetypeGAV']
+    return getGav(gavStr)
 
 def getGeneratedProjectGav(yaml: 'dict') -> 'Gav':
-    gav=yaml['generatedGav']
-    gavList=gav.split(':')
-    version=None
+    gavStr = yaml['generatedGav']
+    return getGav(gavStr)
+
+"gavStr is groupId:artifactId:version"
+def getGav(gavStr: 'str') -> 'Gav':
+    gavList = gavStr.split(':')
+    version = None
     if len(gavList) > 2:
-        version=gavList[2]
+        version = gavList[2]
     return Gav(gavList[0], gavList[1], version)
 
 def getFieldsAndTypes(modelDict: 'dict') -> 'dict field:type':

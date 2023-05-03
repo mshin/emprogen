@@ -9,6 +9,9 @@ import shutil
 #import com.emprogen.java.maven.yaml_functions as yml
 from com.emprogen.java.maven.models import Gav
 
+def getJavaMavenPath() -> 'str':
+    return str(pathlib.Path(__file__).parent.resolve())
+
 def copyFile(src: 'str', dst: 'str') -> None:
     shutil.copy2(src, dst)
 
@@ -18,9 +21,9 @@ def getFilePath(file: '__file__') -> 'str':
 def lower1st(x: 'str') -> 'str':
     return x[0].lower() + x[1:]
 
-pattern = re.compile(r'(?<!^)(?=[A-Z])')
+ctsPattern = re.compile(r'(?<!^)(?=[A-Z])')
 def camelToSnake(camelString: 'str') -> 'str':
-    return pattern.sub('_', camelString).lower()
+    return ctsPattern.sub('_', camelString).lower()
 
 def getModelPath(gav: 'Gav') -> 'str':
     return gav.artifactId + '/src/main/java/' + gav.groupId.replace('.', '/') + '/' + gav.artifactId.replace('-', '/')
@@ -45,6 +48,12 @@ def beautifyImports(pathToPom: 'str; path to project pom') -> 'None':
             f.write(data)
             f.truncate()
 
+def replaceFileContents(content: 'str', filePath: 'str') -> None:
+    with open(filePath, 'r+') as f:
+        f.seek(0)
+        f.write(content)
+        f.truncate()
+
 def deleteFile(path: 'str'):
     print('deleting file ' + str(path) + '...')
     pathlib.Path(path).unlink(missing_ok=True)
@@ -52,20 +61,27 @@ def deleteFile(path: 'str'):
 def getPackage(gav: 'Gav') -> 'str':
     return gav.groupId + '.' + gav.artifactId.replace('-', '.')
 
-def generateMavenProject(archGav: 'Gav', genGav: 'Gav', author: 'str'=None, 
-        *, file:'path to pom'=None) -> None:
+"Not efficient for getting multiple properties. Ok for getting 1 property."
+def getProperty(prop: 'str', filePath: 'str') -> 'the property; str':
+    pattern = re.compile(r'(?<=' + prop + r'=)(.*)')
+    output = None
+    with open(filePath, 'r') as f:
+        fileString = f.read()
+        match = re.search(pattern, fileString)
+        if match:
+            output = match.group()
+    return output
+
+def generateMavenProject(archGav: 'Gav', genGav: 'Gav', author: 'str' = None, *, file: 'path to pom' = None,
+         **options: 'dict') -> None:
     pkg=getPackage(genGav)
-    opts={}
+    opts=options
     opts['archetypeGroupId']=archGav.groupId
     opts['archetypeArtifactId']=archGav.artifactId
     opts['archetypeVersion']=archGav.version
     opts['groupId']=genGav.groupId
     opts['artifactId']=genGav.artifactId
     opts['package']=pkg
-    opts['class0']='class0'
-    opts['class1']='class1'
-    opts['fields']='fields'
-    opts['enumerations']='enumerations'
     if author:
         opts['author']=author
     if genGav.version:
@@ -82,12 +98,19 @@ def callMvnWithOptions(*, goal='archetype:generate', file:'path to pom'=None, **
         argStr = '-D{key}={value}'.format(key=k, value=v)
         argList.append(argStr)
     print('maven call: ' + str(argList))
-    process = subprocess.run(argList, check=True, text=True)
+    process = runSubprocess(argList)
 
-def addDependency(pomPath: 'str', gav: 'Gav'=Gav(None, None, None)) -> None:
+def runSubprocess(argList: 'list') -> None:
+    print('running subprocess.. \n    ' + str(argList))
+    subprocess.run(argList, check=True, text=True)
+
+def runSubprocessCaptureOutput(argList: 'list') -> 'whatever the subprocess would return':
+    print('running subprocess.. \n    ' + str(argList))
+    return subprocess.run(argList, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
+
+def addDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     tree = et.parse(pomPath) #ElementTree
     root = tree.getroot() #Element
-
     ns = {'x': 'http://maven.apache.org/POM/4.0.0'}
     elem = root.find('./x:dependencies', ns)
     dep = et.Element('dependency')
@@ -103,8 +126,11 @@ def addDependency(pomPath: 'str', gav: 'Gav'=Gav(None, None, None)) -> None:
         versionElement.text = gav.version
         dep.append(versionElement)
 
+    elem.append(dep)
+
     et.indent(tree, space="    ", level=0)
     et.register_namespace('', ns['x'])
+    # print('root: ' + str(et.tostring(root)))
     tree.write(pomPath)
 
 def replaceTextInFile(searchText: 'str regex', replaceText: 'str', filePath: 'str path') -> None:
@@ -113,18 +139,18 @@ def replaceTextInFile(searchText: 'str regex', replaceText: 'str', filePath: 'st
   
         # Reading the file data and store
         # it in a file variable
-        file = f.read()
+        file0 = f.read()
           
         # Replacing the pattern with the string
         # in the file data
-        file = re.sub(searchText, replaceText, file)
+        file0 = re.sub(searchText, replaceText, file0)
   
         # Setting the position to the top
         # of the page to insert data
         f.seek(0)
           
         # Writing replaced data in the file
-        f.write(file)
+        f.write(file0)
   
         # Truncating the file size
         #f.truncate()
