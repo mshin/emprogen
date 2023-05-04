@@ -1,0 +1,38 @@
+%YAML 1.1
+---
+# com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "http://emprogen.com/schemas/java/maven/p0/v1/base-schema-1.0.0"
+tag: "tag:emprogen.com:java/maven/p0/v1/base-schema-1.0.0"
+title: |
+  Base schema
+description: |
+  This schema defines properties common to all java/maven schemas.
+examples:
+  -
+    - This schema can't be used. Copied as a template for other schemas.
+type: object
+properties:
+  id:
+    type: string
+    pattern: "^[\\w\\.\\-]+$"
+    description: |
+      The unique path to the generate script. '.' delimited.
+  generatedGav:
+    type: string
+    pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+(:.+|)$"
+    description: |
+      The maven GAV (groupId:artifactId:version) for the generated code.
+  author:
+    type: string
+    description: |
+      The person who authored the code.
+  dependencyGav:
+    type: array
+    description: |
+      A list of dependency GAVs to add to the generated projects' pom.
+    items:
+      type: string
+      pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+$"
+required: [id, generatedGav]
+additionalProperties: false

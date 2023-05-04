@@ -4,7 +4,7 @@ import yaml
 
 def loadYamlDocs(projDescLoc: 'str') -> 'list:dict': 
     with open(projDescLoc) as f:
-        gen=yaml.safe_load_all(f)
+        gen = yaml.safe_load_all(f)
         #file closes before can read all stuff out of gen, so turn to list
         return list(gen)
 

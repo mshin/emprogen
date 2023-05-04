@@ -27,6 +27,17 @@
 #author: MunChul Shin
 # TODO
 ---
+id: com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
+#archetypeGAV: com.github.mshin:jaxrms-springboot-camel-archetype:1.0.1
+generatedGav: com.github.mshin:example-service-impl
+author: MunChul Shin
+serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
+serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
+dependencyGav:
+    - com.github.mshin:example-domain-model:0.0.1
+#    - gav1
+#    - gav2
+---
 id: com.emprogen.java.maven.model.lombok.domain.p0.v1
 # archetypeGAV: com.github.mshin:archetype-domain-model:0.0.2
 generatedGav: com.github.mshin:example-domain-model:0.0.1
@@ -60,17 +71,6 @@ enum:
           - GREASE
           - BUTTER
           - OLIVE
----
-id: com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
-#archetypeGAV: com.github.mshin:jaxrms-springboot-camel-archetype:1.0.1
-generatedGav: com.github.mshin:example-service-impl
-author: MunChul Shin
-serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
-serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
-dependencyGav:
-    - com.github.mshin:example-domain-model:0.0.1
-#    - gav1
-#    - gav2
 ---
 archetypeGAV: com.github.mshin:archetype-jaxrs-model:0.0.1
 generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
