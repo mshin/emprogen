@@ -72,7 +72,8 @@ enum:
           - BUTTER
           - OLIVE
 ---
-archetypeGAV: com.github.mshin:archetype-jaxrs-model:0.0.1
+id: com.emprogen.java.maven.model.lombok.jaxrs.p0.v1
+#archetypeGAV: com.github.mshin:archetype-jaxrs-model:0.0.1
 generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
 author: MunChul Shin
 model:

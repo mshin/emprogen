@@ -1,0 +1,70 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "http://emprogen.com/schemas/java/maven/model/lombok/jaxrs/p0/v1/schema"
+tag: "tag:emprogen.com:java/maven/model/lombok/jaxrs/p0/v1/schema"
+title: |
+  Schema for yaml defining lombok jaxrs models.
+description: |
+  This schema is for yaml descriptors defining jaxrs models that use the lombok library.
+examples:
+  - |
+    id: com.emprogen.java.maven.model.lombok.jaxrs.p0.v1
+    generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
+    author: MunChul Shin
+    model:
+        - name: JaxrsModel0
+          fields:
+              - Map<BigDecimal, List<BigDecimal>>:field3
+              - ArrayList:field2
+              - BigDecimal:field1
+        - name: JaxrsModel1
+          fields:
+              - Integer:field1
+              - String:field2
+              - Date:field3
+type: object
+properties:
+  id:
+    type: string
+    pattern: "^[\\w\\.\\-]+$"
+    description: |
+      The unique path to the generate script. '.' delimited.
+  generatedGav:
+    type: string
+    pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+(:.+|)$"
+    description: |
+      The maven GAV (groupId:artifactId:version) for the generated code.
+  author:
+    type: string
+    description: |
+      The person who authored the code.
+  dependencyGav:
+    type: array
+    description: |
+      A list of dependency GAVs to add to the generated projects' pom.
+    items:
+      type: string
+      pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+$"
+  model:
+    type: array
+    description: |
+      A list of Java models to add to the generated package.
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: "^[\\w\\$]+$"
+          description: |
+            The classname for the model.
+        fields:
+          type: array
+          description: |
+            A list of type:field elements.
+            If java types are not in java_types.properties or JavaSE, include package.
+          items:
+            type: string
+            pattern: "^[\\w<> ,]+:[\\w\\$]+$"
+required: [id, generatedGav]
+additionalProperties: false
