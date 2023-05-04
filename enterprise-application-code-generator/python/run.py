@@ -7,7 +7,7 @@ import os
 import pathlib
 from sys import argv
 import importlib
-import com.emprogen.validate_scheama as vs
+import com.emprogen.validate_schema as vs
 
 if not len(argv) > 1:
     raise ValueError('Must pass yaml descriptor for generating code as arg.')
