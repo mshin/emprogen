@@ -1,0 +1,96 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "http://emprogen.com/schemas/java/maven/model/lombok/domain/p0/v1/schema"
+tag: "tag:emprogen.com:java/maven/model/lombok/domain/p0/v1/schema"
+title: |
+  Schema for yaml defining lombok domain models.
+description: |
+  This schema is for yaml descriptors defining domain models that use the lombok library.
+examples:
+  - |
+    id: com.emprogen.java.maven.model.lombok.domain.p0.v1
+    generatedGav: com.github.mshin:example-domain-model:0.0.1
+    author: MunChul Shin
+    model:
+        - name: DomainModel0
+          fields:
+              - Map<BigDecimal, List<BigDecimal>>:field1
+              - String:field2
+              - Integer:field3
+        - name: Cookies
+          fields:
+              - String:tastiness
+              - String:type
+              - boolean:isGood
+              - int:calories
+    enum:
+        - name: Enum1
+          values:
+              - GREASE
+              - BUTTER
+              - OLIVE
+type: object
+properties:
+  id:
+    type: string
+    pattern: "^[\\w\\.\\-]+$"
+    description: |
+      The unique path to the generate script. '.' delimited.
+  generatedGav:
+    type: string
+    pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+(:.+|)$"
+    description: |
+      The maven GAV (groupId:artifactId:version) for the generated code.
+  author:
+    type: string
+    description: |
+      The person who authored the code.
+  dependencyGav:
+    type: array
+    description: |
+      A list of dependency GAVs to add to the generated projects' pom.
+    items:
+      type: string
+      pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+$"
+  model:
+    type: array
+    description: |
+      A list of Java models to add to the generated package.
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: "^[\\w\\$]+$"
+          description: |
+            The classname for the model.
+        fields:
+          type: array
+          description: |
+            A list of type:field elements.
+            If java types are not in java_types.properties or JavaSE, include package.
+          items:
+            type: string
+            pattern: "^[\\w<> ,]+:[\\w\\$]+$"
+  enum:
+    type: array
+    description: |
+      A list of Java Enum classes to add to the generated package.
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: "^[\\w\\$]+$"
+          description: |
+            The Enum name for the Java enumeration.
+        values:
+          type: array
+          description: |
+            A list of Java enumerated values.
+          items:
+            type: string
+            pattern: "^[\\w\\$]+$"
+required: [id, generatedGav]
+additionalProperties: false
