@@ -25,10 +25,10 @@ for i, documentDict in enumerate(yamlList):
     pwd = str(jmf.getFilePath(__file__)) + '/'
     schemaPath = documentDict['id'].replace('.', '/') + '/schema.yaml'
     print('schemaPath: ' + str(schemaPath))
-    yamlList = yf.loadYamlDocs(pwd + schemaPath)
+    schemaYamlList = yf.loadYamlDocs(pwd + schemaPath)
     schema = ''
-    if yamlList and len(yamlList) > 0:
-        schema = yamlList[0]
+    if schemaYamlList and len(schemaYamlList) > 0:
+        schema = schemaYamlList[0]
     # print ('schema: ' + str(schema))
 
     vs.validate(documentDict, schema)
@@ -38,11 +38,13 @@ for i, documentDict in enumerate(yamlList):
 if firstDocumentIsStackDescriptor:
     pass
     # TODO run stack descriptor.
-quit()
+
+
 for documentDict in yamlList:
     # if not a stack descriptor,
     # find the script to run and run it.
     scriptPath = documentDict['id'] + '.generate'
+    print('scriptPath: ' + scriptPath)
     script = importlib.import_module(scriptPath)
     script.generate(documentDict)
     #script.generate(documentDict, yf.getArchetypeGav(documentDict))
