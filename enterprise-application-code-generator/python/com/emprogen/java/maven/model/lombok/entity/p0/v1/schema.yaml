@@ -1,0 +1,138 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "http://emprogen.com/schemas/java/maven/model/lombok/entity/p0/v1/schema"
+tag: "tag:emprogen.com:java/maven/model/lombok/entity/p0/v1/schema"
+title: |
+  Schema for yaml defining lombok entities.
+description: |
+  This schema is for yaml descriptors defining entities that use the lombok library.
+examples:
+  - |
+    id: com.emprogen.java.maven.model.lombok.entity.p0.v1
+    generatedGav: com.github.mshin:example-entity
+    author: MunChul Shin
+    model:
+        - name: AccountEntity
+          pk: id
+          fields:
+              - Long:id
+              - LocalDate:dateCreated
+              - LocalDateTime:lastLoginTimestamp
+              - BigDecimal:accountBalance
+        - name: QuestionnaireEntity
+          pk: id
+          fields:
+              - Long:id
+              - String:field1
+              - Integer:field2
+        - name: FormEntity
+          pk: id
+          fields:
+              - Long:id
+              - String:addressLine1
+              - String:addressLine2
+        - name: UserEntity
+          pk: id
+          fields:
+              - Long:id
+              - String:firstName
+              - String:lastName
+              - LocalDate:birthDate
+              - Boolean:isAdmin
+        - name: TransactionEntity
+          pk: transactionId
+          fields:
+              - BigDecimal:amount
+              - String:transactionId
+              - LocalDateTime:timestampTransactionInitiated
+              - LocalDateTime:timestampTransactionCompleted
+        - name: AppEntity
+          pk: id
+          fields:
+              - Long:id
+              - String:name
+              - Integer:hitsCounter
+    # owner is on many side, on reference side if only one, second entity mentioned... in that order
+    # < next to an entity means it has a reference to the other.
+    # format is "- ${Entity.class} **-** ${OtherEntity.class}" Where first * is <|- second * is 1|n third * is 1|n and fourth star is >|-.
+    # valid join instructions are:  <1-1> | -1-1> | <1-1- | <n-1> | <n-1- | <1-n> | -1-n> | <n-n> | -n-n> | <n-n- 
+    joins:
+        - FormEntity <1-1> AccountEntity
+        - FormEntity <1-1- QuestionnaireEntity
+        - UserEntity <n-1> AccountEntity
+        - FormEntity <1-n> TransactionEntity
+        - AppEntity <n-n> UserEntity
+type: object
+properties:
+  id:
+    type: string
+    pattern: "^[\\w\\.\\-]+$"
+    description: |
+      The unique path to the generate script. '.' delimited.
+  generatedGav:
+    type: string
+    pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+(:.+|)$"
+    description: |
+      The maven GAV (groupId:artifactId:version) for the generated code.
+  author:
+    type: string
+    description: |
+      The person who authored the code.
+  dependencyGav:
+    type: array
+    description: |
+      A list of dependency GAVs to add to the generated projects' pom.
+    items:
+      type: string
+      pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+$"
+  model:
+    type: array
+    description: |
+      A list of Java models to add to the generated package.
+    items:
+      type: object
+      properties:
+        pk:
+          type: string
+          pattern: "^[\\w\\$]+$"
+          description: |
+            The entity model's primary key field name. Should also be an element of the fields list.
+        name:
+          type: string
+          pattern: "^[\\w\\$]+$"
+          description: |
+            The classname for the model.
+        fields:
+          type: array
+          description: |
+            A list of type:field elements.
+            If java types are not in java_types.properties or JavaSE, include package.
+          items:
+            type: string
+            pattern: "^[\\w<> ,]+:[\\w\\$]+$"
+  joins:
+    type: array
+    description: |
+      A list of join mappings between two entities. See examples.
+      The mappings use the following rules..
+      Owner is on many side, on reference side if only one, second entity mentioned... in that order
+      < next to an entity means it has a reference to the other.
+      Format is "- ${Entity.class} **-** ${OtherEntity.class}" Where first * is <|- second * is 1|n third * is 1|n and fourth star is >|-.
+      Valid join instructions are..  <1-1> | -1-1> | <1-1- | <n-1> | <n-1- | <1-n> | -1-n> | <n-n> | -n-n> | <n-n-
+        JOIN INSTRUCTION |  RELATIONSHIP  | LEFT REF | RIGHT REF | OWNER
+           <1-1>         |  one to one    |    X     |     X     | right
+           -1-1>         |  one to one    |          |     X     | right
+           <1-1-         |  one to one    |    X     |           | left
+           <n-1>         |  many to one   |    X     |     X     | left
+           <n-1-         |  many to one   |    X     |           | left
+           <1-n>         |  one to many   |    X     |     X     | right
+           -1-n>         |  one to many   |          |     X     | right
+           <n-n>         |  many to many  |    X     |     X     | right
+           -n-n>         |  many to many  |          |     X     | right
+           <n-n-         |  many to many  |    X     |           | left
+    items:
+      type: string
+      pattern: "^[\\w\\$]+ [-<][1n]-[1n][->] [\\w\\$]+$"
+required: [id, generatedGav]
+additionalProperties: false

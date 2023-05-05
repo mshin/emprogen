@@ -1,45 +1,14 @@
 # This descriptor would generate 5 projects.
-
-#---
-#archetypeGAV: com.github.mshin:jaxrms-rs-api-archetype:0.0.1
-#generatedGav: com.github.mshin:jaxrms-emprogen-crud-rs-api:1.0.0
-#author: MunChul Shin
-#serviceInterfaceName: JaxrmsEmprogenCrudService
-#method:
-#    - http: POST
-#      path: post
-#      description: 'This API method will be used to create a name record.'
-#      consumes: MediaType.APPLICATION_JSON
-#      produces: MediaType.APPLICATION_JSON
-#      returnType: PostNameResponse
-#      method: postName
-#      throws:
-#          - throwable: ExceptionResponses
-#      args:
-#          - var: postNameRequest
-#            type: PostNameRequest
-#            required: true
-#            description: 'The request to create a name record.'
-#            displayName: PostNameRequest
-#---
-#archetypeGAV: com.github.mshin:archetype-mapper:0.0.1
-#generatedGav: com.github.mshin:example-jaxrs-domain-mapper:1.0.0
-#author: MunChul Shin
-# TODO
 ---
 id: com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
-#archetypeGAV: com.github.mshin:jaxrms-springboot-camel-archetype:1.0.1
 generatedGav: com.github.mshin:example-service-impl
 author: MunChul Shin
 serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
 serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
 dependencyGav:
     - com.github.mshin:example-domain-model:0.0.1
-#    - gav1
-#    - gav2
 ---
 id: com.emprogen.java.maven.model.lombok.domain.p0.v1
-# archetypeGAV: com.github.mshin:archetype-domain-model:0.0.2
 generatedGav: com.github.mshin:example-domain-model:0.0.1
 author: MunChul Shin
 model:
@@ -73,7 +42,6 @@ enum:
           - OLIVE
 ---
 id: com.emprogen.java.maven.model.lombok.jaxrs.p0.v1
-#archetypeGAV: com.github.mshin:archetype-jaxrs-model:0.0.1
 generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
 author: MunChul Shin
 model:
@@ -88,7 +56,7 @@ model:
           - String:field2
           - Date:field3
 ---
-archetypeGAV: com.github.mshin:archetype-entity:0.0.1
+id: com.emprogen.java.maven.model.lombok.entity.p0.v1
 generatedGav: com.github.mshin:example-entity
 author: MunChul Shin
 model:
@@ -143,7 +111,7 @@ joins:
     - FormEntity <1-n> TransactionEntity
     - AppEntity <n-n> UserEntity
 ---
-archetypeGAV: com.github.mshin:archetype-domain-model:0.0.2
+id: com.emprogen.java.maven.model.lombok.domain.p0.v1
 generatedGav: com.github.mshin:example-domain-model
 author: MunChul Shin
 model:

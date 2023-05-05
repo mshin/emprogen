@@ -9,8 +9,8 @@ title: |
 description: |
   This schema defines properties common to all java/maven schemas.
 examples:
-  -
-    - This schema can't be used. Copied as a template for other schemas.
+  - |
+    This schema can't be used. Copied as a template for other schemas.
 type: object
 properties:
   id:

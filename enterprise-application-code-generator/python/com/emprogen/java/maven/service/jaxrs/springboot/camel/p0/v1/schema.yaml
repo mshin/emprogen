@@ -9,14 +9,14 @@ title: |
 description: |
   This schema defines the rules for authoring a yaml defining a springboot camel service generated from a jaxrs API definition.
 examples:
-  -
-    - id: com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
-    - generatedGav: com.github.mshin:example-service-impl
-    - author: MunChul Shin
-    - serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
-    - serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
-    - dependencyGav:
-    -     - com.github.mshin:example-domain-model:0.0.1
+  - |
+    id: com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
+    generatedGav: com.github.mshin:example-service-impl
+    author: MunChul Shin
+    serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
+    serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
+    dependencyGav:
+        - com.github.mshin:example-domain-model:0.0.1
 type: object
 properties:
   id:
