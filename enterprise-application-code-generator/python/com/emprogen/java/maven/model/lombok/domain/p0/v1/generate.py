@@ -15,13 +15,13 @@ from com.emprogen.java.maven.models import Gav
  # delete placeholder model
 
 
-def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-domain-p0-archetype', '0.0.1')) -> None:
+def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-domain-p0-archetype', '0.0.1')) -> None:
 
     # Do all 1 time loads and calculations up front.
     # define archetype Gav used for this generator within script.
     archGav = archetypeGav
-    # yf.getArchetypeGav(domainModelDescriptor)
-    projGav = yf.getGeneratedProjectGav(domainModelDescriptor)
+    # yf.getArchetypeGav(descriptor)
+    projGav = yf.getGeneratedProjectGav(descriptor)
     projPomPath = projGav.artifactId + '/pom.xml'
     modelPath = jmf.getModelPath(projGav)
     templateFile = modelPath + '/class0.java'
@@ -33,10 +33,10 @@ def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.empro
     opts['class1'] = 'class1'
     opts['fields'] = 'fields'
     opts['enumerations'] = 'enumerations'
-    jmf.generateMavenProject(archGav, projGav, domainModelDescriptor['author'], **opts)
+    jmf.generateMavenProject(archGav, projGav, descriptor['author'], **opts)
 
     # for each model file
-    for model in domainModelDescriptor['model']:
+    for model in descriptor['model']:
 
         newClassName = model['name']
         newFileName = modelPath + '/' + newClassName + '.java'
@@ -55,7 +55,7 @@ def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.empro
     # delete placeholder model
     jmf.deleteFile(templateFile)
 
-    for enum in domainModelDescriptor['enum']:
+    for enum in descriptor['enum']:
 
         newClassName = enum['name']
         newFileName = modelPath + '/' + newClassName + '.java'

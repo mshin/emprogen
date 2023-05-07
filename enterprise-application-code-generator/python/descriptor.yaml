@@ -1,5 +1,20 @@
 # This descriptor would generate 5 projects.
 ---
+id: com.emprogen.java.maven.model.lombok.jaxrs.p0.v1
+generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
+author: MunChul Shin
+model:
+    - name: JaxrsModel0
+      fields:
+          - Map<BigDecimal, List<BigDecimal>>:field3
+          - ArrayList:field2
+          - BigDecimal:field1
+    - name: JaxrsModel1
+      fields:
+          - Integer:field1
+          - String:field2
+          - Date:field3
+---
 id: com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
 generatedGav: com.github.mshin:example-service-impl
 author: MunChul Shin
@@ -40,21 +55,6 @@ enum:
           - GREASE
           - BUTTER
           - OLIVE
----
-id: com.emprogen.java.maven.model.lombok.jaxrs.p0.v1
-generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
-author: MunChul Shin
-model:
-    - name: JaxrsModel0
-      fields:
-          - Map<BigDecimal, List<BigDecimal>>:field3
-          - ArrayList:field2
-          - BigDecimal:field1
-    - name: JaxrsModel1
-      fields:
-          - Integer:field1
-          - String:field2
-          - Date:field3
 ---
 id: com.emprogen.java.maven.model.lombok.entity.p0.v1
 generatedGav: com.github.mshin:example-entity

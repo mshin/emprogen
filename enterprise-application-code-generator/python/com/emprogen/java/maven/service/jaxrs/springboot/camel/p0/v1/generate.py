@@ -9,8 +9,8 @@ from com.emprogen.java.maven.models import Gav
 
 #TODO change name of serviceImpl from ...ServiceBean to ...ServiceImpl
 
-def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.github.mshin', 'jaxrms-springboot-camel-archetype', '1.0.1')) -> None:
-#def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-springboot-camel-p0-archetype', '0.0.1')) -> None:
+#def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.github.mshin', 'jaxrms-springboot-camel-archetype', '1.0.1')) -> None:
+def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-springboot-camel-p0-archetype', '0.0.1')) -> None:
 
 
 # generate the maven project (build existing java file url.)
@@ -27,22 +27,18 @@ def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.githu
 # call formatter on project.
 # build resultant project to verify compilation.
 
-# $1 yaml proj descriptor location; $2 doc num index 0
-# $3 g callback $4 a callback $5 sigav callback $6 si callback
-
-
     # Do all 1 time loads and calculations up front.
     # define archetype Gav used for this generator within script.
     archGav = archetypeGav
-    projGav = yf.getGeneratedProjectGav(domainModelDescriptor)
-    serviceInterfaceGavString = domainModelDescriptor['serviceInterfaceGav']
+    projGav = yf.getGeneratedProjectGav(descriptor)
+    serviceInterfaceGavString = descriptor['serviceInterfaceGav']
     apiGav = yf.getGav(serviceInterfaceGavString)
 
     generatedPackage = jmf.getPackage(projGav)
     projPomPath = projGav.artifactId + '/pom.xml'
     modelPath = jmf.getModelPath(projGav)
 
-    serviceInterfaceString = domainModelDescriptor['serviceInterface']
+    serviceInterfaceString = descriptor['serviceInterface']
     serviceInterfaceName = serviceInterfaceString.split('.')[-1]
     serviceInterfacePackage = serviceInterfaceString.replace('.' + serviceInterfaceName, '')
 
@@ -68,7 +64,7 @@ def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.githu
     opts['jaxrs_service_interface'] = serviceInterfaceName
     opts['jaxrs_service_package'] = serviceInterfacePackage
     print('service opts: ' + str(opts))
-    jmf.generateMavenProject(archGav, projGav, domainModelDescriptor['author'], **opts)
+    jmf.generateMavenProject(archGav, projGav, descriptor['author'], **opts)
 
     # generate impl class
     # delete existing service bean/impl
@@ -120,7 +116,7 @@ def generate(domainModelDescriptor: 'dict', archetypeGav: 'Gav' = Gav('com.githu
     jmf.replaceTextInFile(rercoPattern, routeString, routesTemplateFile)
 
     # add the dependency to the pom.
-    for dependency in domainModelDescriptor['dependencyGav']:
+    for dependency in descriptor['dependencyGav']:
         jmf.addDependency(projPomPath, yf.getGav(dependency))
     # update imports
     jmf.beautifyImports(projPomPath)
