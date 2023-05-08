@@ -1,31 +1,35 @@
-#!/usr/local/bin/python3
-
 import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf
 import com.emprogen.java.maven.field_functions as ff
 from com.emprogen.java.maven.models import Gav
 
-# for each document in the yaml file
- # generate the Maven project (build existing java file url.)
- # create new models based on template
-  # create the file in same directory as other file.
-  # replace the .Java file name with model name
-  # replace the fields with a new field string
-  # TODO update imports for fields.
- # delete placeholder model
-
-
 def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-jaxrs-p0-archetype', '0.0.1')) -> None:
 
     # Do all 1 time loads and calculations up front.
-    # define archetype Gav used for this generator within script.
+
+    # define maven archetype used for this generator within script.
     archGav = archetypeGav
+
+    # the maven groupId:artifactId:version for the code module to be generated
     projGav = yf.getGeneratedProjectGav(descriptor)
+
+    # the directory of the maven pom for the generated code. Usually at the directory root of project.
     projPomPath = projGav.artifactId + '/pom.xml'
+
+    # the directory of the java code.
     modelPath = jmf.getModelPath(projGav)
+
+    # the template java model class file.
     templateFile = modelPath + '/class0.java'
-    typToPkgtyp = ff.getTypeToPkgtypeDict(jmf.getJavaMavenPath() + '/java_type.properties')
-    fieldAnnotations = jmf.getProperty('field', str(jmf.getFilePath(__file__)) + '/jaxrs_field_annotation.properties')
+
+    # the location of the java properties file mapping tpe to package.type.
+    typToPkgtyp = ff.loadPropertiesAsDict(jmf.getJavaMavenPath() + '/java_type.properties')
+
+    thisFilesPath = str(jmf.getFilePath(__file__))
+
+    # the location of the java properties file mapping field to annotation.
+    fieldAnnotations = jmf.getProperty('field', thisFilesPath + '/jaxrs_field_annotation.properties')
+
     # Geneate Maven project.
     opts = {}
     opts['class0'] = 'class0'
@@ -61,6 +65,12 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'mode
 
     # delete placeholder model
     jmf.deleteFile(templateFile)
+
+    # add addtl dependencies to the pom.
+    # if no items in optional dependencyGav, default {} for null safety
+    for dependency in descriptor.get('dependencyGav', {}):
+        print('adding dependency to pom: ' + dependency)
+        jmf.addDependency(projPomPath, yf.getGav(dependency))
 
     # update imports
     jmf.beautifyImports(projPomPath)

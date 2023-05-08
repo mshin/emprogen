@@ -1,5 +1,60 @@
 # This descriptor would generate 5 projects.
 ---
+id: com.emprogen.java.maven.model.lombok.entity.p0.v1
+generatedGav: com.github.mshin:example-entity
+author: MunChul Shin
+model:
+    - name: AccountEntity
+      pk: id
+      fields:
+          - Long:id
+          - LocalDate:dateCreated
+          - LocalDateTime:lastLoginTimestamp
+          - BigDecimal:accountBalance
+    - name: QuestionnaireEntity
+      pk: id
+      fields:
+          - Long:id
+          - String:field1
+          - Integer:field2
+    - name: FormEntity
+      pk: id
+      fields:
+          - Long:id
+          - String:addressLine1
+          - String:addressLine2
+    - name: UserEntity
+      pk: id
+      fields:
+          - Long:id
+          - String:firstName
+          - String:lastName
+          - LocalDate:birthDate
+          - Boolean:isAdmin
+    - name: TransactionEntity
+      pk: transactionId
+      fields:
+          - BigDecimal:amount
+          - String:transactionId
+          - LocalDateTime:timestampTransactionInitiated
+          - LocalDateTime:timestampTransactionCompleted
+    - name: AppEntity
+      pk: id
+      fields:
+          - Long:id
+          - String:name
+          - Integer:hitsCounter
+# owner is on many side, on reference side if only one, second entity mentioned... in that order
+# < next to an entity means it has a reference to the other.
+# format is "- ${Entity.class} **-** ${OtherEntity.class}" Where first * is <|- second * is 1|n third * is 1|n and fourth star is >|-.
+# valid join instructions are:  <1-1> | -1-1> | <1-1- | <n-1> | <n-1- | <1-n> | -1-n> | <n-n> | -n-n> | <n-n- 
+joins:
+    - FormEntity <1-1> AccountEntity
+    - FormEntity <1-1- QuestionnaireEntity
+    - UserEntity <n-1> AccountEntity
+    - FormEntity <1-n> TransactionEntity
+    - AppEntity <n-n> UserEntity
+---
 id: com.emprogen.java.maven.model.lombok.jaxrs.p0.v1
 generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
 author: MunChul Shin
@@ -56,63 +111,8 @@ enum:
           - BUTTER
           - OLIVE
 ---
-id: com.emprogen.java.maven.model.lombok.entity.p0.v1
-generatedGav: com.github.mshin:example-entity
-author: MunChul Shin
-model:
-    - name: AccountEntity
-      pk: id
-      fields:
-          - Long:id
-          - LocalDate:dateCreated
-          - LocalDateTime:lastLoginTimestamp
-          - BigDecimal:accountBalance
-    - name: QuestionnaireEntity
-      pk: id
-      fields:
-          - Long:id
-          - String:field1
-          - Integer:field2
-    - name: FormEntity
-      pk: id
-      fields:
-          - Long:id
-          - String:addressLine1
-          - String:addressLine2
-    - name: UserEntity
-      pk: id
-      fields:
-          - Long:id
-          - String:firstName
-          - String:lastName
-          - LocalDate:birthDate
-          - Boolean:isAdmin
-    - name: TransactionEntity
-      pk: transactionId
-      fields:
-          - BigDecimal:amount
-          - String:transactionId
-          - LocalDateTime:timestampTransactionInitiated
-          - LocalDateTime:timestampTransactionCompleted
-    - name: AppEntity
-      pk: id
-      fields:
-          - Long:id
-          - String:name
-          - Integer:hitsCounter
-# owner is on many side, on reference side if only one, second entity mentioned... in that order
-# < next to an entity means it has a reference to the other.
-# format is "- ${Entity.class} **-** ${OtherEntity.class}" Where first * is <|- second * is 1|n third * is 1|n and fourth star is >|-.
-# valid join instructions are:  <1-1> | -1-1> | <1-1- | <n-1> | <n-1- | <1-n> | -1-n> | <n-n> | -n-n> | <n-n- 
-joins:
-    - FormEntity <1-1> AccountEntity
-    - FormEntity <1-1- QuestionnaireEntity
-    - UserEntity <n-1> AccountEntity
-    - FormEntity <1-n> TransactionEntity
-    - AppEntity <n-n> UserEntity
----
 id: com.emprogen.java.maven.model.lombok.domain.p0.v1
-generatedGav: com.github.mshin:example-domain-model
+generatedGav: com.github.mshin:example-domain-model2
 author: MunChul Shin
 model:
     - name: DomainModel0

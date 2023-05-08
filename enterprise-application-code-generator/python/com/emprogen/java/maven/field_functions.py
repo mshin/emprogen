@@ -1,28 +1,35 @@
 #!/usr/local/bin/python3
 import re
 
-"Given a url to the java_types.properties file, return the key=value items in a dict."
-def getTypeToPkgtypeDict(javaTypesPropUrl: 'str') -> 'dict':
-    # Get the package for each type. Put it in a dict type:pkg.type.
-    typesDict = {}
-    with open(javaTypesPropUrl) as f:
-        rawTypesList = f.read().split('\n')
-        print('rawTypesList: ' + str(rawTypesList))
-        for p in rawTypesList:
-            if not p: continue
-            if p and p[0] == '#':
-                print("got rid of comment: " + str(p))
+"Given a url to .properties file, return the key=value items in a dict."
+def loadPropertiesAsDict(propertiesFileUrl: 'str') -> 'dict':
+
+    propertiesDict = {}
+
+    # key is ([^=]+) aka one or more characters starting at the beginning of line that are not equals sign.
+    # value is (.*) aka any characters after the first equals sign until the end of the line.
+    pattern = re.compile('^([^=]+)=(.*)$')
+
+    with open(propertiesFileUrl) as f:
+        keyValueList = f.read().split('\n')
+
+        for line in keyValueList:
+            if not line: continue
+            if line and line[0] == '#':
+                print("got rid of comment: " + str(line))
                 continue
-            print(str(p))
-            typPkgtyp = p.split('=')
-            if len(typPkgtyp) == 2:
-                typesDict[typPkgtyp[0]] = typPkgtyp[1]
+
+            match = re.match(pattern, line)
+            if match:
+                key = match.group(1)
+                value = match.group(2)
+                propertiesDict[key] = value
             else:
                 e = Exception('Property was not in format k=v.')
-                print('file: ' + str(javaTypesPropUrl) + '| prop: ' + str(p))
+                print('file: ' + str(propertiesFileUrl) + '| prop: ' + str(p))
                 raise e
-    print('typesDict: ' + str(typesDict))
-    return typesDict
+    print('propertiesDict: ' + str(propertiesDict))
+    return propertiesDict
 
 "Given the field:type and type:pkgtype dictionaries, return a field:pkgtype dict."
 def mapFieldsToQualifiedTypes(fieldToType: 'dict', typeToPkgtype: 'dict') -> 'dict':

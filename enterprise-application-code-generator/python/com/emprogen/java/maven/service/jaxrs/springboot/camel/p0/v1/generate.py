@@ -1,5 +1,3 @@
-#!/usr/local/bin/python3
-
 import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf
 import com.emprogen.java.maven.field_functions as ff
@@ -12,49 +10,58 @@ from com.emprogen.java.maven.models import Gav
 #def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.github.mshin', 'jaxrms-springboot-camel-archetype', '1.0.1')) -> None:
 def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-springboot-camel-p0-archetype', '0.0.1')) -> None:
 
-
-# generate the maven project (build existing java file url.)
-# get jaxrs service interface
-# make impl file.
-  # generate impl class
-  # delete existing service bean/impl
-  # make new service impl .java file with generated content.
-# replace Application.java placeholder for service interface name. (with package)
-# update camel route with methods from impl.
-# update bean test class names
-# update route test class names and bean name.
-
-# call formatter on project.
-# build resultant project to verify compilation.
-
     # Do all 1 time loads and calculations up front.
-    # define archetype Gav used for this generator within script.
+
+    # define maven archetype used for this generator within script.
     archGav = archetypeGav
+
+    # the maven groupId:artifactId:version for the code module to be generated
     projGav = yf.getGeneratedProjectGav(descriptor)
+
+    # the gav for the maven module containing the jaxrs Interface from which the service will be generated.
     serviceInterfaceGavString = descriptor['serviceInterfaceGav']
     apiGav = yf.getGav(serviceInterfaceGavString)
 
+    # the java package for the project to be generated.
     generatedPackage = jmf.getPackage(projGav)
+
+    # the directory of the maven pom for the generated code. Usually at the directory root of project.
     projPomPath = projGav.artifactId + '/pom.xml'
+    # the directory of the java code.
     modelPath = jmf.getModelPath(projGav)
 
+    # the package.Classname for the jaxrs Interface from which the service will be generatd.
     serviceInterfaceString = descriptor['serviceInterface']
+    # the Classname only for the jaxrs Interface from which the service will be generated.
     serviceInterfaceName = serviceInterfaceString.split('.')[-1]
+    # the package only for the jaxrs Interface from which the service will be generated.
     serviceInterfacePackage = serviceInterfaceString.replace('.' + serviceInterfaceName, '')
 
+    # the template java bean class file.
     beanTemplateFile = modelPath + '/' + serviceInterfaceName + 'Bean.java'
+    # the template java camel routes class file.
     routesTemplateFile = modelPath + '/' + serviceInterfaceName + 'Routes.java'
+    # the template java spring application class file.
     applicationTemplateFile =  modelPath + '/Application.java'
 
-    filePath = str(jmf.getFilePath(__file__))
-    javaMavenDir = jmf.getJavaMavenPath()
-    typToPkgtyp = ff.getTypeToPkgtypeDict(javaMavenDir + '/java_type.properties')
-    cpPlUrl=javaMavenDir + '/maven-cp.pl'
-    camelRouteChoiceUrl = filePath + '/camel_route_choice.properties'
+    thisFilesPath = str(jmf.getFilePath(__file__))
 
-    genImplClass = "com.emprogen.generate.impl.GenerateImplService"
+    # the directory com/emprogen/java/maven
+    javaMavenDir = jmf.getJavaMavenPath()
+    # the location of the java properties file mapping tpe to package.type.
+    typToPkgtyp = ff.loadPropertiesAsDict(javaMavenDir + '/java_type.properties')
+
+    # the location of the script that gets maven dependencies for calling from classpath context
+    cpPlUrl=javaMavenDir + '/maven-cp.pl'
+    # the location of the properties file with snippets used to create a camel route in java dsl.
+    camelRouteChoiceUrl = thisFilesPath + '/camel_route_choice.properties'
+    # the spring annotation for defining a spring managed bean.
     springComponentAnn = "@org.springframework.stereotype.Component"
+    # the package.Classname of a tool used to generate a java impl Class given a java Interface.
+    genImplClass = "com.emprogen.generate.impl.GenerateImplService"
+    # the maven gav for the GenerateImplService tool.
     generateImplGav = "com.emprogen:generate-impl:0.0.1"
+
 
     # Geneate Maven project.
     opts = {}
@@ -66,15 +73,13 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     print('service opts: ' + str(opts))
     jmf.generateMavenProject(archGav, projGav, descriptor['author'], **opts)
 
-    # generate impl class
-    # delete existing service bean/impl
-    # make new service impl .java file with generated content.
-
-    #serviceImplementationClasspath = subprocess.run([cpPlUrl, serviceInterfaceString], check=True, text=True, capture_output=True).stdout
+    # get the maven dependencies for the module containing the jaxrs Interface from which the service will be generated.
     serviceImplementationClasspath = jmf.runSubprocessCaptureOutput([cpPlUrl, serviceInterfaceGavString]).strip()
+    # get the maven dependencies for the module containing the tool used to generate a java impl Class given a java Interface.
     generateImplClasspath = jmf.runSubprocessCaptureOutput([cpPlUrl, generateImplGav]).strip()
-
     #print ('serviceImplementationClasspath: ' + str(serviceImplementationClasspath))
+
+    # run the tool to get the generated code from the jaxrs Interface.
     generatedImpl = jmf.runSubprocessCaptureOutput(['java', '-cp', 
             serviceImplementationClasspath + ':' + generateImplClasspath, genImplClass, 
             serviceInterfaceString, generatedPackage])
@@ -115,9 +120,12 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     rercoPattern = r'(?<=\.choice\(\)\n)((.|\n)+;)'
     jmf.replaceTextInFile(rercoPattern, routeString, routesTemplateFile)
 
-    # add the dependency to the pom.
-    for dependency in descriptor['dependencyGav']:
+    # add addtl dependencies to the pom.
+    # if no items in optional dependencyGav, default {} for null safety
+    for dependency in descriptor.get('dependencyGav', {}):
+        print('adding dependency to pom: ' + dependency)
         jmf.addDependency(projPomPath, yf.getGav(dependency))
+
     # update imports
     jmf.beautifyImports(projPomPath)
 
