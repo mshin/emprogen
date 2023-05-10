@@ -2,6 +2,53 @@ import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf
 import com.emprogen.java.maven.field_functions as ff
 from com.emprogen.java.maven.models import Gav
+from com.emprogen.java.maven.models import JoinInstruction
+from com.emprogen.java.maven.models import TableRelationship
+
+def getJoinInstruction(joinDesc: 'str') -> 'JoinInstruction':
+    # Format is "- ${Entity.class} **-** ${OtherEntity.class}" Where first * is <|- second * is 1|n third * is 1|n and fourth star is >|-.
+    # Example: FormEntity <1-1> AccountEntity
+
+    joinDescList = str(joinDesc).split()
+    entNameL = joinDescList[0]
+    entNameR = joinDescList[2]
+    joinStr = joinDescList[1]
+    isRefL = True
+    isRefR = True
+    isOwnerR = True
+    mapping = None
+
+    if '-' == joinStr[0]:
+        isRefL = False
+    if '-' == joinStr[4]:
+        isRefR = False
+
+    if 'n' == joinStr[1]:
+        if 'n' == joinStr[3]:
+            mapping = TableRelationship.MANY_TO_MANY
+        else:
+            mapping = TableRelationship.MANY_TO_ONE
+    else:
+        if 'n' == joinStr[3]:
+            mapping = TableRelationship.ONE_TO_MANY
+        else:
+            mapping = TableRelationship.ONE_TO_ONE
+
+    if isRefR == False or mapping == TableRelationship.MANY_TO_ONE:
+        isOwnerR = False
+
+    return JoinInstruction(entNameL, entNameR, mapping, isRefL, isRefR, isOwnerR)
+
+def replaceVarsInAnnotation(annotation: 'str', refingType: 'str', refingTypeVar: 'str', refingTypePkVar: 'str',
+        refingTypePkVarSnake: 'str', otherPkVarSnake: 'str', owningType: 'str', owningTypeVar: 'str') -> 'str':
+    annotation = annotation.replace(r'%0', refingType)
+    annotation = annotation.replace(r'%1', refingTypeVar)
+    annotation = annotation.replace(r'%4pk', refingTypePkVar)
+    annotation = annotation.replace(r'%5pksql', refingTypePkVarSnake)
+    annotation = annotation.replace(r'%6opksql', otherPkVarSnake)
+    annotation = annotation.replace(r'%2', owningType)
+    annotation = annotation.replace(r'%3', owningTypeVar)
+    return annotation
 
 def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-entity-p0-archetype', '0.0.1')) -> None:
 
@@ -98,8 +145,8 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'mode
             # add the processed annotation to the corresponding field in fieldString.
             fieldString = fieldString.replace('&%' + field + '&%', ann)
 
-        # replace all carat symbols with newlines.
-        # Some of the annotations are stored as properties and use carat instead of newline.
+        # replace all caret symbols with newlines.
+        # Some of the annotations are stored as properties and use caret instead of newline.
         fieldString = fieldString.replace('^', '\n')
         print('fieldString: ' + fieldString)
         # replace contents of class file. 'fields' placeholder replaced with generated fields.
@@ -110,8 +157,74 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'mode
         if {'LocalDate', 'LocalDateTime'} & set(fieldToType.values()):
             needsConverterDependency = True
 
+    # get model to pk dictionary
+    modelNameToPkDict = {}
+    for model in descriptor['model']:
+        modelNameToPkDict[model.get('name')] = model.get('pk')
+
+    # get joins dictionary
+    # create list of the join instructions
+    joinInstructionList = []
     for join in descriptor['joins']:
-        pass #TODO
+        joinInstruction = getJoinInstruction(join)
+        joinInstructionList.append(joinInstruction)
+
+    # build the annotation and write it to file.
+    for joinInstruction in joinInstructionList:
+
+        # set owner/not owner as either left or right entity
+        if joinInstruction.isOwnerR:
+            owner = joinInstruction.entNameR
+            notOwner = joinInstruction.entNameL
+        else:
+            owner = joinInstruction.entNameL
+            notOwner = joinInstruction.entNameR
+
+        # set variables needed for placeholder replacement in join annotation.
+        owningType = owner
+        owningTypeVar = jmf.lower1st(owner)
+        refingType = notOwner
+        refingTypeVar = jmf.lower1st(notOwner)
+        refingTypePkVar = modelNameToPkDict.get(refingType)
+        refingTypePkVarSnake = jmf.camelToSnake(refingTypePkVar)
+        otherPkVar = modelNameToPkDict.get(owningType) # not used in annotation
+        otherPkVarSnake = jmf.camelToSnake(otherPkVar)
+
+        # start with left Entity
+        if joinInstruction.isRefL:
+            # get the template annotation. Adding caret to the beginning to be replaced with newline.
+            annProp = joinInstruction.getAnnotationKeyLeft()
+            ann = '^' + jpaJoinAnnotationDict.get(annProp.name)
+
+            # build annotation by replacing placeholders.
+            ann = replaceVarsInAnnotation(ann, refingType, refingTypeVar, refingTypePkVar, refingTypePkVarSnake, otherPkVarSnake, owningType, owningTypeVar)
+            # we're going to replace the class's closing bracket with annotation, so must add it back in.
+            ann += '^^}^'
+            # caret for newline.
+            ann = ann.replace('^', '\n')
+
+            # make the path for entity to write to.
+            entityFilePath = modelPath + '/' + joinInstruction.entNameL + '.java'
+            # write the annotation to the respective file by appending it to the end.
+            jmf.replaceTextInFile('\n}', ann, entityFilePath)
+
+        # then do right Entity
+        if joinInstruction.isRefR:
+            # get the template annotation
+            annProp = joinInstruction.getAnnotationKeyRight()
+            ann = jpaJoinAnnotationDict.get(annProp.name)
+
+            # build annotation by replacing placeholders.
+            ann = replaceVarsInAnnotation(ann, refingType, refingTypeVar, refingTypePkVar, refingTypePkVarSnake, otherPkVarSnake, owningType, owningTypeVar)
+            # we're going to replace the class's closing bracket with annotation, so must add it back in.
+            ann += '^^}^'
+            # caret for newline.
+            ann = ann.replace('^', '\n')
+
+            # make the path for entity to write to.
+            entityFilePath = modelPath + '/' + joinInstruction.entNameR + '.java'
+            # write the annotation to the respective file by appending it to the end.
+            jmf.replaceTextInFile('\n}', ann, entityFilePath)
 
     # delete placeholder model
     jmf.deleteFile(templateFile)
