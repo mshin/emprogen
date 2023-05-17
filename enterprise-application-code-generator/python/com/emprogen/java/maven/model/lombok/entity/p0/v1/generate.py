@@ -50,7 +50,8 @@ def replaceVarsInAnnotation(annotation: 'str', refingType: 'str', refingTypeVar:
     annotation = annotation.replace(r'%3', owningTypeVar)
     return annotation
 
-def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-entity-p0-archetype', '0.0.1')) -> None:
+def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-entity-p0-archetype', '0.0.1'),
+        *, filesPath: 'str' = None) -> None:
 
     # Do all 1 time loads and calculations up front.
 

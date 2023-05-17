@@ -8,7 +8,8 @@ from com.emprogen.java.maven.models import Gav
 #TODO change name of serviceImpl from ...ServiceBean to ...ServiceImpl
 
 #def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.github.mshin', 'jaxrms-springboot-camel-archetype', '1.0.1')) -> None:
-def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-springboot-camel-p0-archetype', '0.0.1')) -> None:
+def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-springboot-camel-p0-archetype', '0.0.1')
+        , *, filesPath: 'str' = None) -> None:
 
     # Do all 1 time loads and calculations up front.
 

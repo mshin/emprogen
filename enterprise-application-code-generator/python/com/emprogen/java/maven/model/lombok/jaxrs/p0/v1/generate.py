@@ -3,7 +3,8 @@ import com.emprogen.java.maven.yaml_functions as yf
 import com.emprogen.java.maven.field_functions as ff
 from com.emprogen.java.maven.models import Gav
 
-def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-jaxrs-p0-archetype', '0.0.1')) -> None:
+def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-jaxrs-p0-archetype', '0.0.1')
+        , *, filesPath: 'str' = None) -> None:
 
     # Do all 1 time loads and calculations up front.
 

@@ -1,4 +1,8 @@
-# This descriptor would generate 5 projects.
+# This descriptor would generate 3 projects.
+id: com.emprogen.java.maven.api.openapi.jaxrs.p0.v1
+generatedGav: com.github.mshin:example-api:1.0.0
+author: MunChul Shin
+openApiUrl: openapi.yaml
 ---
 id: com.emprogen.java.maven.model.lombok.entity.p0.v1
 generatedGav: com.github.mshin:example-entity
@@ -77,69 +81,3 @@ serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
 serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
 dependencyGav:
     - com.github.mshin:example-domain-model:0.0.1
----
-id: com.emprogen.java.maven.model.lombok.domain.p0.v1
-generatedGav: com.github.mshin:example-domain-model:0.0.1
-author: MunChul Shin
-model:
-    - name: DomainModel0
-      fields:
-          - Map<BigDecimal, List<BigDecimal>>:field1
-          - String:field2
-          - Integer:field3
-    - name: DomainModel1
-      fields:
-          - Integer:field1
-          - String:field2
-          - boolean:field3
-          - int:field4
-    - name: Cookies
-      fields:
-          - String:tastiness
-          - String:type
-          - boolean:isGood
-          - int:calories
-    - name: Stock
-      fields:
-          - Date:acquired
-          - Integer:value
-          - Integer:quantity
-enum:
-    - name: Enum1
-      values:
-          - GREASE
-          - BUTTER
-          - OLIVE
----
-id: com.emprogen.java.maven.model.lombok.domain.p0.v1
-generatedGav: com.github.mshin:example-domain-model2
-author: MunChul Shin
-model:
-    - name: DomainModel0
-      fields:
-          - String:field1
-          - String:field2
-          - Integer:field3
-    - name: DomainModel1
-      fields:
-          - Integer:field1
-          - String:field2
-          - boolean:field3
-          - int:field4
-    - name: Cookies
-      fields:
-          - String:tastiness
-          - String:type
-          - boolean:isGood
-          - int:calories
-    - name: Stock
-      fields:
-          - Date:acquired
-          - Integer:value
-          - Integer:quantity
-enum:
-    - name: Enum1
-      values:
-          - GREASE
-          - BUTTER
-          - OLIVE
