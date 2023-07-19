@@ -3,12 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.emprogen</groupId>
-    <artifactId>openapi</artifactId>
+    <artifactId>jaxrs-spec-0</artifactId>
     <version>0.0.1</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>microprofile</module>
-        <module>swagger</module>
+        <module>api-openapi-swagger-jaxrs-0-archetype</module>
     </modules>
 </project>

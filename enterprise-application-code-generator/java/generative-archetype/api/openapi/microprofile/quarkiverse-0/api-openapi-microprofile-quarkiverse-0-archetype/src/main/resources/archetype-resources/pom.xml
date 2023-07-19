@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.emprogen</groupId>
+    <artifactId>openapi-microprofile-smallrye-quarkus-jaxrs</artifactId>
+    <version>0.0.1</version>
+    <packaging>pom</packaging>
+
+    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+      <dependency>
+        <groupId>io.quarkiverse.openapi.generator</groupId>
+        <artifactId>quarkus-openapi-generator</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-maven-plugin</artifactId>
+          <version>3.2.0.Final</version>
+          <extensions>true</extensions>
+          <executions>
+            <execution>
+              <goals>
+                <goal>build</goal>
+                <goal>generate-code</goal>
+                <goal>generate-code-tests</goal>
+              </goals>
+              <configuration>
+                <configOptions>
+                  <sourceFolder>src/main/java/</sourceFolder>
+                  <apiPackage>${apiPackage}</apiPackage>
+                  <modelPackage>${modelPackage}</modelPackage>
+                  <groupId>${generatedGroupId}</groupId>
+                  <artifactId>${generatedArtifactId}</artifactId>
+                  <artifactVersion>${generatedVersion}</artifactVersion>
+                  <additionalModelTypeAnnotations></additionalModelTypeAnnotations>
+                  <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                  <interfaceOnly>true</interfaceOnly>
+                  <serializableModel>true</serializableModel>
+                  <useJakartaEe>false</useJakartaEe>
+                  <useSwaggerAnnotations>true</useSwaggerAnnotations>
+                  <withXml>false</withXml><!--changed-->
+                  <prependFormOrBodyParameters></prependFormOrBodyParameters>
+                  <useMicroProfileOpenAPIAnnotations></useMicroProfileOpenAPIAnnotations>
+                  <useOneOfInterfaces></useOneOfInterfaces>
+                  <useTags></useTags>
+                </configOptions>
+                <globalProperties>
+                  <skipFormModel>false</skipFormModel>
+                </globalProperties>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+
+    <executions>
+        <execution>
+            <phase>generate-sources</phase>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+            <configuration>
+                <inputSpec>${yamlName}</inputSpec>
+                <generatorName>jaxrs-spec</generatorName>
+                <!--additionalProperties>interfaceOnly=true</additionalProperties-->
+                <configOptions>
+                    <sourceFolder>src/main/java/</sourceFolder>
+                    <apiPackage>${apiPackage}</apiPackage>
+                    <modelPackage>${modelPackage}</modelPackage>
+                    <groupId>${generatedGroupId}</groupId>
+                    <artifactId>${generatedArtifactId}</artifactId>
+                    <artifactVersion>${generatedVersion}</artifactVersion>
+                    <additionalModelTypeAnnotations></additionalModelTypeAnnotations>
+                    <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                    <interfaceOnly>true</interfaceOnly>
+                    <serializableModel>true</serializableModel>
+                    <useJakartaEe>false</useJakartaEe>
+                    <useSwaggerAnnotations>true</useSwaggerAnnotations>
+                    <withXml>false</withXml><!--changed-->
+                    <prependFormOrBodyParameters></prependFormOrBodyParameters>
+                    <useMicroProfileOpenAPIAnnotations></useMicroProfileOpenAPIAnnotations>
+                    <useOneOfInterfaces></useOneOfInterfaces>
+                    <useTags></useTags>
+                </configOptions>
+                <globalProperties>
+                    <skipFormModel>false</skipFormModel>
+                </globalProperties>
+            </configuration>
+        </execution>
+    </executions>
+
+</project>

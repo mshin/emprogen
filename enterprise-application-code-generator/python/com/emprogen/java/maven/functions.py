@@ -6,8 +6,11 @@ import xml.etree.ElementTree as et
 import glob
 import pathlib
 import shutil
+import importlib
 #import com.emprogen.java.maven.yaml_functions as yml
 from com.emprogen.java.maven.models import Gav
+
+rgjf = importlib.import_module("com.emprogen.java.run-google-java-format")
 
 def getJavaMavenPath() -> 'str':
     return str(pathlib.Path(__file__).parent.resolve())
@@ -28,7 +31,28 @@ def camelToSnake(camelString: 'str') -> 'str':
 def getModelPath(gav: 'Gav') -> 'str':
     return gav.artifactId + '/src/main/java/' + gav.groupId.replace('.', '/') + '/' + gav.artifactId.replace('-', '/')
 
-def beautifyImports(pathToPom: 'str; path to project pom') -> 'None':
+def gjf(javaFiles: 'list; .java files to be formatted with google-java-format') -> None:
+    #pathOfCheckGoogleJavaFormatPy = str(pathlib.Path(__file__).parent.parent.resolve()) + '/run-google-java-format.py'
+    #print ('pathOfCheckGoogleJavaFormatPy:' + str(pathOfCheckGoogleJavaFormatPy))
+    for javaFile in javaFiles:
+        rgjf.run(javaFile)
+    print('finished formatting ' + str(len(javaFiles)) + ' java files.')
+
+def eclipseFormatterValidate(pathToPom: 'str; path to project pom') -> None:
+    validate = 'net.revelc.code.formatter:formatter-maven-plugin:2.23.0:validate'
+    print('running maven plugin eclipse formatter:validate at path: ' + pathToPom)
+
+    opts = {'configFile': getJavaMavenPath() + '/mshin_formatter_java.xml'}
+    callMvnWithOptions(**opts, goal=validate, file=pathToPom)
+
+def eclipseFormatter(pathToPom: 'str; path to project pom') -> None:
+    formatter = 'net.revelc.code.formatter:formatter-maven-plugin:2.23.0:format'
+    print('running maven plugin eclipse formatter:format at path: ' + pathToPom)
+
+    opts = {'configFile': getJavaMavenPath() + '/mshin_formatter_java.xml'}
+    callMvnWithOptions(**opts, goal=formatter, file=pathToPom)
+
+def beautifyImports(pathToPom: 'str; path to project pom') -> None:
     beautify = 'org.andromda.maven.plugins:andromda-beautifier-plugin:3.4:beautify-imports'
     print('Beautifying imports at path: ' + pathToPom)
     callMvnWithOptions(goal=beautify, file=pathToPom)
@@ -133,27 +157,68 @@ def addDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     # print('root: ' + str(et.tostring(root)))
     tree.write(pomPath)
 
-def replaceTextInFile(searchText: 'str regex', replaceText: 'str', filePath: 'str path') -> None:
+def removeDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
+    tree = et.parse(pomPath) #ElementTree
+    root = tree.getroot() #Element
+    ns = {'x': 'http://maven.apache.org/POM/4.0.0'}
+    # ./project/dependencies/dependency/groupId[.='io.swagger']/../artifactId[.='swagger-annotations']/..
+    #elem = root.find(r"./x:dependencies/x:dependency/x:groupId[.='io.swagger']/../x:artifactId/..", ns)
+    elem = root.find("./x:dependencies/x:dependency/x:groupId[.='" + gav.groupId + "']/../x:artifactId[.='" + gav.artifactId + "']/..", ns)
+    if gav.version:
+        elem = root.find("./x:dependencies/x:dependency/x:groupId[.='" + gav.groupId + "']/../x:artifactId[.='" + gav.artifactId + "']/../x:version[.='" + gav.version + "']/..", ns)
+
+    parentElem = root.find('./x:dependencies', ns)
+    parentElem.remove(elem)
+
+    et.indent(tree, space="    ", level=0)
+    et.register_namespace('', ns['x'])
+    # print('root: ' + str(et.tostring(root)))
+    tree.write(pomPath)
+
+def replaceTextInFileMulti(searchToReplace: 'dict', filePath: 'str path', *, count: 'int' = 0) -> None:
     # Opening the file in read and write mode
     with open(filePath,'r+') as f:
-  
+
         # Reading the file data and store
         # it in a file variable
         file0 = f.read()
-          
-        # Replacing the pattern with the string
-        # in the file data
-        file0 = re.sub(searchText, replaceText, file0)
-  
+
+        # Replacing the pattern with the string in the file data for each item in the dict
+        for searchText, replaceText in searchToReplace.items():
+            file0 = re.sub(searchText, replaceText, file0, count = count)
+
+        # Delete the current content of the file before writing.
+        f.truncate(0)
+
         # Setting the position to the top
         # of the page to insert data
         f.seek(0)
-          
+
         # Writing replaced data in the file
         f.write(file0)
-  
-        # Truncating the file size
-        #f.truncate()
+
+def replaceTextInFile(searchText: 'str regex', replaceText: 'str', filePath: 'str path', *, count: 'int' = 0) -> None:
+    replaceTextInFileMulti({searchText: replaceText}, filePath, count = count)
+
+def addJavaImports(imports: 'str', filePath: 'str path') -> None:
+    print('adding imports to file: ' + str(filePath))
+    searchText = '\n'
+    replaceTextInFile(searchText, '\n\n' + imports + '\n', filePath, count = 1)
+
+def buildAnnotationAttributeReplacementListOfTriples(annotationToSearchToReplace: 'list') -> 'dict':
+    output = {}
+    for annotation, searchString, replaceString in annotationToSearchToReplace:
+        # group 1 before attribute replaced.
+        # group 2 after annotation replaced
+        # annotation followed by 0 or more whitespace then left parentheses,
+        # then 0 or more characters that are not right parentheses,
+        # then the attribute to be replaced,
+        # then 0 or more whitespace characters followed by '=' followed by 0 or more whitespaces,
+        # then 0 or more characters that are not right parentheses, then right parentheses.
+        item = '(' + annotation + '\s*\([^\)]*)' + searchString + '(\s*=\s*[^\)]*\))'
+        output[item] = replaceString
+    print('buildAnnotationAttributeReplacementListOfTriples: ' + str(output))
+    return output
 
 print('loaded ' + __file__)
 
