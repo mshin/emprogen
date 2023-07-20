@@ -175,6 +175,47 @@ def removeDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None
     # print('root: ' + str(et.tostring(root)))
     tree.write(pomPath)
 
+# pathToElementList does not contain the element identifier elements, only everything up to that point.
+# elementIdentifierDict element:value
+def removeXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list', elementIdentifierDict: 'dict') -> None:
+    tree = et.parse(filePath) #ElementTree
+    root = tree.getroot() #Element
+    ns = {'x': namespace}
+
+    pathToElement = '.'
+    elementIdentifiers = ''
+    for e in pathToElementList:
+        pathToElement += '/x:' + e
+    for e, value in elementIdentifierDict.items():
+        elementIdentifiers += '/x:' + e + "[.='" + value + "']/.."
+    searchablePath = pathToElement + elementIdentifiers
+
+    elem = root.find(searchablePath, ns)
+    parentElem = root.find(searchablePath + '/..', ns)
+    parentElem.remove(elem)
+
+    et.indent(tree, space="    ", level=0)
+    et.register_namespace('', ns['x'])
+    tree.write(filePath)
+
+def removePomProperties(pomPath: 'str', propertiesList: 'list') -> None:
+    for prop in propertiesList:
+        removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['properties', prop], {})
+        print ('removed pom property ' + prop + ' in pom ' + pomPath)
+
+def removePomPlugin(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
+    # Not including groupId because some plugins don't include them
+    removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['build', 'plugins', 'plugin'], {'artifactId': gav.artifactId})
+    print ('removed pom plugin ' + str(gav) + ' in pom ' + pomPath)
+
+def removePomProfile(pomPath: 'str', profileId: 'str') -> None:
+    removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['profiles', 'profile'], {'id': profileId})
+    print ('removed pom profile ' + profileId + ' in pom ' + pomPath)
+
+def removePomDependencyManagement(pomPath: 'str') -> None:
+    removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['dependencyManagement'], {})
+    print ('removed dependencyManagement in pom ' + pomPath)
+
 def replaceTextInFileMulti(searchToReplace: 'dict', filePath: 'str path', *, count: 'int' = 0) -> None:
     # Opening the file in read and write mode
     with open(filePath,'r+') as f:

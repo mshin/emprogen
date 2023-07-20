@@ -48,9 +48,19 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
     mvnGenGav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-1-archetype', '0.0.1')
 
-    openApiGav = Gav('io.swagger.core.v3', 'swagger-annotations', '2.2.10')
+    #openApiGav = Gav('io.swagger.core.v3', 'swagger-annotations', '2.2.10')
+
+    # remove these
     swaggerGav = Gav('io.swagger', 'swagger-annotations', None)
+    quarkusJunitGav = Gav('io.quarkus', 'quarkus-junit5', None)
+    restAssuredGav = Gav('io.rest-assured', 'rest-assured', None)
+    quarkusResteasyGav = Gav('io.quarkus', 'quarkus-resteasy', None)
+    quarkusSmallryeGav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
+
+    #add these for annotations
     microprofileGav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2') #'3.1.1')
+    jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')
+    jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')
 
     genGav = yf.getGav(descriptor['generatedGav'])
     package = jmf.getPackage(genGav)
@@ -143,6 +153,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     #add openapi microprofile (openapi3) annotations
     jmf.addDependency(projPomPath, microprofileGav)
 
+    # Delete old generating pom file.
+    jmf.deleteFile(projPomPath + '.generating')
+
     print('Rebuilding project.')
     jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
     print('Finished rebuilding project.')
@@ -152,21 +165,14 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     print('Removed target directory.')
 
     for f in javaFileList:
-        # remove swagger2 annotations with openapiAnnotations
+        # remove swagger2 annotations
         jmf.replaceTextInFileMulti(swaggerAnnotationReplacementDict, f)
-
-    #for each model in the model dir
-    # if os.path.isdir(modelPath):
-    #     for f in os.listdir(modelPath):
-    #         # replace swagger2 annotations with openapiAnnotations
-    #         jmf.replaceTextInFileMulti(annotationReplacementDict, modelPath + '/' + f)
 
     # collapse microprofile openapi annotations
     for f in javaFileList:
         with open(f,'r+') as fopen:
 
-            # Reading the file data and store
-            # it in a file variable
+            # Reading the file data and store it in a file variable
             file0 = fopen.read()
 
             # Replacing the pattern with the string in the file data for each item in the dict
@@ -181,21 +187,38 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
             # Delete the current content of the file before writing.
             fopen.truncate(0)
-
-            # Setting the position to the top
-            # of the page to insert data
+            # Setting the position to the top of the page to insert data
             fopen.seek(0)
-
             # Writing replaced data in the file
             fopen.write(file0)
 
-    #remove swagger2 annotations dependency from pom
+    # remove swagger2 annotations dependency from pom
     jmf.removeDependency(projPomPath, swaggerGav)
+    # Trim down pom by removing all unnecessary transitive dependencies.
+    # Only keep mandatory dependencies, mostly annotation libraries.
+    jmf.removeDependency(projPomPath, quarkusJunitGav)
+    jmf.removeDependency(projPomPath, restAssuredGav)
+    jmf.removeDependency(projPomPath, quarkusResteasyGav)
+    jmf.removeDependency(projPomPath, quarkusSmallryeGav)
+    jmf.addDependency(projPomPath, Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2'))
+    jmf.addDependency(projPomPath, Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10'))
 
-    # if no items in optional dependencyGav, default {} for null safety
-    for dependency in descriptor.get('dependencyGav', {}):
-        print('adding dependency to pom: ' + dependency)
-        jmf.addDependency(projPomPath, yf.getGav(dependency))
+    # trim excess fat from generated pom, including properties, plugins and profiles.
+    jmf.removePomProperties(projPomPath, ['io.swagger.annotations.version', 'quarkus-plugin.version',
+    'quarkus.platform.version', 'quarkus.platform.artifact-id', 'quarkus.platform.group-id',
+    'surefire-plugin.version', 'maven.compiler.parameters'])
+    jmf.removePomPlugin(projPomPath, Gav('io.quarkus', 'quarkus-maven-plugin', None))
+    jmf.removePomPlugin(projPomPath, Gav(None, 'maven-surefire-plugin', None))
+    jmf.removePomPlugin(projPomPath, Gav('org.codehaus.mojo', 'build-helper-maven-plugin', None))
+    jmf.removePomProfile(projPomPath, 'native')
+    jmf.removePomDependencyManagement(projPomPath)
+
+    # move version properties down to dependency declarations.
+    jmf.removeDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', None))
+    jmf.removeDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', None))
+    jmf.addDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1'))
+    jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
+    jmf.removePomProperties(projPomPath, ['javax.annotation-api-version', 'javax.ws.rs-version'])
 
     # update imports
     #jmf.gjf(javaFileList)
