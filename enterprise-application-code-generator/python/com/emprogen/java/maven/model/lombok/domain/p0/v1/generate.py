@@ -38,7 +38,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'mode
     jmf.generateMavenProject(archGav, projGav, descriptor['author'], **opts)
 
     # for each model file
-    for model in descriptor['model']:
+    for model in descriptor.get('model', {}):
 
         newClassName = model['name']
         newFileName = modelPath + '/' + newClassName + '.java'
@@ -57,7 +57,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'mode
     # delete placeholder model
     jmf.deleteFile(templateFile)
 
-    for enum in descriptor['enum']:
+    for enum in descriptor.get('enum', {}):
 
         newClassName = enum['name']
         newFileName = modelPath + '/' + newClassName + '.java'
