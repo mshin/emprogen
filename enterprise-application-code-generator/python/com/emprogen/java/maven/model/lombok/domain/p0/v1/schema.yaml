@@ -30,6 +30,14 @@ examples:
               - GREASE
               - BUTTER
               - OLIVE
+        - name: Enum2
+          fields:
+              - String:id
+              - Integer:code
+          values:
+              - ORANGE,orangeId,3141
+              - LONGAN:longanId:2718
+              - CARDAMOM;cardamomId;1618
 type: object
 properties:
   id:
@@ -91,6 +99,19 @@ properties:
             A list of Java enumerated values.
           items:
             type: string
-            pattern: "^[\\w\\$]+$"
+            pattern: "^[\\w\\$]+((\\W)((?!\\2).)+)*+$"
+            description: |
+              Name of enumerated value, followed by a delimiter that is a non-word, non '$' char.
+              The delimter is followed by a list of field values for each enumerated value.
+              The list uses the same delimiter that follows the enumerated value. The delimiter can
+              be chosen by the user to allow for field content that might use special characters.
+              Word characters are [a-zA-Z0-9_].
+        fields:
+          type: array
+          description: |
+            A list of type:field elements. If this array is present, values array items must each set this content.
+          items:
+            type: string
+            pattern: "^[\\w<> ,]+:[\\w\\$]+$"
 required: [id, generatedGav]
 additionalProperties: false

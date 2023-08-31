@@ -67,6 +67,10 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'mode
         #TODO check class1 in file to ensure replaced correctly
         jmf.replaceTextInFile('class1', newClassName, newFileName)
 
+        # if fieds present...
+        #TODO set constructor and fields
+        # for list of values, add the field values to each enumerated value
+
         # replace enum paceholder with generated enum values.
         enumValues = yf.getEnumValues(enum)
         enumStr = '    ' + ', '.join(str(a) for a in enumValues)
