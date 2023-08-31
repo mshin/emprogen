@@ -114,7 +114,10 @@ public class GenerateImplService {
             }
         }
         sb.append(" {\n");
-        sb.append("        return null;\n    }\n");
+        if (!"void".equals(returnTypeS)) {
+            sb.append("        return null;\n");
+        }
+        sb.append("    }\n");
         return sb.toString();
     }
 
