@@ -99,7 +99,7 @@ properties:
             A list of Java enumerated values.
           items:
             type: string
-            pattern: "^[\\w\\$]+((\\W)((?!\\2).)+)*+$"
+            #pattern: "^[\\w\\$]+((\\W)((?!\\2).)+)*+$"#TODO jsonSchema does not support this pattern.
             description: |
               Name of enumerated value, followed by a delimiter that is a non-word, non '$' char.
               The delimter is followed by a list of field values for each enumerated value.
