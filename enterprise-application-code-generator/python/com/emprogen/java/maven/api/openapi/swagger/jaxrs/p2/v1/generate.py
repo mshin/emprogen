@@ -240,7 +240,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jmf.removeDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', None))
     jmf.removeDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', None))
     jmf.addDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1'))
-    jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
+#    jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
     jmf.removePomProperties(projPomPath, ['javax.annotation-api-version', 'javax.ws.rs-version'])
 
     # removing json-nullable... hopefully never need.
