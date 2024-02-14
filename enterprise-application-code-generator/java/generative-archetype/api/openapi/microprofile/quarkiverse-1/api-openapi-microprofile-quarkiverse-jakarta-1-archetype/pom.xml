@@ -2,16 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Abandoning because jaxrs version didn't generate good code.
+    2024-02-14 MShin -->
+
     <groupId>com.emprogen</groupId>
-    <artifactId>swagger</artifactId>
+    <artifactId>api-openapi-microprofile-quarkiverse-jakarta-1-archetype</artifactId>
     <version>0.0.1</version>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>java-0</module>
-        <module>jaxrs-spec-0</module>
-        <module>jaxrs-spec-1</module>
-        <module>jaxrs-spec-2</module>
-        <module>jakarta-spec-2</module>
-    </modules>
 </project>

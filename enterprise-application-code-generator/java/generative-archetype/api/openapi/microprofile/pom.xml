@@ -9,5 +9,6 @@
 
     <modules>
         <module>quarkiverse-0</module>
+        <module>quarkiverse-1</module>
     </modules>
 </project>

@@ -16,7 +16,12 @@ def getJavaMavenPath() -> 'str':
     return str(pathlib.Path(__file__).parent.resolve())
 
 def copyFile(src: 'str', dst: 'str') -> None:
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copy2(src, dst)
+
+def makeFile(pth: 'str', fle: 'str') -> None:
+    os.makedirs(os.path.dirname(pth), exist_ok=True)
+    open(pth + '/' + fle, 'w+')
 
 def getFilePath(file: '__file__') -> 'str':
     return pathlib.Path(file).parent.resolve()

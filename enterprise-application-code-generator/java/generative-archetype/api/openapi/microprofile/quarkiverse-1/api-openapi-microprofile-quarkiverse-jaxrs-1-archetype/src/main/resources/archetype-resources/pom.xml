@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- This runs, but doesn't generate good code. 
+      Too narrow; going back to jaxrs-spec that this is based on.
+    2024-02-14 MShin -->
+    <groupId>com.emprogen</groupId>
+    <artifactId>openapi-microprofile-quarkiverse-jaxrs-1-archetype</artifactId>
+    <version>0.0.1</version>
+    <packaging>jar</packaging>
+
+    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <maven.compiler.source>11</maven.compiler.source>
+      <maven.compiler.target>11</maven.compiler.target>
+      <version.quarkus>2.16.12.Final</version.quarkus>
+    </properties>
+
+  <dependencyManagement>
+      <dependencies>
+          <dependency> 
+              <groupId>io.quarkus</groupId>
+              <artifactId>quarkus-bom</artifactId>
+              <version>2.16.12.Final</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
+
+
+    <dependencies>
+      <dependency>
+        <groupId>io.quarkiverse.openapi.generator</groupId>
+        <artifactId>quarkus-openapi-generator</artifactId>
+        <version>1.3.16</version><!--2.2.16,2.4.0-->
+      </dependency>
+
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-rest-client-jackson</artifactId>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-multipart-provider</artifactId>
+      </dependency>
+    </dependencies>
+
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-maven-plugin</artifactId>
+          <version>${version.quarkus}</version>
+          <extensions>true</extensions>
+          <executions>
+            <execution>
+              <goals>
+                <goal>build</goal>
+                <goal>generate-code</goal>
+                <goal>generate-code-tests</goal>
+              </goals>
+              <configuration>
+                <configOptions>
+                  <sourceFolder>src/main/java/</sourceFolder>
+                  <apiPackage>${apiPackage}</apiPackage>
+                  <modelPackage>${modelPackage}</modelPackage>
+                  <groupId>${generatedGroupId}</groupId>
+                  <artifactId>${generatedArtifactId}</artifactId>
+                  <artifactVersion>${generatedVersion}</artifactVersion>
+                  <additionalModelTypeAnnotations></additionalModelTypeAnnotations>
+                  <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                  <interfaceOnly>true</interfaceOnly>
+                  <serializableModel>true</serializableModel>
+                  <useJakartaEe>false</useJakartaEe>
+                  <useSwaggerAnnotations>true</useSwaggerAnnotations>
+                  <withXml>false</withXml>
+                  <prependFormOrBodyParameters></prependFormOrBodyParameters>
+                  <useMicroProfileOpenAPIAnnotations>true</useMicroProfileOpenAPIAnnotations>
+                  <useOneOfInterfaces></useOneOfInterfaces>
+                  <useTags></useTags>
+                </configOptions>
+                <globalProperties>
+                  <skipFormModel>false</skipFormModel>
+                </globalProperties>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  <profiles>
+    <profile>
+      <id>native-image</id>
+      <activation>
+        <property>
+          <name>native</name>
+        </property>
+      </activation>
+    </profile>
+  </profiles>
+</project>

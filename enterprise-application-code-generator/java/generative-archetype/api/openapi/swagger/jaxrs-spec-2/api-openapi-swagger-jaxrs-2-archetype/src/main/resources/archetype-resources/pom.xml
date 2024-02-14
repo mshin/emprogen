@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.emprogen</groupId>
+    <artifactId>api-openapi-swagger-jaxrs-2-archetype</artifactId>
+    <version>0.0.1</version>
+    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${yamlName}</inputSpec>
+                            <generatorName>jaxrs-spec</generatorName>
+                            <!--additionalProperties>interfaceOnly=true</additionalProperties-->
+                            <configOptions>
+                                <sourceFolder>src/main/java/</sourceFolder>
+                                <apiPackage>${apiPackage}</apiPackage>
+                                <modelPackage>${modelPackage}</modelPackage>
+                                <groupId>${generatedGroupId}</groupId>
+                                <artifactId>${generatedArtifactId}</artifactId>
+                                <artifactVersion>${generatedVersion}</artifactVersion>
+                                <additionalModelTypeAnnotations></additionalModelTypeAnnotations>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <interfaceOnly>true</interfaceOnly>
+                                <serializableModel>true</serializableModel>
+                                <useJakartaEe>false</useJakartaEe>
+                                <useSwaggerAnnotations>true</useSwaggerAnnotations>
+                                <withXml>false</withXml><!--changed-->
+                                <prependFormOrBodyParameters></prependFormOrBodyParameters>
+                                <library>quarkus</library>
+                                <useMicroProfileOpenAPIAnnotations>true</useMicroProfileOpenAPIAnnotations>
+                                <useOneOfInterfaces></useOneOfInterfaces>
+                                <useTags></useTags>
+                            </configOptions>
+                            <globalProperties>
+                                <skipFormModel>false</skipFormModel>
+                            </globalProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
