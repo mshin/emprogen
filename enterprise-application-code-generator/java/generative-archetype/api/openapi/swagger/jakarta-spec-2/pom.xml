@@ -7,4 +7,7 @@
     <version>0.0.1</version>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>api-openapi-swagger-jakarta-2-archetype</module>
+    </modules>
 </project>

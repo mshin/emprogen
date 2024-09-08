@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.emprogen</groupId>
-    <artifactId>api-openapi-swagger-jaxrs-2-archetype</artifactId>
-    <version>0.0.2</version>
+    <artifactId>api-openapi-swagger-jakarta-2-archetype</artifactId>
+    <version>0.0.1</version>
     <packaging>pom</packaging>
 
     <build>
@@ -12,7 +12,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.8.0</version>
+                <version>7.3.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -34,7 +34,7 @@
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <interfaceOnly>true</interfaceOnly>
                                 <serializableModel>true</serializableModel>
-                                <useJakartaEe>false</useJakartaEe>
+                                <useJakartaEe>true</useJakartaEe>
                                 <useSwaggerAnnotations>true</useSwaggerAnnotations>
                                 <withXml>false</withXml><!--changed-->
                                 <prependFormOrBodyParameters></prependFormOrBodyParameters>

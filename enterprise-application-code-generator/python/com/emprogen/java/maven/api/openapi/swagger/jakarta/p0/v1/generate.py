@@ -11,18 +11,22 @@ from com.emprogen.java.maven.models import TableRelationship
 
 def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
-    print('in openapi.swagger.jaxrs.p4.v1.generate.py')
+    print('in openapi.swagger.jakarta.p2.v1.generate.py')
+
+#TODO replace all swagger annotations
+    swaggerAnnotationReplacementDict = {
+        r'@Api\(*.*\)*': '',
+        r'@ApiModelProperty\(*.*\)*': '',
+        r'@ApiModel\(*.*\)*': '',
+        r'@ApiOperation\(*.*\)*': '',
+        r'@ApiParam\(*.*\)*': '',
+        r'import io\.swagger\.annotations\..*\n': '',
+        r'io.swagger.annotations.[ApiModel;|ApiModelProperty;|Api;|ApiOperation;|ApiParam;]': ''}
 
     swagger2AnnPrefix = 'io.swagger.annotations.'
-    swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 
-                              'ApiModel', 'ApiModelProperty', 'ApiModelProperty.AccessMode', 'ApiOperation', 'ApiParam', 'ApiResponse', 
-                              'ApiResponses', 'Authorization', 'AuthorizationScope', 'BasicAuthDefinition', 'Contact', 'Example', 'ExampleProperty', 
-                              'Extension', 'ExtensionProperty', 'ExternalDocs', 'Info', 'License', 'OAuth2Definition', 'OAuth2Definition.Flow', 
-                              'ResponseHeader', 'Scope', 'SecurityDefinition', 'SwaggerDefinition', 'SwaggerDefinition.Scheme', 'Tag']
+    swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 'ApiModel', 'ApiModelProperty', 'ApiModelProperty.AccessMode', 'ApiOperation', 'ApiParam', 'ApiResponse', 'ApiResponses', 'Authorization', 'AuthorizationScope', 'BasicAuthDefinition', 'Contact', 'Example', 'ExampleProperty', 'Extension', 'ExtensionProperty', 'ExternalDocs', 'Info', 'License', 'OAuth2Definition', 'OAuth2Definition.Flow', 'ResponseHeader', 'Scope', 'SecurityDefinition', 'SwaggerDefinition', 'SwaggerDefinition.Scheme', 'Tag']
     swagger2FqdnAnnList = [ swagger2AnnPrefix + x for x in swagger2AnnPostfixList ]
     swagger2ShortAnnList = [ re.search('\w+$', x).group(0) for x in swagger2AnnPostfixList ]
-    #print('swagger2FqdnAnnList: ' + str(swagger2FqdnAnnList))#2024
-    #print('swagger2ShortAnnList: ' + str(swagger2ShortAnnList))#2024
     # swagger2AnnImportsList = [ 'import ' + x + ';\n' for x in swagger2FqdnAnnList ]
     # swagger2FqdnAnnToShortAnnToImportList = list(zip(swagger2FqdnAnnList, swagger2ShortAnnList, swagger2AnnImportsList))
 
@@ -35,9 +39,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
     emptyStringList = ['' for x in range(len(swaggerAnnotationReplacemenList))]
     swaggerAnnotationReplacementDict = dict(zip(swaggerAnnotationReplacemenList, emptyStringList))
-    swaggerAnnotationReplacementDict[r'\}, tags=\{  \}\)'] = ''#2024 fixes an issue where including @Authorization breaks the pattern.
+
     #print('swaggerAnnotationReplacemenList:' + str(swaggerAnnotationReplacemenList))
-    print('swaggerAnnotationReplacementDict:' + str(swaggerAnnotationReplacementDict))#2024
+    #print('swaggerAnnotationReplacementDict:' + str(swaggerAnnotationReplacementDict))
 
     # try not to use annotations that are not in both! standards split is not good.
     #media.ArraySchema (only in swagger, not microprofile)
@@ -62,7 +66,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     mpAnnImportsList = [ 'import ' + x + ';\n' for x in mpFqdnAnnList ]
     mpFqdnAnnToShortAnnToImportList = list(zip(mpFqdnAnnList, mpShortAnnList, mpAnnImportsList))
 
-    mvnGenGav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2')
+    mvnGenGav = Gav('com.emprogen', 'api-openapi-swagger-jakarta-2-archetype', '0.0.1')
 
     #openApiGav = Gav('io.swagger.core.v3', 'swagger-annotations', '2.2.10')
 
@@ -78,7 +82,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')#3.0.2
     jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')#2.16.1
     jacksonDbndnbGav = Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6')
-    javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
+    #javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
 
     genGav = yf.getGav(descriptor['generatedGav'])
     package = jmf.getPackage(genGav)
@@ -114,7 +118,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
 
     print('finished generating project.')
-    #quit(0)#2024
+
     # remove generating pom (rename first)
     os.rename(genGav.artifactId + '/pom.xml', genGav.artifactId + '/pom.xml.generating')
 
@@ -132,11 +136,11 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     print('javaFileList: ' + str(javaFileList))
 
     # the jaxrs-spec generator is terrible, need to fix some code.
-    # delete lines starting with @javax.annotation.Generated in all files.
+    # delete lines starting with @jakarta.annotation.Generated in all files.
     for f in javaFileList:
         print('file: ' + str(f))
         # get rid of 'false' at end of generated annotation line
-        jmf.replaceTextInFile('\n@javax\.annotation\.Generated.*\n', '',f)
+        jmf.replaceTextInFile('\n@jakarta\.annotation\.Generated.*\n', '',f)
         # get rid of broken toString
         with open(f,'r+') as f2:
 
@@ -168,6 +172,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
         print('adding dependency to pom: ' + dependency)
         jmf.addDependency(projPomPath, yf.getGav(dependency))
 
+    print("made it to end.")
+    exit()
+
     #add openapi microprofile (openapi3) annotations
     jmf.addDependency(projPomPath, microprofileGav)
 
@@ -184,7 +191,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     print('Removing target directory.')
     jmf.callMvnWithOptions(goal='clean', file=projPomPath)
     print('Removed target directory.')
- 
+
+#TODO do this section next
+
     for f in javaFileList:
         # remove swagger2 annotations
         jmf.replaceTextInFileMulti(swaggerAnnotationReplacementDict, f)
@@ -213,11 +222,6 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
             # Writing replaced data in the file
             fopen.write(file0)
 
-#TODO 
-# remove poorly generated content: tag stubs
-# add back in stripped OpenAPI3 data: info.description, securityRequirement.scopes, tags
-# load openapi spec doc and transvers to get content for reintroduction
-
     # remove swagger2 annotations dependency from pom
     jmf.removeDependency(projPomPath, swaggerGav)
     # Trim down pom by removing all unnecessary transitive dependencies.
@@ -242,8 +246,10 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     # move version properties down to dependency declarations.
     jmf.removeDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', None))
     jmf.removeDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', None))
-    jmf.addDependency(projPomPath, javaxRsGav)
+    #jmf.addDependency(projPomPath, javaxRsGav)
 #    jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
+    
+    #TODO remove this
     jmf.removePomProperties(projPomPath, ['javax.annotation-api-version', 'javax.ws.rs-version'])
 
     # removing json-nullable... hopefully never need.

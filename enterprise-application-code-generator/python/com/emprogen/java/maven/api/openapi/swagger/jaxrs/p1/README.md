@@ -1,1 +1,3 @@
 openAPI annotations
+
+ABANDONED
