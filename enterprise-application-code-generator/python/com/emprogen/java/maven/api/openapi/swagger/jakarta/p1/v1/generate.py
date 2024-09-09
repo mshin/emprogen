@@ -11,37 +11,33 @@ from com.emprogen.java.maven.models import TableRelationship
 
 def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
-    print('in openapi.swagger.jakarta.p0.v1.generate.py')
-
-#TODO replace all swagger annotations
-    swaggerAnnotationReplacementDict = {
-        r'@Api\(*.*\)*': '',
-        r'@ApiModelProperty\(*.*\)*': '',
-        r'@ApiModel\(*.*\)*': '',
-        r'@ApiOperation\(*.*\)*': '',
-        r'@ApiParam\(*.*\)*': '',
-        r'import io\.swagger\.annotations\..*\n': '',
-        r'io.swagger.annotations.[ApiModel;|ApiModelProperty;|Api;|ApiOperation;|ApiParam;]': ''}
+    print('in openapi.swagger.jakarta.p1.v1.generate.py')
 
     swagger2AnnPrefix = 'io.swagger.annotations.'
-    swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 'ApiModel', 'ApiModelProperty', 'ApiModelProperty.AccessMode', 'ApiOperation', 'ApiParam', 'ApiResponse', 'ApiResponses', 'Authorization', 'AuthorizationScope', 'BasicAuthDefinition', 'Contact', 'Example', 'ExampleProperty', 'Extension', 'ExtensionProperty', 'ExternalDocs', 'Info', 'License', 'OAuth2Definition', 'OAuth2Definition.Flow', 'ResponseHeader', 'Scope', 'SecurityDefinition', 'SwaggerDefinition', 'SwaggerDefinition.Scheme', 'Tag']
+    swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 
+                              'ApiModel', 'ApiModelProperty', 'ApiModelProperty.AccessMode', 'ApiOperation', 'ApiParam', 'ApiResponse', 
+                              'ApiResponses', 'Authorization', 'AuthorizationScope', 'BasicAuthDefinition', 'Contact', 'Example', 'ExampleProperty', 
+                              'Extension', 'ExtensionProperty', 'ExternalDocs', 'Info', 'License', 'OAuth2Definition', 'OAuth2Definition.Flow', 
+                              'ResponseHeader', 'Scope', 'SecurityDefinition', 'SwaggerDefinition', 'SwaggerDefinition.Scheme', 'Tag']
     swagger2FqdnAnnList = [ swagger2AnnPrefix + x for x in swagger2AnnPostfixList ]
     swagger2ShortAnnList = [ re.search('\w+$', x).group(0) for x in swagger2AnnPostfixList ]
+    #print('swagger2FqdnAnnList: ' + str(swagger2FqdnAnnList))#2024
+    #print('swagger2ShortAnnList: ' + str(swagger2ShortAnnList))#2024
     # swagger2AnnImportsList = [ 'import ' + x + ';\n' for x in swagger2FqdnAnnList ]
     # swagger2FqdnAnnToShortAnnToImportList = list(zip(swagger2FqdnAnnList, swagger2ShortAnnList, swagger2AnnImportsList))
 
     swaggerAnnotationReplacemenList = []
     for annotation in swagger2ShortAnnList:
-        swaggerAnnotationReplacemenList.append('@' + annotation + r'\(*.*\)*')
+        swaggerAnnotationReplacemenList.append('@' + annotation + r'\(*.*\)*\n')
     swaggerAnnotationReplacemenList.append(r'import io\.swagger\.annotations\..*\n')
     #for fqdnAnn in swagger2FqdnAnnList:
     #    swaggerAnnotationReplacemenList.append(fqdnAnn)
 
     emptyStringList = ['' for x in range(len(swaggerAnnotationReplacemenList))]
     swaggerAnnotationReplacementDict = dict(zip(swaggerAnnotationReplacemenList, emptyStringList))
-
+    swaggerAnnotationReplacementDict[r'\}, tags=\{  \}\)\n'] = ''#2024 fixes an issue where including @Authorization breaks the pattern.
     #print('swaggerAnnotationReplacemenList:' + str(swaggerAnnotationReplacemenList))
-    #print('swaggerAnnotationReplacementDict:' + str(swaggerAnnotationReplacementDict))
+    print('swaggerAnnotationReplacementDict:' + str(swaggerAnnotationReplacementDict))#2024
 
     # try not to use annotations that are not in both! standards split is not good.
     #media.ArraySchema (only in swagger, not microprofile)
@@ -78,11 +74,11 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     quarkusSmallryeGav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
 
     #add these for annotations
-    microprofileGav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2') #'3.1.1')
-    jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')#3.0.2
-    jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')#2.16.1
+    microprofileGav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2') #'3.1.1') 2024#4.0
+    jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')#3.0.2 2024#3.1.0
+    jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')#2.16.1 2024#2.17.2
     jacksonDbndnbGav = Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6')
-    #javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
+    javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
 
     genGav = yf.getGav(descriptor['generatedGav'])
     package = jmf.getPackage(genGav)
@@ -114,11 +110,11 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jmf.generateMavenProject(mvnGenGav, genGav, descriptor['author'], **opts, file=pathToPom)
 
     print('finished generating generator project.')
-
+    quit(0)#2024
     jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
 
     print('finished generating project.')
-
+    #quit(0)#2024
     # remove generating pom (rename first)
     os.rename(genGav.artifactId + '/pom.xml', genGav.artifactId + '/pom.xml.generating')
 
@@ -136,11 +132,11 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     print('javaFileList: ' + str(javaFileList))
 
     # the jaxrs-spec generator is terrible, need to fix some code.
-    # delete lines starting with @jakarta.annotation.Generated in all files.
+    # delete lines starting with @javax.annotation.Generated in all files.
     for f in javaFileList:
         print('file: ' + str(f))
         # get rid of 'false' at end of generated annotation line
-        jmf.replaceTextInFile('\n@jakarta\.annotation\.Generated.*\n', '',f)
+        jmf.replaceTextInFile('\n@javax\.annotation\.Generated.*\n', '',f)
         # get rid of broken toString
         with open(f,'r+') as f2:
 
@@ -172,9 +168,6 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
         print('adding dependency to pom: ' + dependency)
         jmf.addDependency(projPomPath, yf.getGav(dependency))
 
-    print("made it to end.")
-    exit()
-
     #add openapi microprofile (openapi3) annotations
     jmf.addDependency(projPomPath, microprofileGav)
 
@@ -191,9 +184,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     print('Removing target directory.')
     jmf.callMvnWithOptions(goal='clean', file=projPomPath)
     print('Removed target directory.')
-
-#TODO do this section next
-
+ 
     for f in javaFileList:
         # remove swagger2 annotations
         jmf.replaceTextInFileMulti(swaggerAnnotationReplacementDict, f)
@@ -207,7 +198,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
             # Replacing the pattern with the string in the file data for each item in the dict
             for searchText, replaceText, importStatement in mpFqdnAnnToShortAnnToImportList:
-                annSubResult = re.subn('@' + searchText + r'(?!\w)', '@' + replaceText, file0, count = 0) # 0 means replace as many as you can find
+                annSubResult = re.subn(searchText + r'(?!\w)', replaceText, file0, count = 0) # 0 means replace as many as you can find
                 file0 = annSubResult[0]
                 numberOfReplacementsMade = annSubResult[1]
                 # if a replacement was made, insert the corresponding import statement at top of file.
@@ -221,6 +212,105 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
             fopen.seek(0)
             # Writing replaced data in the file
             fopen.write(file0)
+
+    # remove poorly generated content: tag stubs
+    # add back in stripped OpenAPI3 data: info.description, securityRequirement.scopes, tags
+    # load openapi spec doc and transverse to get content for reintroduction
+
+    # remove any \n@Tag
+    # remove any tags = stuff
+    tagDict = {'\n@Tag.*\n': '\n', '@Tag.*\)\n': '{@%@}\n'}
+    for f in javaFileList:
+        jmf.replaceTextInFileMulti(tagDict, f)
+
+    # get values from OpenAPI3 spec doc
+    oa3dict = yf.loadOpenApi3(pathToOpenApi)
+
+    infoTitle = oa3dict.get("info", {}).get("title", "")
+    infoDescription = oa3dict.get("info", {}).get("description", "")
+    tagsList = oa3dict.get("tags", "")
+    SchemesList = oa3dict.get("components", {}).get("securitySchemes", "").keys()
+    methodSecuritySchemeScopes = [] #list:dict:list
+
+    for k, v in oa3dict.get("paths", {}).items():
+        for k2, v2 in v.items():
+            methodSecuritySchemeScopes.append({k + ' ' + k2: v2.get("security", "")})
+
+    print('infoTitle: ' + str(infoTitle))
+    print('infoDescription: ' + str(infoDescription))
+    print('tagsList: ' + str(tagsList))
+    print('SchemesList: ' + str(SchemesList))
+    print('methodSecuritySchemeScopes: ' + str(methodSecuritySchemeScopes))
+
+    # add title back in
+    for f in javaFileList:
+        jmf.replaceTextInFile('(@OpenAPIDefinition(\n|.)*@Info(\n|.)*title\s?=\s?)""', r'\g<1>"' + infoTitle + '"', f)
+    # add openapidefinition info description back in
+    for f in javaFileList:
+        jmf.replaceTextInFile('(@OpenAPIDefinition(\n|.)*@Info(\n|.)*title\s?=\s?".*"(\n|.)*version\s?=\s?".*"(\n|.)*description\s?=\s?)""(?!\))', r'\g<1>"' + infoDescription + '"', f)
+
+    # add tags back in
+    tagAnnotations = ""
+    for index, tag in enumerate(tagsList):
+        tagAnnotations += '@Tag(name="' + tag.get("name", "") + '", description="' + tag.get("description", "") + '")'
+        if index < len(tagsList) - 1:
+            tagAnnotations += ', '
+
+    for f in javaFileList:
+        jmf.replaceTextInFile('(tags\s?=\s?\{)@%@\}', r'\g<1>' + tagAnnotations +  '}', f)
+
+
+    # add security scopes in.
+
+    # iterate over each of the methodSecuritySchemeScopes, if scheme scopes list > 0... find the annotations in java code and add scopes.
+    for scope in methodSecuritySchemeScopes:
+        for url_httpMethod, securitySchemeList in scope.items():
+            url = url_httpMethod.split(' ')[0]
+            httpMethod = url_httpMethod.split(' ')[1].upper()
+            for securityScheme in securitySchemeList:
+                for securitySchemeName, scopes in securityScheme.items():
+                    if len(scopes) > 0:
+                        for f in javaFileList:
+                            fileString = ''
+                            with open(f, 'r') as fil:
+                                fileString = fil.read()
+                            updateFile = False
+                            rootPathAnnotation = jmf.getInFile('@Path\s*\(\s*"(.*)"\s*\)(\n|.)*public\s+(interface|class)', f)
+                            rootPath = ''
+                            if None != rootPathAnnotation:
+                                print('rootPathAnnotation: ' + str(rootPathAnnotation) + ' in file: ' + str(f))
+                                rootPathMatches = re.search('@Path\s*\(\s*"(.*)"\s*\)', rootPathAnnotation, re.MULTILINE)
+                                if None != rootPathMatches:
+                                    rootPath = rootPathMatches.group(1)
+                                print('rootPath: ' + str(rootPath))
+                            # for each method in the file, find path and httpMethod
+                            matchIter = re.finditer('@(POST|PUT|GET|DELETE|PATCH|OPTIONS|HEAD|TRACE|CONNECT)\s+(@Path\s*\(\s*"(.*)"\s*\))?', fileString, re.MULTILINE)
+                            for match in matchIter:
+                                if None != match:
+                                    #print('match: ' + repr(match))
+                                    matchHttpMethod = match.group(1)
+                                    matchRelativePath = match.group(3)
+                                    matchRelativePath = matchRelativePath if matchRelativePath != None else ''
+                                    matchPath = rootPath + matchRelativePath
+                                    matchUrl_httpMethod = matchPath + ' ' + matchHttpMethod
+                                    compareUrl_httpMethod = url + ' ' + httpMethod
+                                    #print('matchUrl_httpMethod: ' + str(matchUrl_httpMethod))
+                                    #print('compareUrl_httpMethod: ' + str(compareUrl_httpMethod))
+                                    if matchUrl_httpMethod == compareUrl_httpMethod:
+                                        print('matchUrl_httpMethod: ' + str(matchUrl_httpMethod) + ' == ' + str(compareUrl_httpMethod))
+                                        # find the method with the url_httpMethod and add the scopes to the securityRequirement annotation.
+                                        searchText = '(@' + matchHttpMethod + r'(\n|.)+' + matchRelativePath.replace('/', '\/') + r'(\n|.)*@SecurityRequirement\s?\(\s?name\s?=\s?"' + securitySchemeName + '"\s?)\)'
+                                        print('searchText: ' + str(searchText))
+                                        replaceText = r'\g<1>, scopes = {"' + '", "'.join(scopes) + '"})'
+                                        print('replaceText: ' + str(replaceText))
+                                        fileString = re.sub(searchText, replaceText, fileString, count = 1)
+                                        updateFile = True
+
+                            # write file to disk
+                            if updateFile:
+                                with open(f, 'w') as fil:
+                                    fil.write(fileString)
+                                    print('file updated: ' + str(f) + ' at ' + url_httpMethod + ' with scopes: ' + str(scopes))
 
     # remove swagger2 annotations dependency from pom
     jmf.removeDependency(projPomPath, swaggerGav)
@@ -243,17 +333,19 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jmf.removePomProfile(projPomPath, 'native')
     jmf.removePomDependencyManagement(projPomPath)
 
+    # update java version in pom
+    jmf.removePomProperties(projPomPath, ['maven.compiler.source', 'maven.compiler.target'])
+    jmf.addPomProperties(projPomPath, {'maven.compiler.source': '11', 'maven.compiler.target': '11'})
+
     # move version properties down to dependency declarations.
     jmf.removeDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', None))
     jmf.removeDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', None))
-    #jmf.addDependency(projPomPath, javaxRsGav)
+    jmf.addDependency(projPomPath, javaxRsGav)
 #    jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
-    
-    #TODO remove this
     jmf.removePomProperties(projPomPath, ['javax.annotation-api-version', 'javax.ws.rs-version'])
 
     # removing json-nullable... hopefully never need.
-    # jmf.removeDependency(projPomPath, Gav('org.openapitools', 'jackson-databind-nullable', None))
+    jmf.removeDependency(projPomPath, Gav('org.openapitools', 'jackson-databind-nullable', None))
 
     # update imports
     #jmf.gjf(javaFileList)
@@ -263,6 +355,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
     # create src/main/resources/META-INF/beans.xml
     jmf.makeFile(genGav.artifactId + '/src/main/resources/META-INF/', 'beans.xml') 
+
+    # remove docker folder
+    jmf.deleteDirectory(genGav.artifactId + '/src/main/docker')
 
     # rename src/main/openapi/openapi.yaml to real doc name
     oapidocPath = genGav.artifactId + '/src/main/openapi'
