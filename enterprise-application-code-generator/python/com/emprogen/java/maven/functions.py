@@ -36,6 +36,7 @@ def camelToSnake(camelString: 'str') -> 'str':
 def getModelPath(gav: 'Gav') -> 'str':
     return gav.artifactId + '/src/main/java/' + gav.groupId.replace('.', '/') + '/' + gav.artifactId.replace('-', '/')
 
+# google java format
 def gjf(javaFiles: 'list; .java files to be formatted with google-java-format') -> None:
     #pathOfCheckGoogleJavaFormatPy = str(pathlib.Path(__file__).parent.parent.resolve()) + '/run-google-java-format.py'
     #print ('pathOfCheckGoogleJavaFormatPy:' + str(pathOfCheckGoogleJavaFormatPy))
@@ -86,6 +87,10 @@ def replaceFileContents(content: 'str', filePath: 'str') -> None:
 def deleteFile(path: 'str'):
     print('deleting file ' + str(path) + '...')
     pathlib.Path(path).unlink(missing_ok=True)
+
+def deleteDirectory(path: 'str'):
+    print('deleting directory ' + str(path) + '...')
+    shutil.rmtree(path, ignore_errors=True)
 
 def getPackage(gav: 'Gav') -> 'str':
     return gav.groupId + '.' + gav.artifactId.replace('-', '.')
@@ -203,10 +208,45 @@ def removeXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list
     et.register_namespace('', ns['x'])
     tree.write(filePath)
 
+# pathToElementList does not contain the element identifier elements, only everything up to that point.
+# elementToAddDict element:value
+def addXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list', elementToAddDict: 'dict') -> None:
+    tree = et.parse(filePath) #ElementTree
+    root = tree.getroot() #Element
+    ns = {'x': namespace}
+
+    pathToElement = '.'
+    elementIdentifiers = ''
+    for e in pathToElementList:
+        pathToElement += '/x:' + e
+    for e, value in elementToAddDict.items():
+        elementIdentifiers += '/x:' + e + "[.='" + value + "']"
+    searchablePath = pathToElement + elementIdentifiers
+
+    parentElem = root.find(pathToElement, ns)
+    for e, value in elementToAddDict.items():
+        #parentElem.append(et.Element(e))
+        et.SubElement(parentElem, e).text = value
+    # elem = et.Element(pathToElementList[-1])
+    # for e, value in elementToAddDict.items():
+    #     print('!!!adding element: ' + e + ' with value: ' + value)
+    #     elem.set(e, value)
+    #     print('!!!elem: ' + repr(elem))
+    # parentElem.append(elem)
+
+    et.indent(tree, space="    ", level=0)
+    et.register_namespace('', ns['x'])
+    tree.write(filePath)
+
 def removePomProperties(pomPath: 'str', propertiesList: 'list') -> None:
     for prop in propertiesList:
         removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['properties', prop], {})
         print ('removed pom property ' + prop + ' in pom ' + pomPath)
+
+def addPomProperties(pomPath: 'str', propertiesDict: 'dict') -> None:
+    for prop, value in propertiesDict.items():
+        addXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['properties'], {prop: value})
+        print ('added pom property ' + prop + ' in pom ' + pomPath)
 
 def removePomPlugin(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     # Not including groupId because some plugins don't include them
@@ -265,6 +305,15 @@ def buildAnnotationAttributeReplacementListOfTriples(annotationToSearchToReplace
         output[item] = replaceString
     print('buildAnnotationAttributeReplacementListOfTriples: ' + str(output))
     return output
+
+def getInFile(regexFind: 'str', filePath: 'str') -> 'str':
+    with open(filePath, 'r') as f:
+        fileString = f.read()
+        match = re.search(regexFind, fileString, re.MULTILINE)
+        if match:
+            return match.group()
+    return None
+
 
 print('loaded ' + __file__)
 

@@ -1,6 +1,23 @@
 #!/usr/local/bin/python3
 from com.emprogen.java.maven.models import Gav
 import yaml
+import json
+
+def yamlToJson(yamlStr: 'str') -> 'str':
+    return json.dumps(yaml.safe_load(yamlStr), indent=2)
+
+def jsonToYaml(jsonStr: 'str') -> 'str':
+    return yaml.dump(json.loads(jsonStr), default_flow_style=False)
+
+def loadOpenApi3(docPath: 'str') -> 'dict':
+    ext = docPath.split('.')[-1]
+    print('ext: ' + ext)
+    if ext == 'json':
+        with open(docPath) as f:
+            return json.load(f)
+    elif ext == 'yaml' or ext == 'yml':
+        with open(docPath) as f:
+            return yaml.safe_load(f)
 
 def loadYamlDocs(projDescLoc: 'str') -> 'list:dict': 
     with open(projDescLoc) as f:

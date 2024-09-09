@@ -11,7 +11,7 @@ from com.emprogen.java.maven.models import TableRelationship
 
 def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
-    print('in openapi.swagger.jaxrs.p4.v1.generate.py')
+    print('in openapi.swagger.jaxrs.p4.v8.generate.py')
 
     swagger2AnnPrefix = 'io.swagger.annotations.'
     swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 

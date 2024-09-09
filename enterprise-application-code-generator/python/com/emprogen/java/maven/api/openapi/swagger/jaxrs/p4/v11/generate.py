@@ -11,7 +11,7 @@ from com.emprogen.java.maven.models import TableRelationship
 
 def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
-    print('in openapi.swagger.jaxrs.p4.v1.generate.py')
+    print('in openapi.swagger.jaxrs.p4.v11.generate.py')
 
     swagger2AnnPrefix = 'io.swagger.annotations.'
     swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 
@@ -333,9 +333,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jmf.removePomProfile(projPomPath, 'native')
     jmf.removePomDependencyManagement(projPomPath)
 
-    # # update java version in pom
-    # jmf.removePomProperties(projPomPath, ['maven.compiler.source', 'maven.compiler.target'])
-    # jmf.addPomProperties(projPomPath, {'maven.compiler.source': '11', 'maven.compiler.target': '11'})
+    # update java version in pom
+    jmf.removePomProperties(projPomPath, ['maven.compiler.source', 'maven.compiler.target'])
+    jmf.addPomProperties(projPomPath, {'maven.compiler.source': '11', 'maven.compiler.target': '11'})
 
     # move version properties down to dependency declarations.
     jmf.removeDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', None))
