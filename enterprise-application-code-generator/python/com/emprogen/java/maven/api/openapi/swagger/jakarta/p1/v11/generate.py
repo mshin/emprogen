@@ -11,7 +11,7 @@ from com.emprogen.java.maven.models import TableRelationship
 
 def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
 
-    print('in openapi.swagger.jakarta.p1.v1.generate.py')
+    print('in openapi.swagger.jakarta.p1.v11.generate.py')
 
     swagger2AnnPrefix = 'io.swagger.annotations.'
     swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 
@@ -74,13 +74,12 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     quarkusSmallryeGav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
 
     #add these for annotations
-    microprofileGav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2') #'3.1.1') 2024#4.0
-    jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2')#3.0.2 2024#3.1.0
-    jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')#2.16.1 2024#2.17.2
+    microprofileGav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '4.0') #'3.1.1') 2024#4.0
+    jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '3.1.0')#3.0.2 2024#3.1.0
+    jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.17.2')#2.16.1 2024#2.17.2
     jacksonDbndnbGav = Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6')
-    # javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
-    jakartaRsGav = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0')#2024 4.0.0
-    jakartaAnnGav = Gav('jakarta.annotation', 'jakarta.annotation-api', '2.1.1')#2024 3.0.0
+    jakartaRsGav = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '4.0.0')#2024 4.0.0
+    jakartaAnnGav = Gav('jakarta.annotation', 'jakarta.annotation-api', '3.0.0')#2024 3.0.0
 
     genGav = yf.getGav(descriptor['generatedGav'])
     package = jmf.getPackage(genGav)
@@ -336,8 +335,8 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jmf.removePomDependencyManagement(projPomPath)
 
     # update java version in pom
-    # jmf.removePomProperties(projPomPath, ['maven.compiler.source', 'maven.compiler.target'])
-    # jmf.addPomProperties(projPomPath, {'maven.compiler.source': '11', 'maven.compiler.target': '11'})
+    jmf.removePomProperties(projPomPath, ['maven.compiler.source', 'maven.compiler.target'])
+    jmf.addPomProperties(projPomPath, {'maven.compiler.source': '11', 'maven.compiler.target': '11'})
 
     # move version properties down to dependency declarations.
     jakartaRsGavNoVersion = Gav(jakartaRsGav.groupId, jakartaRsGav.artifactId, None)
@@ -347,11 +346,6 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jmf.addDependency(projPomPath, jakartaRsGav)
     jmf.addDependency(projPomPath, jakartaAnnGav)
     jmf.removePomProperties(projPomPath, ['jakarta.annotation-api-version', 'jakarta.ws.rs-version'])
-    #jmf.removeDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', None))
-    #jmf.removeDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', None))
-    #jmf.addDependency(projPomPath, javaxRsGav)
-#    jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
-    #jmf.removePomProperties(projPomPath, ['javax.annotation-api-version', 'javax.ws.rs-version'])
 
     # removing json-nullable... hopefully never need.
     #jmf.removeDependency(projPomPath, Gav('org.openapitools', 'jackson-databind-nullable', None))
