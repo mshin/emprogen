@@ -3,17 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.emprogen</groupId>
-    <artifactId>jaxrs</artifactId>
+    <artifactId>quarkus-p0</artifactId>
     <version>0.0.1</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>quarkus-camel-k8s-p0</module>
-        <module>quarkus-camel-ocp-p0</module>
-        <module>quarkus-camel-p0</module>
-        <module>quarkus-p0</module>
-        <module>springboot-camel-k8s-p0</module>
-        <module>springboot-camel-ocp-p0</module>
-        <module>springboot-camel-p0</module>
+        <module>service-jaxrs-quarkus-p0-archetype</module>
+        <module>service-jaxrs-quarkus-p0-example</module>
     </modules>
 </project>
