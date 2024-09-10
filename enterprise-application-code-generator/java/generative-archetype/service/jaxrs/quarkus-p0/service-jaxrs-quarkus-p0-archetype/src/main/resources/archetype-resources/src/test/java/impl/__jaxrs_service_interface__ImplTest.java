@@ -5,7 +5,7 @@ import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import static io.restassured.RestAssured.given;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import net.minidev.json.JSONObject;
 
