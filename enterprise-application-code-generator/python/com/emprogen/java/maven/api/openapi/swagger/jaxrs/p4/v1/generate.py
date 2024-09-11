@@ -231,16 +231,22 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     tagsList = oa3dict.get("tags", "")
     SchemesList = oa3dict.get("components", {}).get("securitySchemes", "").keys()
     methodSecuritySchemeScopes = [] #list:dict:list
-
+    # print('oa3dict: ' + str(oa3dict))
+    oas3HttpMethods = {'get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'}
     for k, v in oa3dict.get("paths", {}).items():
+        # print('k: ' + str(k))
+        # print('v: ' + str(v))
         for k2, v2 in v.items():
-            methodSecuritySchemeScopes.append({k + ' ' + k2: v2.get("security", "")})
+            # print('k2: ' + str(k2))
+            # print('v2: ' + str(v2))
+            if k2 in oas3HttpMethods:
+                methodSecuritySchemeScopes.append({k + ' ' + k2: v2.get("security", "")})
 
-    print('infoTitle: ' + str(infoTitle))
-    print('infoDescription: ' + str(infoDescription))
-    print('tagsList: ' + str(tagsList))
-    print('SchemesList: ' + str(SchemesList))
-    print('methodSecuritySchemeScopes: ' + str(methodSecuritySchemeScopes))
+    # print('infoTitle: ' + str(infoTitle))
+    # print('infoDescription: ' + str(infoDescription))
+    # print('tagsList: ' + str(tagsList))
+    # print('SchemesList: ' + str(SchemesList))
+    # print('methodSecuritySchemeScopes: ' + str(methodSecuritySchemeScopes))
 
     # add title back in
     for f in javaFileList:
