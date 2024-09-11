@@ -78,7 +78,10 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     serviceImplementationClasspath = jmf.runSubprocessCaptureOutput([cpPlUrl, serviceInterfaceGavString]).strip()
     # get the maven dependencies for the module containing the tool used to generate a java impl Class given a java Interface.
     generateImplClasspath = jmf.runSubprocessCaptureOutput([cpPlUrl, generateImplGav]).strip()
-    #print ('serviceImplementationClasspath: ' + str(serviceImplementationClasspath))
+    # print ('serviceImplementationClasspath: ' + str(serviceImplementationClasspath))
+    # print ('generateImplClasspath: ' + str(generateImplClasspath))
+    # print ('generatedPackage: ' + str(generatedPackage))
+    # print ('serviceInterfaceString: ' + str(serviceInterfaceString))
 
     # run the tool to get the generated code from the jaxrs Interface.
     generatedImpl = jmf.runSubprocessCaptureOutput(['java', '-cp', 

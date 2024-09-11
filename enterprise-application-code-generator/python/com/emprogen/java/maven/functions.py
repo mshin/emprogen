@@ -143,7 +143,8 @@ def runSubprocessCaptureOutput(argList: 'list') -> 'whatever the subprocess woul
     return subprocess.run(argList, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
 
 def addDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
-    tree = et.parse(pomPath) #ElementTree
+    parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
+    tree = et.parse(pomPath, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': 'http://maven.apache.org/POM/4.0.0'}
     elem = root.find('./x:dependencies', ns)
@@ -168,7 +169,8 @@ def addDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     tree.write(pomPath)
 
 def removeDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
-    tree = et.parse(pomPath) #ElementTree
+    parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
+    tree = et.parse(pomPath, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': 'http://maven.apache.org/POM/4.0.0'}
     # ./project/dependencies/dependency/groupId[.='io.swagger']/../artifactId[.='swagger-annotations']/..
@@ -188,7 +190,8 @@ def removeDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None
 # pathToElementList does not contain the element identifier elements, only everything up to that point.
 # elementIdentifierDict element:value
 def removeXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list', elementIdentifierDict: 'dict') -> None:
-    tree = et.parse(filePath) #ElementTree
+    parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
+    tree = et.parse(filePath, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': namespace}
 
@@ -211,7 +214,8 @@ def removeXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list
 # pathToElementList does not contain the element identifier elements, only everything up to that point.
 # elementToAddDict element:value
 def addXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list', elementToAddDict: 'dict') -> None:
-    tree = et.parse(filePath) #ElementTree
+    parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
+    tree = et.parse(filePath, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': namespace}
 
