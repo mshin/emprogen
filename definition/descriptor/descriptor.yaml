@@ -1,13 +1,3 @@
-id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p2.v1
-generatedGav: com.lmco.aero.ssb:sustainment-data-rs-api-a:1.0.0
-author: MunChul Shin
-openApiUrl: ODIN_ASIoF_API_Send.yml
-# ---
-# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p1.v1
-# generatedGav: com.lmco.aero.ssb:sustainment-data-rs-api-b:1.0.0
-# author: MunChul Shin
-# openApiUrl: ODIN_ASIoF_API_Send.yml
-# ---
 # id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p0.v1
 # generatedGav: com.github.mshin:example-api:1.0.0
 # author: MunChul Shin

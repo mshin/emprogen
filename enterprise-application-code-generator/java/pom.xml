@@ -12,5 +12,6 @@
         <module>generate-impl</module>
         <module>generate-impl-test-api</module>
         <module>generative-archetype</module>
+        <module>jpa-type-converter</module>
     </modules>
 </project>
