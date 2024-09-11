@@ -42,7 +42,7 @@ public class ${jaxrs_service_interface}ImplTest {
 
     @Test
     public void test1() {
-        LOGGER.info("Start {jaxrs_service_interface}ImplTest test1");
+        LOGGER.info("Start ${jaxrs_service_interface}ImplTest test1");
 
         given()
         .when().get("/q/openapi")
@@ -52,7 +52,7 @@ public class ${jaxrs_service_interface}ImplTest {
 
     @Test
     public void test2() {
-        LOGGER.info("Start {jaxrs_service_interface}ImplTest test2");
+        LOGGER.info("Start ${jaxrs_service_interface}ImplTest test2");
 
         given()
         .when().get("/q/swagger-ui")
@@ -77,7 +77,7 @@ public class ${jaxrs_service_interface}ImplTest {
         path.append(port);
         path.append("/TODO_set_rest_path");
 
-        LOGGER.info("{jaxrs_service_interface}ImplTest requestParams: {}" + requestParams);
+        LOGGER.info("${jaxrs_service_interface}ImplTest requestParams: {}" + requestParams);
         LOGGER.info("path: {}", path.toString());
 
         Response response = 
