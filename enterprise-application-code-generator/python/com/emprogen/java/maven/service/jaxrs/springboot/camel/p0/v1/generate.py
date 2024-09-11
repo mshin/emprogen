@@ -135,3 +135,4 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
 
     # verify it compiles
     jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
+    jmf.callMvnWithOptions(goal='clean', file=projPomPath)

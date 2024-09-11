@@ -1,4 +1,4 @@
-package ${package};
+package ${package}.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ${jaxrs_service_package}.${jaxrs_service_interface};
+import ${package}.${jaxrs_service_interface}Service;
+
 
 /**
  * @author ${author}

@@ -39,7 +39,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     # the template java bean class file.
     serviceTemplateFile = modelPath + '/' + serviceInterfaceName + 'Service.java'
     # the template java impl class file.
-    implTemplateFile = modelPath + '/' + serviceInterfaceName + 'Impl.java'
+    implTemplateFile = modelPath + '/impl/' + serviceInterfaceName + 'Impl.java'
 
     thisFilesPath = str(jmf.getFilePath(__file__))
 
@@ -180,3 +180,4 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
 
     # verify it compiles
     jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
+    jmf.callMvnWithOptions(goal='clean', file=projPomPath)

@@ -1,4 +1,4 @@
-package ${package};
+package ${package}.impl;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
