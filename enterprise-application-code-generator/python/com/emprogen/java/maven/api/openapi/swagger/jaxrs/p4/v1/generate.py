@@ -15,7 +15,17 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
 
     # BEGIN CONSTANTS
 
-    mvnGenGav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2')
+    mvnGenGav = None
+    javaxGenGav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2')
+    jakartaGenGav = Gav('com.emprogen', 'api-openapi-swagger-jakarta-2-archetype', '0.0.1')
+
+    if 'javax' == jaxrs:
+        mvnGenGav = javaxGenGav
+    elif 'jakarta' == jaxrs:
+        mvnGenGav = jakartaGenGav
+    else:
+        print('Unsupported jaxrs: ' + str(jaxrs) + '. Must be javax or jakarta.')
+        quit(1)
 
     # openApiGav = Gav('io.swagger.core.v3', 'swagger-annotations', '2.2.10')
     # jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
@@ -146,7 +156,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
 
     print('finished generating project.')
-    #quit(0)#2024
+
     # remove generating pom (rename first)
     os.rename(genGav.artifactId + '/pom.xml', genGav.artifactId + '/pom.xml.generating')
 
@@ -164,11 +174,11 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     print('javaFileList: ' + str(javaFileList))
 
     # the jaxrs-spec generator is terrible, need to fix some code.
-    # delete lines starting with @javax.annotation.Generated in all files.
+    # delete lines starting with @javax.annotation.Generated (OR @jakarta.annotation.Generated) in all files.
     for f in javaFileList:
         print('file: ' + str(f))
         # get rid of 'false' at end of generated annotation line
-        jmf.replaceTextInFile('\n@javax\.annotation\.Generated.*\n', '',f)
+        jmf.replaceTextInFile('\n@(javax|jakarta)\.annotation\.Generated.*\n', '',f)
         # get rid of broken toString
         with open(f,'r+') as f2:
 
@@ -216,7 +226,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     print('Removing target directory.')
     jmf.callMvnWithOptions(goal='clean', file=projPomPath)
     print('Removed target directory.')
- 
+
     for f in javaFileList:
         # remove swagger2 annotations
         jmf.replaceTextInFileMulti(swaggerAnnotationReplacementDict, f)
@@ -261,23 +271,19 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     infoTitle = oa3dict.get("info", {}).get("title", "")
     infoDescription = oa3dict.get("info", {}).get("description", "")
     tagsList = oa3dict.get("tags", "")
-    SchemesList = oa3dict.get("components", {}).get("securitySchemes", "").keys()
+    schemesList = oa3dict.get("components", {}).get("securitySchemes", "").keys()
     methodSecuritySchemeScopes = [] #list:dict:list
     # print('oa3dict: ' + str(oa3dict))
     oas3HttpMethods = {'get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'}
     for k, v in oa3dict.get("paths", {}).items():
-        # print('k: ' + str(k))
-        # print('v: ' + str(v))
         for k2, v2 in v.items():
-            # print('k2: ' + str(k2))
-            # print('v2: ' + str(v2))
             if k2 in oas3HttpMethods:
                 methodSecuritySchemeScopes.append({k + ' ' + k2: v2.get("security", "")})
 
     # print('infoTitle: ' + str(infoTitle))
     # print('infoDescription: ' + str(infoDescription))
     # print('tagsList: ' + str(tagsList))
-    # print('SchemesList: ' + str(SchemesList))
+    # print('schemesList: ' + str(schemesList))
     # print('methodSecuritySchemeScopes: ' + str(methodSecuritySchemeScopes))
 
     # add title back in
