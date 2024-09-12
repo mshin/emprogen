@@ -9,9 +9,57 @@ from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
-def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
+def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' = '8', jaxrs: 'str' = 'javax') -> None:
 
     print('in openapi.swagger.jaxrs.p4.v1.generate.py')
+
+    # BEGIN CONSTANTS
+
+    mvnGenGav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2')
+
+    # openApiGav = Gav('io.swagger.core.v3', 'swagger-annotations', '2.2.10')
+    # jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
+
+    #add these for annotations
+    microprofileGav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2')
+    jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')
+    jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')
+    javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
+    jakartaRsGav = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '2.1.6')
+
+    microprofileGav2023 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '3.1.1')
+    jakartaValidationGav2022 = Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2')
+    jacksonAnnGav2023 = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.16.1')
+    jakartaRsGav2023 = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0')
+
+    microprofileGav202409 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '4.0')
+    jakartaValidationGav202409 = Gav('jakarta.validation', 'jakarta.validation-api', '3.1.0')
+    jacksonAnnGav202409 = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.17.2')
+    jakartaRsGav202409 = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '4.0.0')
+
+    jacksonDbndnbGav = Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6')
+
+    # remove these
+    swaggerGav = Gav('io.swagger', 'swagger-annotations', None)
+    quarkusJunitGav = Gav('io.quarkus', 'quarkus-junit5', None)
+    restAssuredGav = Gav('io.rest-assured', 'rest-assured', None)
+    quarkusResteasyGav = Gav('io.quarkus', 'quarkus-resteasy', None)
+    quarkusSmallryeGav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
+    removeJavaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', None)
+    removeJavaxAnnGav = Gav('javax.annotation', 'javax.annotation-api', None)
+    removeJsonNullableGav = Gav('org.openapitools', 'jackson-databind-nullable', None)
+
+    quarkusMavenPluginGav = Gav('io.quarkus', 'quarkus-maven-plugin', None)
+    mavenSurefirePluginGav = Gav(None, 'maven-surefire-plugin', None)
+    buildHelperMavenPluginGav = Gav('org.codehaus.mojo', 'build-helper-maven-plugin', None)
+
+    pomPropertiesToRemove = ['io.swagger.annotations.version', 'quarkus-plugin.version',
+    'quarkus.platform.version', 'quarkus.platform.artifact-id', 'quarkus.platform.group-id',
+    'surefire-plugin.version', 'maven.compiler.parameters', 'javax.annotation-api-version', 'javax.ws.rs-version']
+
+    javaVersionPomProperties = ['maven.compiler.source', 'maven.compiler.target']
+
+    #swagger2 annotations
 
     swagger2AnnPrefix = 'io.swagger.annotations.'
     swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 
@@ -62,23 +110,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     mpAnnImportsList = [ 'import ' + x + ';\n' for x in mpFqdnAnnList ]
     mpFqdnAnnToShortAnnToImportList = list(zip(mpFqdnAnnList, mpShortAnnList, mpAnnImportsList))
 
-    mvnGenGav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2')
-
-    #openApiGav = Gav('io.swagger.core.v3', 'swagger-annotations', '2.2.10')
-
-    # remove these
-    swaggerGav = Gav('io.swagger', 'swagger-annotations', None)
-    quarkusJunitGav = Gav('io.quarkus', 'quarkus-junit5', None)
-    restAssuredGav = Gav('io.rest-assured', 'rest-assured', None)
-    quarkusResteasyGav = Gav('io.quarkus', 'quarkus-resteasy', None)
-    quarkusSmallryeGav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
-
-    #add these for annotations
-    microprofileGav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2') #'3.1.1') 2024#4.0
-    jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')#3.0.2 2024#3.1.0
-    jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')#2.16.1 2024#2.17.2
-    jacksonDbndnbGav = Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6')
-    javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
+    # END CONSTANTS
 
     genGav = yf.getGav(descriptor['generatedGav'])
     package = jmf.getPackage(genGav)
@@ -326,32 +358,53 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
     jmf.removeDependency(projPomPath, restAssuredGav)
     jmf.removeDependency(projPomPath, quarkusResteasyGav)
     jmf.removeDependency(projPomPath, quarkusSmallryeGav)
-    jmf.addDependency(projPomPath, jakartaValidationGav)
-    jmf.addDependency(projPomPath, jacksonAnnGav)
+    jmf.removeDependency(projPomPath, removeJavaxRsGav)
+    jmf.removeDependency(projPomPath, removeJavaxAnnGav)
+    # removing json-nullable... hopefully never need.
+    jmf.removeDependency(projPomPath, removeJsonNullableGav)
 
     # trim excess fat from generated pom, including properties, plugins and profiles.
-    jmf.removePomProperties(projPomPath, ['io.swagger.annotations.version', 'quarkus-plugin.version',
-    'quarkus.platform.version', 'quarkus.platform.artifact-id', 'quarkus.platform.group-id',
-    'surefire-plugin.version', 'maven.compiler.parameters'])
-    jmf.removePomPlugin(projPomPath, Gav('io.quarkus', 'quarkus-maven-plugin', None))
-    jmf.removePomPlugin(projPomPath, Gav(None, 'maven-surefire-plugin', None))
-    jmf.removePomPlugin(projPomPath, Gav('org.codehaus.mojo', 'build-helper-maven-plugin', None))
+    jmf.removePomPlugin(projPomPath, quarkusMavenPluginGav)
+    jmf.removePomPlugin(projPomPath, mavenSurefirePluginGav)
+    jmf.removePomPlugin(projPomPath, buildHelperMavenPluginGav)
     jmf.removePomProfile(projPomPath, 'native')
     jmf.removePomDependencyManagement(projPomPath)
+    jmf.removePomProperties(projPomPath, pomPropertiesToRemove)
+    jmf.removePomProperties(projPomPath, javaVersionPomProperties)
 
-    # # update java version in pom
-    # jmf.removePomProperties(projPomPath, ['maven.compiler.source', 'maven.compiler.target'])
-    # jmf.addPomProperties(projPomPath, {'maven.compiler.source': '11', 'maven.compiler.target': '11'})
+    # jmf.addDependency(projPomPath, jacksonDbndnbGav)
+    # Find correct dependencies to add based on combination of jaxrs and java version
+    if '17' == javaVersion:
+        jmf.addDependency(projPomPath, microprofileGav202409)
+        jmf.addDependency(projPomPath, jakartaValidationGav202409)
+        jmf.addDependency(projPomPath, jacksonAnnGav202409)
+        jmf.addDependency(projPomPath, jakartaRsGav202409)
+    elif '11' == javaVersion:
+        jmf.addDependency(projPomPath, microprofileGav2023)
+        jmf.addDependency(projPomPath, jakartaValidationGav2022)
+        jmf.addDependency(projPomPath, jacksonAnnGav2023)
+        jmf.addDependency(projPomPath, jakartaRsGav2023)
+    elif '8' == javaVersion:
+        jmf.addDependency(projPomPath, microprofileGav)
+        jmf.addDependency(projPomPath, jakartaValidationGav)
+        jmf.addDependency(projPomPath, jacksonAnnGav)
+    else:
+        print('Unsupported java version: ' + str(javaVersion))
+        quit(1)
 
-    # move version properties down to dependency declarations.
-    jmf.removeDependency(projPomPath, Gav('javax.ws.rs', 'javax.ws.rs-api', None))
-    jmf.removeDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', None))
-    jmf.addDependency(projPomPath, javaxRsGav)
-#    jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
-    jmf.removePomProperties(projPomPath, ['javax.annotation-api-version', 'javax.ws.rs-version'])
 
-    # removing json-nullable... hopefully never need.
-    jmf.removeDependency(projPomPath, Gav('org.openapitools', 'jackson-databind-nullable', None))
+    if 'javax' == jaxrs:
+        jmf.addDependency(projPomPath, javaxRsGav)
+        print('Only Java version 8 supported with javax jaxrs. Setting java version to 8 if it is not otherwise. If you want to use a different version of Java, you must use jakarta jaxrs.')
+        javaVersion = '8'
+    elif 'jakarta' == jaxrs:
+        jmf.addDependency(projPomPath, jakartaRsGav)
+    else:
+        print('Unsupported jaxrs: ' + str(jaxrs))
+        quit(1)
+
+    # set java version to javaVersion
+    jmf.addPomProperties(projPomPath, dict(zip(javaVersionPomProperties, [javaVersion, javaVersion])))
 
     # update imports
     #jmf.gjf(javaFileList)

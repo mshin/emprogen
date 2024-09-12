@@ -1,0 +1,53 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "http://emprogen.com/schemas/java/maven/service/jaxrs/quarkus/p0/v17/schema"
+tag: "tag:emprogen.com:java/maven/service/jaxrs/quarkus/p0/v17/schema"
+title: |
+  Schema for yaml defining jaxrs quarkus service.
+description: |
+  This schema defines the rules for authoring a yaml defining a quarkus service generated from a jaxrs API definition.
+examples:
+  - |
+    id: com.emprogen.java.maven.service.jaxrs.quarkus.p0.v17
+    generatedGav: com.github.mshin:example-service-impl
+    author: MunChul Shin
+    serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
+    serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
+    dependencyGav:
+        - com.github.mshin:example-domain-model:0.0.1
+type: object
+properties:
+  id:
+    type: string
+    pattern: "^[\\w\\.\\-]+$"
+    description: |
+      The unique path to the generate script. '.' delimited.
+  generatedGav:
+    type: string
+    pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+(:.+|)$"
+    description: |
+      The maven GAV (groupId:artifactId:version) for the generated code.
+  author:
+    type: string
+    description: |
+      The person who authored the code.
+  dependencyGav:
+    type: array
+    description: |
+      A list of dependency GAVs to add to the generated projects' pom.
+    items:
+      type: string
+      pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+$"
+  serviceInterfaceGav:
+    type: string
+    pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+$"
+    description: |
+      The GAV for the module containing the jaxrs interface used to generate the service.
+  serviceInterface:
+    type: string
+    pattern: "^[a-z0-9_\\.]+.[a-zA-Z0-9_\\$]+$"
+    description: |
+      The Java package.Class name for the jaxrs interface that defines the service.
+required: [id, generatedGav, serviceInterfaceGav, serviceInterface]
+additionalProperties: false

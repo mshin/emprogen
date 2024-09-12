@@ -157,6 +157,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     jmf.removePomProperties(projPomPath, ['maven.compiler.source', 'maven.compiler.target'])
     jmf.addPomProperties(projPomPath, {'maven.compiler.source': javaVersion, 'maven.compiler.target': javaVersion})
 
+    # set jaxrs package and java version based on the openapi3 module
     if '-1' != serviceImplementationClasspath.find('javax.ws.rs:javax.ws.rs-api'):
         print('Using javax in API definition module. Reducing Quarkus version in impl module to use javax instad of jakarta code packages. Reducing java version to 8.')
         # Fix java imports
