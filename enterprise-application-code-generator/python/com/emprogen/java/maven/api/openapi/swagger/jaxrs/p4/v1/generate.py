@@ -35,7 +35,6 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')
     jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')
     javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
-    jakartaRsGav = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '2.1.6')
 
     microprofileGav2023 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '3.1.1')
     jakartaValidationGav2022 = Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2')
@@ -56,7 +55,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     quarkusResteasyGav = Gav('io.quarkus', 'quarkus-resteasy', None)
     quarkusSmallryeGav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
     removeJavaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', None)
+    removeJakartaRsGav = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', None)
     removeJavaxAnnGav = Gav('javax.annotation', 'javax.annotation-api', None)
+    removeJakartaAnnGav = Gav('jakarta.annotation', 'jakarta.annotation-api', None)
     removeJsonNullableGav = Gav('org.openapitools', 'jackson-databind-nullable', None)
 
     quarkusMavenPluginGav = Gav('io.quarkus', 'quarkus-maven-plugin', None)
@@ -65,7 +66,8 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
 
     pomPropertiesToRemove = ['io.swagger.annotations.version', 'quarkus-plugin.version',
     'quarkus.platform.version', 'quarkus.platform.artifact-id', 'quarkus.platform.group-id',
-    'surefire-plugin.version', 'maven.compiler.parameters', 'javax.annotation-api-version', 'javax.ws.rs-version']
+    'surefire-plugin.version', 'maven.compiler.parameters', 'javax.annotation-api-version',
+    'jakarta.annotation-api-version', 'javax.ws.rs-version', 'jakarta.ws.rs-version']
 
     javaVersionPomProperties = ['maven.compiler.source', 'maven.compiler.target']
 
@@ -366,6 +368,8 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     jmf.removeDependency(projPomPath, quarkusSmallryeGav)
     jmf.removeDependency(projPomPath, removeJavaxRsGav)
     jmf.removeDependency(projPomPath, removeJavaxAnnGav)
+    jmf.removeDependency(projPomPath, removeJakartaAnnGav)
+    jmf.removeDependency(projPomPath, removeJakartaRsGav)
     # removing json-nullable... hopefully never need.
     jmf.removeDependency(projPomPath, removeJsonNullableGav)
 
@@ -404,7 +408,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
         print('Only Java version 8 supported with javax jaxrs. Setting java version to 8 if it is not otherwise. If you want to use a different version of Java, you must use jakarta jaxrs.')
         javaVersion = '8'
     elif 'jakarta' == jaxrs:
-        jmf.addDependency(projPomPath, jakartaRsGav)
+        jmf.addDependency(projPomPath, jakartaRsGav2023)
+        jmf.removeDependency(projPomPath, jakartaValidationGav)
+        jmf.addDependency(projPomPath, jakartaValidationGav2022)
     else:
         print('Unsupported jaxrs: ' + str(jaxrs))
         quit(1)

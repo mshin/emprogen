@@ -180,7 +180,8 @@ def removeDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None
         elem = root.find("./x:dependencies/x:dependency/x:groupId[.='" + gav.groupId + "']/../x:artifactId[.='" + gav.artifactId + "']/../x:version[.='" + gav.version + "']/..", ns)
 
     parentElem = root.find('./x:dependencies', ns)
-    parentElem.remove(elem)
+    if None != elem:
+        parentElem.remove(elem)
 
     et.indent(tree, space="    ", level=0)
     et.register_namespace('', ns['x'])
@@ -205,7 +206,8 @@ def removeXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list
 
     elem = root.find(searchablePath, ns)
     parentElem = root.find(searchablePath + '/..', ns)
-    parentElem.remove(elem)
+    if None != elem:
+        parentElem.remove(elem)
 
     et.indent(tree, space="    ", level=0)
     et.register_namespace('', ns['x'])
