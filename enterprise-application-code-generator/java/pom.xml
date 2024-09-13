@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>exception-response-model</module>
+        <module>exception-response</module>
         <module>generate-impl</module>
         <module>generate-impl-test-api</module>
         <module>generative-archetype</module>
