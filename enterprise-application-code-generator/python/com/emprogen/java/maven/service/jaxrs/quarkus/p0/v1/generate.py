@@ -9,6 +9,8 @@ from com.emprogen.java.maven.models import Gav
 def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-quarkus-p0-archetype', '0.0.1')
         , *, filesPath: 'str' = None, javaVersion: 'str' = '8') -> None:
 
+    print('in service.jaxrs.quarkus.p0.v1.generate.py')
+    print('javaVersion: ' + str(javaVersion))
     # Do all 1 time loads and calculations up front.
 
     # define maven archetype used for this generator within script.
@@ -158,7 +160,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     jmf.addPomProperties(projPomPath, {'maven.compiler.source': javaVersion, 'maven.compiler.target': javaVersion})
 
     # set jaxrs package and java version based on the openapi3 module
-    if '-1' != serviceImplementationClasspath.find('javax.ws.rs:javax.ws.rs-api'):
+    if None != re.search('javax.ws.rs.javax.ws.rs-api', serviceImplementationClasspath):
         print('Using javax in API definition module. Reducing Quarkus version in impl module to use javax instad of jakarta code packages. Reducing java version to 8.')
         # Fix java imports
         javaFileList = glob.glob(projGav.artifactId + '/src/**/*.java', recursive=True)
@@ -173,8 +175,10 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
         jmf.removePomProperties(projPomPath, ['maven.compiler.source', 'maven.compiler.target'])
         jmf.addPomProperties(projPomPath, {'maven.compiler.source': '8', 'maven.compiler.target': '8'})
 
-    elif '-1' != serviceImplementationClasspath.find('jakarta.ws.rs:jakarta.ws.rs-api'):
+    elif None != re.search('jakarta.ws.rs.jakarta.ws.rs-api', serviceImplementationClasspath):
         print('Using jakarta code packages in API definition module.')
+    else:
+        print('Did not find javax or jakarta code packages in API definition module.')
 
     # update imports
     jmf.beautifyImports(projPomPath)
