@@ -13,5 +13,6 @@
         <module>generate-impl-test-api</module>
         <module>generative-archetype</module>
         <module>jpa-type-converter</module>
+        <module>jaxrms-rs-api</module>
     </modules>
 </project>
