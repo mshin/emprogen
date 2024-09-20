@@ -74,11 +74,11 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     #swagger2 annotations
 
     swagger2AnnPrefix = 'io.swagger.annotations.'
-    swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition', 'ApiKeyAuthDefinition.ApiKeyLocation', 
+    swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition',
                               'ApiModel', 'ApiModelProperty', 'ApiModelProperty.AccessMode', 'ApiOperation', 'ApiParam', 'ApiResponse', 
                               'ApiResponses', 'Authorization', 'AuthorizationScope', 'BasicAuthDefinition', 'Contact', 'Example', 'ExampleProperty', 
-                              'Extension', 'ExtensionProperty', 'ExternalDocs', 'Info', 'License', 'OAuth2Definition', 'OAuth2Definition.Flow', 
-                              'ResponseHeader', 'Scope', 'SecurityDefinition', 'SwaggerDefinition', 'SwaggerDefinition.Scheme', 'Tag']
+                              'Extension', 'ExtensionProperty', 'ExternalDocs', 'Info', 'License', 'OAuth2Definition',
+                              'ResponseHeader', 'Scope', 'SecurityDefinition', 'SwaggerDefinition', 'Tag']
     swagger2FqdnAnnList = [ swagger2AnnPrefix + x for x in swagger2AnnPostfixList ]
     swagger2ShortAnnList = [ re.search('\w+$', x).group(0) for x in swagger2AnnPostfixList ]
     #print('swagger2FqdnAnnList: ' + str(swagger2FqdnAnnList))#2024
@@ -86,9 +86,18 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     # swagger2AnnImportsList = [ 'import ' + x + ';\n' for x in swagger2FqdnAnnList ]
     # swagger2FqdnAnnToShortAnnToImportList = list(zip(swagger2FqdnAnnList, swagger2ShortAnnList, swagger2AnnImportsList))
 
+    # TODO need to fix the swaggerAnnotationReplacemenList to accurately replace what the jaxrs-spec plugin generator generates.
     swaggerAnnotationReplacemenList = []
     for annotation in swagger2ShortAnnList:
-        swaggerAnnotationReplacemenList.append('@' + annotation + r'\(*.*\)*\n')
+        if 'Api' == annotation:
+            swaggerAnnotationReplacemenList.append('@' + annotation + r'\(.*?\)')
+            swaggerAnnotationReplacemenList.append('@' + annotation + r'\n')
+        elif annotation in {'ApiParam', 'ApiImplicitParam'}:
+            swaggerAnnotationReplacemenList.append('@' + annotation + r'\(.*?\)')
+            swaggerAnnotationReplacemenList.append('@' + annotation)
+        else:
+            swaggerAnnotationReplacemenList.append('@' + annotation + r'\(*.*\)*\n')
+
     swaggerAnnotationReplacemenList.append(r'import io\.swagger\.annotations\..*\n')
     #for fqdnAnn in swagger2FqdnAnnList:
     #    swaggerAnnotationReplacemenList.append(fqdnAnn)
