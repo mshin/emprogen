@@ -33,6 +33,14 @@ ctsPattern = re.compile(r'(?<!^)(?=[A-Z])')
 def camelToSnake(camelString: 'str') -> 'str':
     return ctsPattern.sub('_', camelString).lower()
 
+# Converts snake_case and kebob-case and space case to camelCase
+def toCamel(s: 'str', is_lower_first: 'Bool' = True) -> 'str':
+    word_list = filter(None, re.split(r'[_\- ]', s))
+    s = ''.join(word.title() for word in word_list)
+    if is_lower_first and s and len(s) > 0:
+        s = s[0].lower() + s[1:]
+    return s
+
 def getModelPath(gav: 'Gav') -> 'str':
     return gav.artifactId + '/src/main/java/' + gav.groupId.replace('.', '/') + '/' + gav.artifactId.replace('-', '/')
 

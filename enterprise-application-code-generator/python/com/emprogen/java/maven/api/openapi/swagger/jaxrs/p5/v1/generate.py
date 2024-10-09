@@ -9,51 +9,48 @@ from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
-def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' = '8', jaxrs: 'str' = 'javax') -> None:
+def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str' = '8', jaxrs: 'str' = 'javax') -> None:
 
-    print('in openapi.swagger.jaxrs.p4.v1.generate.py')
+    print('in openapi.swagger.jaxrs.p5.v1.generate.py')
 
     # BEGIN CONSTANTS
-
-    mvnGenGav = None
-    javaxGenGav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2')
-    jakartaGenGav = Gav('com.emprogen', 'api-openapi-swagger-jakarta-2-archetype', '0.0.1')
+    
+    mvn_gen_gav = None
+    javax_gen_gav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2')
+    jakarta_gen_gav = Gav('com.emprogen', 'api-openapi-swagger-jakarta-3-archetype', '0.0.1')
 
     if 'javax' == jaxrs:
-        mvnGenGav = javaxGenGav
+        mvn_gen_gav = javax_gen_gav
     elif 'jakarta' == jaxrs:
-        mvnGenGav = jakartaGenGav
+        mvn_gen_gav = jakarta_gen_gav
     else:
         print('Unsupported jaxrs: ' + str(jaxrs) + '. Must be javax or jakarta.')
         quit(1)
 
-    # openApiGav = Gav('io.swagger.core.v3', 'swagger-annotations', '2.2.10')
-    # jmf.addDependency(projPomPath, Gav('javax.annotation', 'javax.annotation-api', '1.3.2'))
-
     #add these for annotations
-    microprofileGav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2')
-    jakartaValidationGav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')
-    jacksonAnnGav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')
-    javaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
+    microprofile_gav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2')
+    jakarta_validation_gav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')
+    jackson_ann_gav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')
+    javax_rs_gav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
 
-    microprofileGav2023 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '3.1.1')
-    jakartaValidationGav2022 = Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2')
-    jacksonAnnGav2023 = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.16.1')
-    jakartaRsGav2023 = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0')
+    microprofile_gav_2023 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '3.1.1')
+    jakarta_validation_gav_2022 = Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2')
+    jackson_ann_gav_2023 = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.16.1')
+    jakarta_rs_gav_2023 = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0')
 
-    microprofileGav202409 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '4.0')
-    jakartaValidationGav202409 = Gav('jakarta.validation', 'jakarta.validation-api', '3.1.0')
-    jacksonAnnGav202409 = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.17.2')
-    jakartaRsGav202409 = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '4.0.0')
+    microprofile_gav_202409 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '4.0')
+    jakarta_validation_gav_202409 = Gav('jakarta.validation', 'jakarta.validation-api', '3.1.0')
+    jackson_ann_gav_202409 = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.17.2')
+    jakarta_rs_gav_202409 = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '4.0.0')
 
-    jacksonDbndnbGav = Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6')
+    jackson_dbndnb_gav = Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6')
 
     # remove these
-    swaggerGav = Gav('io.swagger', 'swagger-annotations', None)
-    quarkusJunitGav = Gav('io.quarkus', 'quarkus-junit5', None)
-    restAssuredGav = Gav('io.rest-assured', 'rest-assured', None)
-    quarkusResteasyGav = Gav('io.quarkus', 'quarkus-resteasy', None)
-    quarkusSmallryeGav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
+    swagger_gav = Gav('io.swagger', 'swagger-annotations', None)
+    quarkus_junit_gav = Gav('io.quarkus', 'quarkus-junit5', None)
+    rest_assured_gav = Gav('io.rest-assured', 'rest-assured', None)
+    quarkus_resteasy_gav = Gav('io.quarkus', 'quarkus-resteasy', None)
+    quarkus_smallrye_gav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
     removeJavaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', None)
     removeJakartaRsGav = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', None)
     removeJavaxAnnGav = Gav('javax.annotation', 'javax.annotation-api', None)
@@ -70,46 +67,6 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     'jakarta.annotation-api-version', 'javax.ws.rs-version', 'jakarta.ws.rs-version']
 
     javaVersionPomProperties = ['maven.compiler.source', 'maven.compiler.target']
-
-    #swagger2 annotations
-
-    swagger2AnnPrefix = 'io.swagger.annotations.'
-    swagger2AnnPostfixList = ['Api', 'ApiImplicitParam', 'ApiImplicitParams', 'ApiKeyAuthDefinition',
-                              'ApiModel', 'ApiModelProperty', 'ApiModelProperty.AccessMode', 'ApiOperation', 'ApiParam', 'ApiResponse', 
-                              'ApiResponses', 'Authorization', 'AuthorizationScope', 'BasicAuthDefinition', 'Contact', 'Example', 'ExampleProperty', 
-                              'Extension', 'ExtensionProperty', 'ExternalDocs', 'Info', 'License', 'OAuth2Definition',
-                              'ResponseHeader', 'Scope', 'SecurityDefinition', 'SwaggerDefinition', 'Tag']
-    swagger2FqdnAnnList = [ swagger2AnnPrefix + x for x in swagger2AnnPostfixList ]
-    swagger2ShortAnnList = [ re.search('\w+$', x).group(0) for x in swagger2AnnPostfixList ]
-    #print('swagger2FqdnAnnList: ' + str(swagger2FqdnAnnList))#2024
-    #print('swagger2ShortAnnList: ' + str(swagger2ShortAnnList))#2024
-    # swagger2AnnImportsList = [ 'import ' + x + ';\n' for x in swagger2FqdnAnnList ]
-    # swagger2FqdnAnnToShortAnnToImportList = list(zip(swagger2FqdnAnnList, swagger2ShortAnnList, swagger2AnnImportsList))
-
-    # TODO need to fix the swaggerAnnotationReplacemenList to accurately replace what the jaxrs-spec plugin generator generates.
-    swaggerAnnotationReplacemenList = []
-    for annotation in swagger2ShortAnnList:
-        if 'Api' == annotation:
-            swaggerAnnotationReplacemenList.append('@' + annotation + r'\(.*?\)')
-            swaggerAnnotationReplacemenList.append('@' + annotation + r'\n')
-        elif annotation in {'ApiParam', 'ApiImplicitParam'}:
-            swaggerAnnotationReplacemenList.append('@' + annotation + r'\(.*?\)')
-            swaggerAnnotationReplacemenList.append('@' + annotation)
-        else:
-            swaggerAnnotationReplacemenList.append('@' + annotation + r'\(*.*\)*\n')
-
-    swaggerAnnotationReplacemenList.append(r'import io\.swagger\.annotations\..*\n')
-    #for fqdnAnn in swagger2FqdnAnnList:
-    #    swaggerAnnotationReplacemenList.append(fqdnAnn)
-
-    emptyStringList = ['' for x in range(len(swaggerAnnotationReplacemenList))]
-    swaggerAnnotationReplacementDict = dict(zip(swaggerAnnotationReplacemenList, emptyStringList))
-    swaggerAnnotationReplacementDict[r'\}, tags=\{  \}\)\n'] = ''#2024 fixes an issue where including @Authorization breaks the pattern.
-    #print('swaggerAnnotationReplacemenList:' + str(swaggerAnnotationReplacemenList))
-    print('swaggerAnnotationReplacementDict:' + str(swaggerAnnotationReplacementDict))#2024
-
-    # try not to use annotations that are not in both! standards split is not good.
-    #media.ArraySchema (only in swagger, not microprofile)
 
     mpAnnPrefix = 'org.eclipse.microprofile.openapi.annotations.'
     mpAnnPostfixList = ['Extension', 'License', 'Components', 'ExternalDocumentation', 'OpenAPIDefinition',
@@ -133,9 +90,11 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
 
     # END CONSTANTS
 
+    
+
     genGav = yf.getGav(descriptor['generatedGav'])
     package = jmf.getPackage(genGav)
-    pathToOpenApi = filesPath + '/' + descriptor['openApiUrl']
+    pathToOpenApi = files_path + '/' + descriptor['openApiUrl']
     author = descriptor['author']
     pathToPom = None
     # the directory of the java code.
@@ -143,6 +102,9 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
 
     # the directory of the maven pom for the generated code. Usually at the directory root of project.
     projPomPath = genGav.artifactId + '/pom.xml'
+
+    # load OpenAPI3 spec doc, so can get values out
+    oa3dict = yf.loadOpenApi3(pathToOpenApi)
 
     print('genGav: ' + str(genGav))
     print('package: ' + str(package))
@@ -160,14 +122,14 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     opts['generatedArtifactId'] = genGav.artifactId
     opts['generatedVersion'] = genGav.version
     #jmf.callMvnWithOptions(**opts, goal='clean package', file=pathToPom)
-    jmf.generateMavenProject(mvnGenGav, genGav, descriptor['author'], **opts, file=pathToPom)
+    jmf.generateMavenProject(mvn_gen_gav, genGav, descriptor['author'], **opts, file=pathToPom)
 
     print('finished generating generator project.')
 
     jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
 
     print('finished generating project.')
-
+    #quit(0)
     # remove generating pom (rename first)
     os.rename(genGav.artifactId + '/pom.xml', genGav.artifactId + '/pom.xml.generating')
 
@@ -222,10 +184,90 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
         jmf.addDependency(projPomPath, yf.getGav(dependency))
 
     #add openapi microprofile (openapi3) annotations
-    jmf.addDependency(projPomPath, microprofileGav)
+    jmf.addDependency(projPomPath, microprofile_gav)
 
     #add jackson-databind-nullable because generator likes to sometimes throw that in there for no reason.
-    jmf.addDependency(projPomPath, jacksonDbndnbGav)
+    jmf.addDependency(projPomPath, jackson_dbndnb_gav)
+
+    #fix oneOf interface generated class
+    # if oneof in schema:
+    # find class with oneOf
+    # delete contents after public class declaration line.
+    # change class to interface.
+    # if descriminator, find and get description, name, type.
+    # add annotations with name, description.
+    # add public abstract method, with return type, with converted to camel case.
+    # add closing class bracket (\n\n}\n)
+    model_dict = oa3dict.get("components", {}).get("schemas", {})
+    interfaces_dict = {}
+    for model_name, model in model_dict.items():
+        if 'oneOf' in model:
+            print('model_name: ' + str(model_name))
+            print('model: ' + str(model))
+            interfaces_dict[model_name] = model
+    
+    # Get the list of the simple java file names
+    java_file_simple_names = [os.path.basename(f) for f in javaFileList]
+    java_file_simple_names_to_path = dict(zip(java_file_simple_names, javaFileList))
+    # For each model that should be an interface, start making it an interface
+    for model_name, model in interfaces_dict.items():
+        # Get the file path for the model that should be an interface
+        interface_file_path = java_file_simple_names_to_path[model_name + '.java']
+        regex = r'public\s*?class\s*?' + model_name + r'\s*?\{\n(\n|.)+' # find the class declaration; match everything after it.
+        replacement = 'public interface ' + model_name + ' {\n'
+        model_description = model.get('description', None)
+        print('model_description: ' + str(model_description))
+        model_discriminator = model.get('discriminator', None)
+        print('model_discriminator: ' + str(model_discriminator))
+        model_subclasses = model.get('oneOf', [])
+        print('model_subclasses: ' + str(model_subclasses))
+        model_discriminator_name = None
+        model_discriminator_type = None
+        # If there is a discriminator, get info so an abstract method can be added to the interface.
+        if model_discriminator:
+            model_discriminator_name = model_discriminator.get('propertyName', None)
+            model_subclass_path = model_subclasses[0].get('$ref', '')
+            
+            subclass0_name = model_subclass_path.split('/')[-1]
+
+            print('subclass0_name: ' + str(subclass0_name))
+
+            subclass0 = model_dict.get(subclass0_name, None)
+
+            print('subclass0: ' + str(subclass0))
+            print('model_subclasses[0]: ' + str(model_subclasses[0]))
+
+            if subclass0:
+                descriminator_property = subclass0.get('properties', {}).get(model_discriminator_name, {})
+                discriminator_type = descriminator_property.get('type', None)
+                descriminator_ref = descriminator_property.get('$ref', None)
+                if descriminator_ref:
+                    model_discriminator_type = descriminator_ref.split('/')[-1]
+                elif discriminator_type:
+                    model_discriminator_type = discriminator_type
+                else:
+                    print('Could not find discriminator ' + model_discriminator_name + ' type.')
+                    quit(1)
+            print('model_discriminator_name: ' + str(model_discriminator_name))
+
+            replacement += '\n\n    @org.eclipse.microprofile.openapi.annotations.media.Schema(required = true)\n'
+            replacement += '    @JsonProperty("' + model_discriminator_name + '")\n'
+            replacement += '    @NotNull public abstract ' + model_discriminator_type + ' ' + 'get'
+            replacement += jmf.toCamel(model_discriminator_name, False) + '();\n'
+
+        replacement += '\n}\n'
+        jmf.replaceTextInFile(regex, replacement, interface_file_path)
+
+        # remove package imports from same package?!
+        package_pattern = r'(?<=package\s).+(?=;)'
+        package_string = jmf.getInFile(package_pattern, interface_file_path)
+        jmf.replaceTextInFile('import ' + package_string + '.*;\n', '', interface_file_path)
+
+    # comment out @ApplicationPath (causing quarkus error)
+    rest_application_file = java_file_simple_names_to_path.get('RestApplication.java', {})
+    jmf.replaceTextInFile(r'@ApplicationPath', r'//@ApplicationPath', rest_application_file)
+    jmf.replaceTextInFile(r'extends Application \{', r'{ // extends Application', rest_application_file)
+    print('rest_application_file: ' + str(rest_application_file))
 
     # Delete old generating pom file.
     jmf.deleteFile(projPomPath + '.generating')
@@ -237,10 +279,6 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     print('Removing target directory.')
     jmf.callMvnWithOptions(goal='clean', file=projPomPath)
     print('Removed target directory.')
-
-    for f in javaFileList:
-        # remove swagger2 annotations
-        jmf.replaceTextInFileMulti(swaggerAnnotationReplacementDict, f)
 
     # collapse microprofile openapi annotations
     for f in javaFileList:
@@ -277,8 +315,6 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
         jmf.replaceTextInFileMulti(tagDict, f)
 
     # get values from OpenAPI3 spec doc
-    oa3dict = yf.loadOpenApi3(pathToOpenApi)
-
     infoTitle = oa3dict.get("info", {}).get("title", "")
     infoDescription = oa3dict.get("info", {}).get("description", "")
     tagsList = oa3dict.get("tags", "")
@@ -379,13 +415,13 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
 
 
     # remove swagger2 annotations dependency from pom
-    jmf.removeDependency(projPomPath, swaggerGav)
+    jmf.removeDependency(projPomPath, swagger_gav)
     # Trim down pom by removing all unnecessary transitive dependencies.
     # Only keep mandatory dependencies, mostly annotation libraries.
-    jmf.removeDependency(projPomPath, quarkusJunitGav)
-    jmf.removeDependency(projPomPath, restAssuredGav)
-    jmf.removeDependency(projPomPath, quarkusResteasyGav)
-    jmf.removeDependency(projPomPath, quarkusSmallryeGav)
+    jmf.removeDependency(projPomPath, quarkus_junit_gav)
+    jmf.removeDependency(projPomPath, rest_assured_gav)
+    jmf.removeDependency(projPomPath, quarkus_resteasy_gav)
+    jmf.removeDependency(projPomPath, quarkus_smallrye_gav)
     jmf.removeDependency(projPomPath, removeJavaxRsGav)
     jmf.removeDependency(projPomPath, removeJavaxAnnGav)
     jmf.removeDependency(projPomPath, removeJakartaAnnGav)
@@ -402,41 +438,41 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     jmf.removePomProperties(projPomPath, pomPropertiesToRemove)
     jmf.removePomProperties(projPomPath, javaVersionPomProperties)
 
-    # jmf.addDependency(projPomPath, jacksonDbndnbGav)
+    # jmf.addDependency(projPomPath, jackson_dbndnb_gav)
     # Find correct dependencies to add based on combination of jaxrs and java version
-    if '17' == javaVersion:
-        jmf.addDependency(projPomPath, microprofileGav202409)
-        jmf.addDependency(projPomPath, jakartaValidationGav202409)
-        jmf.addDependency(projPomPath, jacksonAnnGav202409)
-        jmf.addDependency(projPomPath, jakartaRsGav202409)
-    elif '11' == javaVersion:
-        jmf.addDependency(projPomPath, microprofileGav2023)
-        jmf.addDependency(projPomPath, jakartaValidationGav2022)
-        jmf.addDependency(projPomPath, jacksonAnnGav2023)
-        jmf.addDependency(projPomPath, jakartaRsGav2023)
-    elif '8' == javaVersion:
-        jmf.addDependency(projPomPath, microprofileGav)
-        jmf.addDependency(projPomPath, jakartaValidationGav)
-        jmf.addDependency(projPomPath, jacksonAnnGav)
+    if '17' == java_version:
+        jmf.addDependency(projPomPath, microprofile_gav_202409)
+        jmf.addDependency(projPomPath, jakarta_validation_gav_202409)
+        jmf.addDependency(projPomPath, jackson_ann_gav_202409)
+        jmf.addDependency(projPomPath, jakarta_rs_gav_202409)
+    elif '11' == java_version:
+        jmf.addDependency(projPomPath, microprofile_gav_2023)
+        jmf.addDependency(projPomPath, jakarta_validation_gav_2022)
+        jmf.addDependency(projPomPath, jackson_ann_gav_2023)
+        jmf.addDependency(projPomPath, jakarta_rs_gav_2023)
+    elif '8' == java_version:
+        jmf.addDependency(projPomPath, microprofile_gav)
+        jmf.addDependency(projPomPath, jakarta_validation_gav)
+        jmf.addDependency(projPomPath, jackson_ann_gav)
     else:
-        print('Unsupported java version: ' + str(javaVersion))
+        print('Unsupported java version: ' + str(java_version))
         quit(1)
 
 
     if 'javax' == jaxrs:
-        jmf.addDependency(projPomPath, javaxRsGav)
+        jmf.addDependency(projPomPath, javax_rs_gav)
         print('Only Java version 8 supported with javax jaxrs. Setting java version to 8 if it is not otherwise. If you want to use a different version of Java, you must use jakarta jaxrs.')
-        javaVersion = '8'
+        java_version = '8'
     elif 'jakarta' == jaxrs:
-        jmf.addDependency(projPomPath, jakartaRsGav2023)
-        jmf.removeDependency(projPomPath, jakartaValidationGav)
-        jmf.addDependency(projPomPath, jakartaValidationGav2022)
+        jmf.addDependency(projPomPath, jakarta_rs_gav_2023)
+        jmf.removeDependency(projPomPath, jakarta_validation_gav)
+        jmf.addDependency(projPomPath, jakarta_validation_gav_2022)
     else:
         print('Unsupported jaxrs: ' + str(jaxrs))
         quit(1)
 
-    # set java version to javaVersion
-    jmf.addPomProperties(projPomPath, dict(zip(javaVersionPomProperties, [javaVersion, javaVersion])))
+    # set java version to java_version
+    jmf.addPomProperties(projPomPath, dict(zip(javaVersionPomProperties, [java_version, java_version])))
 
     # update imports
     #jmf.gjf(javaFileList)

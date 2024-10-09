@@ -3,16 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.emprogen</groupId>
-    <artifactId>swagger</artifactId>
+    <artifactId>jakarta-spec-3</artifactId>
     <version>0.0.1</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>java-0</module>
-        <module>jaxrs-spec-0</module>
-        <module>jaxrs-spec-1</module>
-        <module>jaxrs-spec-2</module>
-        <module>jakarta-spec-2</module>
-        <module>jakarta-spec-3</module>
+        <module>api-openapi-swagger-jakarta-3-archetype</module>
     </modules>
 </project>

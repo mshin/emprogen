@@ -1,15 +1,15 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "http://emprogen.com/schemas/java/maven/api/openapi/swagger/jaxrs/p4/v8/jakarta/schema"
-tag: "tag:emprogen.com:java/maven/api/openapi/swagger/jaxrs/p4/v8/jakarta/schema"
+id: "http://emprogen.com/schemas/java/maven/api/openapi/swagger/jaxrs/p5/v17/schema"
+tag: "tag:emprogen.com:java/maven/api/openapi/swagger/jaxrs/p5/v17/schema"
 title: |
   Schema for yaml defining openapi jaxrs generation.
 description: |
   This schema is for yaml descriptors defining generation of jaxrs interfaces from openapi.
 examples:
   - |
-    id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p4.v8.jakarta
+    id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v17
     generatedGav: com.github.mshin:example-api:1.0.0
     author: MunChul Shin
     openApiUrl:
