@@ -184,6 +184,7 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
         jmf.addDependency(projPomPath, yf.getGav(dependency))
 
     #add openapi microprofile (openapi3) annotations
+    # TODO adding oldest version of microprofile annotations here; maybe check version needed before this point.
     jmf.addDependency(projPomPath, microprofile_gav)
 
     #add jackson-databind-nullable because generator likes to sometimes throw that in there for no reason.
@@ -438,6 +439,8 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     jmf.removePomProperties(projPomPath, pomPropertiesToRemove)
     jmf.removePomProperties(projPomPath, javaVersionPomProperties)
 
+    # must remove default microprofile_gav before adding version correct one.
+    jmf.removeDependency(projPomPath, microprofile_gav)
     # jmf.addDependency(projPomPath, jackson_dbndnb_gav)
     # Find correct dependencies to add based on combination of jaxrs and java version
     if '17' == java_version:
@@ -458,15 +461,12 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
         print('Unsupported java version: ' + str(java_version))
         quit(1)
 
-
     if 'javax' == jaxrs:
         jmf.addDependency(projPomPath, javax_rs_gav)
         print('Only Java version 8 supported with javax jaxrs. Setting java version to 8 if it is not otherwise. If you want to use a different version of Java, you must use jakarta jaxrs.')
         java_version = '8'
     elif 'jakarta' == jaxrs:
-        jmf.addDependency(projPomPath, jakarta_rs_gav_2023)
-        jmf.removeDependency(projPomPath, jakarta_validation_gav)
-        jmf.addDependency(projPomPath, jakarta_validation_gav_2022)
+        None
     else:
         print('Unsupported jaxrs: ' + str(jaxrs))
         quit(1)
