@@ -184,8 +184,9 @@ def run(javaFile):
             "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
         ]
 
+    # mshin adding '-a' to get 4 space indentation instead of 2.
     result = subprocess.call(
-        ["java"] + jdk_opens + ["-jar", gjf_jar_path, "--replace"] + files
+        ["java"] + jdk_opens + ["-jar", gjf_jar_path, "--replace", "-a"] + files
     )
 
     ## This if statement used to be commented out, because google-java-format
