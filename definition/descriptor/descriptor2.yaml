@@ -66,3 +66,38 @@
 #           - GREASE
 #           - BUTTER
 #           - OLIVE
+# id: com.emprogen.java.maven.model.lombok.domain.p1.v1
+# generatedGav: com.github.mshin:example-domain-model2
+# author: MunChul Shin
+# model:
+#     - name: DomainModel0
+#       abstract: true
+#       fields:
+#           - String:field1
+#           - String:field2
+#           - Integer:field3
+#     - name: DomainModel1
+#       extends: DomainModel0
+#       fields:
+#           - Integer:field4
+#           - String:field5
+#           - boolean:field6
+#           - int:field7
+#     - name: Cookies
+#       fields:
+#           - String:tastiness
+#           - String:type
+#           - boolean:isGood
+#           - int:calories
+#     - name: Stock
+#       implements: java.lang.Cloneable
+#       fields:
+#           - Date:acquired
+#           - Integer:value
+#           - Integer:quantity
+# enum:
+#     - name: Enum1
+#       values:
+#           - GREASE
+#           - BUTTER
+#           - OLIVE

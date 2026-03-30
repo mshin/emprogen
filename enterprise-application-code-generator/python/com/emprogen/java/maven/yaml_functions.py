@@ -44,7 +44,7 @@ def getGav(gavStr: 'str') -> 'Gav':
 def getFieldsAndTypes(modelDict: 'dict') -> 'dict field:type':
     fieldsDict = {}
     if modelDict:
-        fieldList = modelDict['fields']
+        fieldList = modelDict.get('fields', [])
         for f in fieldList:
             typeToField = f.split(':')
             fieldsDict[typeToField[1]] = typeToField[0]

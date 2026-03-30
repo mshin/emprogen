@@ -15,7 +15,6 @@ examples:
     model:
         - name: DomainModel0
           abstract: false
-          interface: false
           extends: null
           implements: null
           fields:
@@ -77,22 +76,18 @@ properties:
           pattern: "^[\\w\\$]+$"
           description: |
             The classname for the model.
-        isAbstract:
+        abstract:
           type: boolean
           description: |
             Whether or not the model is an abstract class. Defaults to false.
-        isInterface:
-          type: boolean
-          description: |
-            Whether or not the model is an interface. Defaults to false.
         extends:
           type: string
-          pattern: "^[\\w\\$]+$"
+          pattern: "^[\\w\\$.]+$"
           description: |
             The abstract class this model extends. Defaults to null.
         implements:
           type: string
-          pattern: "^[\\w\\$]+$"
+          pattern: "^[\\w\\$.]+$"
           description: |
             The interface this model implements. Defaults to null.
         fields:

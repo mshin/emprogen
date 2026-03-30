@@ -55,8 +55,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'mode
         print('fieldString: ' + fieldString)
         jmf.replaceTextInFile('    fields', fieldString, newFileName)
 
-        is_abstract = model.get('isAbstract', False)
-        is_interface = model.get('isInterface', False)
+        is_abstract = model.get('abstract', False)
         extends = model.get('extends', None)
         implements = model.get('implements', None)
 
@@ -64,17 +63,19 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'mode
         find_string = '\npublic ' + abstract_string + 'class ' + newClassName + ' '
 
         if is_abstract:
+            print('is_abstract: ' + str(is_abstract))
             jmf.replaceTextInFile('\npublic class', '\npublic abstract class', newFileName)
-        if is_interface:
-            jmf.replaceTextInFile('\npublic class', '\npublic interface', newFileName)
         if extends:
+            print('extends: ' + str(extends))
             replace_string = find_string + 'extends ' + extends + ' '
             jmf.replaceTextInFile(find_string, replace_string, newFileName)
         if implements:
-            implements_already = jmf.getInFile(find_string + 'implements', newFileName)
-            comma = ', ' if implements_already else ' '
-            replace_string = find_string + 'implements ' + implements + comma
-            jmf.replaceTextInFile(find_string, replace_string, newFileName)
+            print('implements: ' + str(implements))
+            new_find_string = find_string + 'implements Serializable'
+            replace_string = new_find_string + ', ' + implements
+            jmf.replaceTextInFile(new_find_string, replace_string, newFileName)
+
+
 
     # delete placeholder model
     jmf.deleteFile(templateFile)
