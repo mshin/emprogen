@@ -117,6 +117,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
 
     # parse the args to remove types.
     for methodName, argList in methodToArgsDict.items():
+        print ('methodName: ' + methodName)
         print ('argList: ' + argList)
         # get the arg type:value pairs
         argTypeVarList = argList.split(',')
@@ -124,7 +125,10 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
         # get the arg var names
         argVars = []
         for argTypeVar in argTypeVarList:
-            argVars.append(argTypeVar.strip().split(' ')[1])
+            # print ('argTypeVar: ' + argTypeVar)
+            argArrayTmp = argTypeVar.strip().split(' ')
+            if len(argArrayTmp) > 1:
+                argVars.append(argArrayTmp[1])
         # print ('argVars: ' + str(argVars))
 
         methodToArgsDict[methodName] = ', '.join(argVars)
