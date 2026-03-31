@@ -311,10 +311,13 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
 
     # remove any \n@Tag
     # remove any tags = stuff
-    tagDict = {'\n@Tag.*\n': '\n', '@Tag.*\)\n': '{@%@}\n'}
+    # don't want to match standalone @Tag like \n\s\s\s\s@Tag(name="pets")\n
+    # don't remember what the 1st element in the list does, leaving for now 202603
+    tagDict = {'\n@Tag.*\n': '\n', '(?<=tags\s=\s)@Tag.*\)\n': '{@%@}\n'}
+    print('before replacing tags.')
     for f in javaFileList:
         jmf.replaceTextInFileMulti(tagDict, f)
-
+    print('after replacing tags.')
     # get values from OpenAPI3 spec doc
     infoTitle = oa3dict.get("info", {}).get("title", "")
     infoDescription = oa3dict.get("info", {}).get("description", "")
@@ -358,7 +361,7 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
 
     for f in javaFileList:
         jmf.replaceTextInFile('(tags\s?=\s?\{)@%@\}', r'\g<1>' + tagAnnotations +  '}', f)
-
+        print('added tags back in. ')
 
     # add security scopes in.
 
@@ -488,8 +491,12 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
 
     # rename src/main/openapi/openapi.yaml to real doc name
     oapidocPath = genGav.artifactId + '/src/main/openapi'
-    jmf.copyFile(oapidocPath + '/openapi.yaml', oapidocPath + '/' + os.path.basename(pathToOpenApi))
-    jmf.deleteFile(oapidocPath + '/openapi.yaml')
+    sourceDoc = oapidocPath + '/openapi.yaml'
+    targetDoc = oapidocPath + '/' + os.path.basename(pathToOpenApi)
+    if targetDoc != sourceDoc:
+        jmf.copyFile(sourceDoc, targetDoc)
+        jmf.deleteFile(oapidocPath + '/openapi.yaml')
+        print('Copied ' + oapidocPath + '/openapi.yaml to ' + oapidocPath + '/' + os.path.basename(pathToOpenApi))
 
     print('Rebuilding project 2.')
     jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
