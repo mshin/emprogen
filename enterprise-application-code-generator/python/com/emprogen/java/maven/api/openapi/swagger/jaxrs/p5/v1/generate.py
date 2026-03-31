@@ -9,15 +9,15 @@ from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
-def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str' = '8', jaxrs: 'str' = 'javax') -> None:
+def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str' = '8', jaxrs: 'str' = 'javax', **kwargs) -> None:
 
     print('in openapi.swagger.jaxrs.p5.v1.generate.py')
 
     # BEGIN CONSTANTS
-    
+
     mvn_gen_gav = None
-    javax_gen_gav = Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2')
-    jakarta_gen_gav = Gav('com.emprogen', 'api-openapi-swagger-jakarta-3-archetype', '0.0.1')
+    javax_gen_gav = kwargs.get('javax_gen_gav', Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2'))
+    jakarta_gen_gav = kwargs.get('jakarta_gen_gav', Gav('com.emprogen', 'api-openapi-swagger-jakarta-3-archetype', '0.0.1'))
 
     if 'javax' == jaxrs:
         mvn_gen_gav = javax_gen_gav
@@ -28,38 +28,38 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
         quit(1)
 
     #add these for annotations
-    microprofile_gav = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2')
-    jakarta_validation_gav = Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2')
-    jackson_ann_gav = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10')
-    javax_rs_gav = Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
+    microprofile_gav = kwargs.get('microprofile_gav', Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2'))
+    jakarta_validation_gav = kwargs.get('jakarta_validation_gav', Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2'))
+    jackson_ann_gav = kwargs.get('jackson_ann_gav', Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10'))
+    javax_rs_gav = kwargs.get('javax_rs_gav', Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1'))
 
-    microprofile_gav_2023 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '3.1.1')
-    jakarta_validation_gav_2022 = Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2')
-    jackson_ann_gav_2023 = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.16.1')
-    jakarta_rs_gav_2023 = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0')
+    microprofile_gav_2023 = kwargs.get('microprofile_gav_2023', Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '3.1.1'))
+    jakarta_validation_gav_2022 = kwargs.get('jakarta_validation_gav_2022', Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2'))
+    jackson_ann_gav_2023 = kwargs.get('jackson_ann_gav_2023', Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.16.1'))
+    jakarta_rs_gav_2023 = kwargs.get('jakarta_rs_gav_2023', Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0'))
 
-    microprofile_gav_202409 = Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '4.0')
-    jakarta_validation_gav_202409 = Gav('jakarta.validation', 'jakarta.validation-api', '3.1.0')
-    jackson_ann_gav_202409 = Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.17.2')
-    jakarta_rs_gav_202409 = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '4.0.0')
+    microprofile_gav_202409 = kwargs.get('microprofile_gav_202409', Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '4.0'))
+    jakarta_validation_gav_202409 = kwargs.get('jakarta_validation_gav_202409', Gav('jakarta.validation', 'jakarta.validation-api', '3.1.0'))
+    jackson_ann_gav_202409 = kwargs.get('jackson_ann_gav_202409', Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.17.2'))
+    jakarta_rs_gav_202409 = kwargs.get('jakarta_rs_gav_202409', Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '4.0.0'))
 
-    jackson_dbndnb_gav = Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6')
+    jackson_dbndnb_gav = kwargs.get('jackson_dbndnb_gav', Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6'))
 
     # remove these
-    swagger_gav = Gav('io.swagger', 'swagger-annotations', None)
-    quarkus_junit_gav = Gav('io.quarkus', 'quarkus-junit5', None)
-    rest_assured_gav = Gav('io.rest-assured', 'rest-assured', None)
-    quarkus_resteasy_gav = Gav('io.quarkus', 'quarkus-resteasy', None)
-    quarkus_smallrye_gav = Gav('io.quarkus', 'quarkus-smallrye-openapi', None)
-    removeJavaxRsGav = Gav('javax.ws.rs', 'javax.ws.rs-api', None)
-    removeJakartaRsGav = Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', None)
-    removeJavaxAnnGav = Gav('javax.annotation', 'javax.annotation-api', None)
-    removeJakartaAnnGav = Gav('jakarta.annotation', 'jakarta.annotation-api', None)
-    removeJsonNullableGav = Gav('org.openapitools', 'jackson-databind-nullable', None)
+    swagger_gav = kwargs.get('swagger_gav', Gav('io.swagger', 'swagger-annotations', None))
+    quarkus_junit_gav = kwargs.get('quarkus_junit_gav', Gav('io.quarkus', 'quarkus-junit5', None))
+    rest_assured_gav = kwargs.get('rest_assured_gav', Gav('io.rest-assured', 'rest-assured', None))
+    quarkus_resteasy_gav = kwargs.get('quarkus_resteasy_gav', Gav('io.quarkus', 'quarkus-resteasy', None))
+    quarkus_smallrye_gav = kwargs.get('quarkus_smallrye_gav', Gav('io.quarkus', 'quarkus-smallrye-openapi', None))
+    removeJavaxRsGav = kwargs.get('removeJavaxRsGav', Gav('javax.ws.rs', 'javax.ws.rs-api', None))
+    removeJakartaRsGav = kwargs.get('removeJakartaRsGav', Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', None))
+    removeJavaxAnnGav = kwargs.get('removeJavaxAnnGav', Gav('javax.annotation', 'javax.annotation-api', None))
+    removeJakartaAnnGav = kwargs.get('removeJakartaAnnGav', Gav('jakarta.annotation', 'jakarta.annotation-api', None))
+    removeJsonNullableGav = kwargs.get('removeJsonNullableGav', Gav('org.openapitools', 'jackson-databind-nullable', None))
 
-    quarkusMavenPluginGav = Gav('io.quarkus', 'quarkus-maven-plugin', None)
-    mavenSurefirePluginGav = Gav(None, 'maven-surefire-plugin', None)
-    buildHelperMavenPluginGav = Gav('org.codehaus.mojo', 'build-helper-maven-plugin', None)
+    quarkusMavenPluginGav = kwargs.get('quarkusMavenPluginGav', Gav('io.quarkus', 'quarkus-maven-plugin', None))
+    mavenSurefirePluginGav = kwargs.get('mavenSurefirePluginGav', Gav(None, 'maven-surefire-plugin', None))
+    buildHelperMavenPluginGav = kwargs.get('buildHelperMavenPluginGav', Gav('org.codehaus.mojo', 'build-helper-maven-plugin', None))
 
     pomPropertiesToRemove = ['io.swagger.annotations.version', 'quarkus-plugin.version',
     'quarkus.platform.version', 'quarkus.platform.artifact-id', 'quarkus.platform.group-id',
