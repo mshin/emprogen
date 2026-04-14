@@ -2,7 +2,7 @@ import importlib
 
 from com.emprogen.java.maven.models import Gav
 
-def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-quarkus-p0-archetype', '0.0.1')
+def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-quarkus-p0-archetype', '0.0.2')
         , *, filesPath: 'str' = None, javaVersion: 'str' = '17') -> None:
 
     print('in service.jaxrs.quarkus.p0.v17.generate.py')

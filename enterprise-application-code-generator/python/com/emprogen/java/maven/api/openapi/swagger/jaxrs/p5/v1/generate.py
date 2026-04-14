@@ -27,21 +27,12 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
         print('Unsupported jaxrs: ' + str(jaxrs) + '. Must be javax or jakarta.')
         quit(1)
 
-    #add these for annotations
+    #add these for annotations (defaults are approx java 8 era versions)
     microprofile_gav = kwargs.get('microprofile_gav', Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '1.1.2'))
-    jakarta_validation_gav = kwargs.get('jakarta_validation_gav', Gav('jakarta.validation', 'jakarta.validation-api', '2.0.2'))
+    jakarta_validation_gav = kwargs.get('jakarta_validation_gav', Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2'))
     jackson_ann_gav = kwargs.get('jackson_ann_gav', Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10'))
     javax_rs_gav = kwargs.get('javax_rs_gav', Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1'))
-
-    microprofile_gav_2023 = kwargs.get('microprofile_gav_2023', Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '3.1.1'))
-    jakarta_validation_gav_2022 = kwargs.get('jakarta_validation_gav_2022', Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2'))
-    jackson_ann_gav_2023 = kwargs.get('jackson_ann_gav_2023', Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.16.1'))
-    jakarta_rs_gav_2023 = kwargs.get('jakarta_rs_gav_2023', Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0'))
-
-    microprofile_gav_202409 = kwargs.get('microprofile_gav_202409', Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '4.0'))
-    jakarta_validation_gav_202409 = kwargs.get('jakarta_validation_gav_202409', Gav('jakarta.validation', 'jakarta.validation-api', '3.1.0'))
-    jackson_ann_gav_202409 = kwargs.get('jackson_ann_gav_202409', Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.17.2'))
-    jakarta_rs_gav_202409 = kwargs.get('jakarta_rs_gav_202409', Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '4.0.0'))
+    jakarta_rs_gav = kwargs.get('jakarta_rs_gav', Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0'))
 
     jackson_dbndnb_gav = kwargs.get('jackson_dbndnb_gav', Gav('org.openapitools', 'jackson-databind-nullable', '0.2.6'))
 
@@ -444,28 +435,18 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
 
     # must remove default microprofile_gav before adding version correct one.
     jmf.removeDependency(projPomPath, microprofile_gav)
-    # jmf.addDependency(projPomPath, jackson_dbndnb_gav)
-    # Find correct dependencies to add based on combination of jaxrs and java version
-    if '17' == java_version:
-        jmf.addDependency(projPomPath, microprofile_gav_202409)
-        jmf.addDependency(projPomPath, jakarta_validation_gav_202409)
-        jmf.addDependency(projPomPath, jackson_ann_gav_202409)
-        jmf.addDependency(projPomPath, jakarta_rs_gav_202409)
-    elif '11' == java_version:
-        jmf.addDependency(projPomPath, microprofile_gav_2023)
-        jmf.addDependency(projPomPath, jakarta_validation_gav_2022)
-        jmf.addDependency(projPomPath, jackson_ann_gav_2023)
-        jmf.addDependency(projPomPath, jakarta_rs_gav_2023)
-    elif '8' == java_version:
-        jmf.addDependency(projPomPath, microprofile_gav)
-        jmf.addDependency(projPomPath, jakarta_validation_gav)
-        jmf.addDependency(projPomPath, jackson_ann_gav)
-    else:
-        print('Unsupported java version: ' + str(java_version))
-        quit(1)
+
+    # Add annotation Gavs in. Defaulting to jakarta.
+    jmf.addDependency(projPomPath, microprofile_gav)
+    jmf.addDependency(projPomPath, jakarta_validation_gav)
+    jmf.addDependency(projPomPath, jackson_ann_gav)
+    jmf.addDependency(projPomPath, jakarta_rs_gav)
 
     if 'javax' == jaxrs:
+        jmf.removeDependency(projPomPath, jakarta_rs_gav)
         jmf.addDependency(projPomPath, javax_rs_gav)
+        for f in javaFileList:
+            jmf.replaceTextInFileMulti({'jakarta\.ws\.rs': 'javax.ws.rs'}, f)
         print('Only Java version 8 supported with javax jaxrs. Setting java version to 8 if it is not otherwise. If you want to use a different version of Java, you must use jakarta jaxrs.')
         java_version = '8'
     elif 'jakarta' == jaxrs:

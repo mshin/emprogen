@@ -1,13 +1,56 @@
-id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v17
-generatedGav: com.github.mshin:example-api:1.0.0
+# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v8.javax
+# generatedGav: com.github.mshin:example-j8javax-api:1.0.0
+# author: MunChul Shin
+# openApiUrl: openapi.yaml
+# ---
+# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v8.jakarta
+# generatedGav: com.github.mshin:example-j8jakarta-api:1.0.0
+# author: MunChul Shin
+# openApiUrl: openapi.yaml
+# ---
+# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v11
+# generatedGav: com.github.mshin:example-j11-api:1.0.0
+# author: MunChul Shin
+# openApiUrl: openapi.yaml
+# ---
+# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v17
+# generatedGav: com.github.mshin:example-j17-api:1.0.0
+# author: MunChul Shin
+# openApiUrl: openapi.yaml
+# ---
+id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
+generatedGav: com.github.mshin:example-j21-api:1.0.0
 author: MunChul Shin
 openApiUrl: openapi.yaml
 ---
-id: com.emprogen.java.maven.service.jaxrs.quarkus.p1.v17
-generatedGav: com.github.mshin:petstore-rs:1.0.0
+# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v25
+# generatedGav: com.github.mshin:example-j25-api:1.0.0
+# author: MunChul Shin
+# openApiUrl: openapi.yaml
+# ---
+id: com.emprogen.java.maven.service.jaxrs.quarkus.p1.v21
+generatedGav: com.github.mshin:example-j21-rs:1.0.0
 author: MunChul Shin
-serviceInterfaceGav: com.github.mshin:example-api:1.0.0
-serviceInterface: com.github.mshin.example.api.PetsApi
+serviceInterfaceGav: com.github.mshin:example-j21-api:1.0.0
+serviceInterface: com.github.mshin.example.j21.api.PetsApi
+---
+# id: com.emprogen.java.maven.service.jaxrs.quarkus.p0.v8
+# generatedGav: com.github.mshin:example-p0j8-rs:1.0.0
+# author: MunChul Shin
+# serviceInterfaceGav: com.github.mshin:example-j8jakarta-api:1.0.0
+# serviceInterface: com.github.mshin.example.j8jakarta.api.PetsApi
+# ---
+# id: com.emprogen.java.maven.service.jaxrs.quarkus.p0.v11
+# generatedGav: com.github.mshin:example-p0j11-rs:1.0.0
+# author: MunChul Shin
+# serviceInterfaceGav: com.github.mshin:example-j8jakarta-api:1.0.0
+# serviceInterface: com.github.mshin.example.j8jakarta.api.PetsApi
+# ---
+# id: com.emprogen.java.maven.service.jaxrs.quarkus.p0.v17
+# generatedGav: com.github.mshin:example-p0j17-rs:1.0.0
+# author: MunChul Shin
+# serviceInterfaceGav: com.github.mshin:example-j8jakarta-api:1.0.0
+# serviceInterface: com.github.mshin.example.j8jakarta.api.PetsApi
 # ---
 # id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p0.v1
 # generatedGav: com.github.mshin:example-api:1.0.0

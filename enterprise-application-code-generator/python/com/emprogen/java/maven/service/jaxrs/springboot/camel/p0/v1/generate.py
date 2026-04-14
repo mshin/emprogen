@@ -61,7 +61,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     # the package.Classname of a tool used to generate a java impl Class given a java Interface.
     genImplClass = "com.emprogen.generate.impl.GenerateImplService"
     # the maven gav for the GenerateImplService tool.
-    generateImplGav = "com.emprogen:generate-impl:0.0.1"
+    generateImplGav = "com.emprogen:generate-impl:0.0.2"
 
 
     # Geneate Maven project.

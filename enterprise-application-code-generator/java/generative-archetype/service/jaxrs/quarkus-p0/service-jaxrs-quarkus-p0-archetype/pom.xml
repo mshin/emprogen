@@ -5,7 +5,7 @@
 
     <groupId>com.emprogen</groupId>
     <artifactId>service-jaxrs-quarkus-p0-archetype</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>maven-archetype</packaging>
     <name>${project.artifactId}</name>
 

@@ -55,6 +55,9 @@ else:
 firstDocumentIsStackDescriptor = False
 
 for i, documentDict in enumerate(yamlList):
+    # prevent "---" end of doc in yaml from being treated as a document with no content.
+    if documentDict is None:
+        continue
     # Validate yaml descriptors against their schemas.
     pwd = str(jmf.getFilePath(__file__)) + '/'
     schemaPath = documentDict['id'].replace('.', '/') + '/schema.yaml'
@@ -74,6 +77,9 @@ if firstDocumentIsStackDescriptor:
     # TODO run stack descriptor.
 
 for documentDict in yamlList:
+    # prevent "---" end of doc in yaml from being treated as a document with no content.
+    if documentDict is None:
+        continue
     # if not a stack descriptor,
     # find the script to run and run it.
     scriptPath = documentDict['id'] + '.generate'
