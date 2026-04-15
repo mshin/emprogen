@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 #
 # https://github.com/ctrueden/ctr-scripts/blob/master/maven-cp

@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 
 import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf

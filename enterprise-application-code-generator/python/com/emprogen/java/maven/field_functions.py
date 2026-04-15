@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3
 import re
 
 "Given a url to .properties file, return the key=value items in a dict."

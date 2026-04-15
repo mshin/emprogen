@@ -2,7 +2,7 @@
 
 ## Instructions
 
-`pip3 install enterprise-application-code-generator/python/requirements.txt`
+`pip3 install -r enterprise-application-code-generator/python/requirements.txt`
 
 ### If you need to, build all the emprogen java code.
 `cd enterprise-application-code-generator/java`

@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3
 from com.emprogen.java.maven.models import Gav
 import yaml
 import json

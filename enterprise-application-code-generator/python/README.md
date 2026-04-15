@@ -1,3 +1,3 @@
 ## Instructions
 
-`pip3 install requirements.txt`
+`pip3 install -r requirements.txt`
