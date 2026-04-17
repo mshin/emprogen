@@ -30,6 +30,9 @@ ENV JAVA_VENDOR="openjdk"
 ENV JAVA_VERSION="21"
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
+# Verify installation
+RUN java -version
+
 
 ####### MAVEN 3.9
 
@@ -38,14 +41,7 @@ RUN dnf install -y maven-openjdk21 && \
     rm -rf /var/cache/dnf
 
 # Verify installations
-RUN java -version && python3 --version && mvn --version
-
-
-####### PERL
-
-RUN dnf -y install perl && \
-    dnf clean all && \
-    rm -rf /var/cache/dnf
+RUN mvn --version
 
 
 ####### COPY CODE
