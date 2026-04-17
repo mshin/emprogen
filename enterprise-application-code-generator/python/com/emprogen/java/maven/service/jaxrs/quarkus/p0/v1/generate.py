@@ -50,7 +50,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     # the location of the java properties file mapping tpe to package.type.
     typToPkgtyp = ff.loadPropertiesAsDict(javaMavenDir + '/java_type.properties')
     # the location of the script that gets maven dependencies for calling from classpath context
-    cpPlUrl=javaMavenDir + '/maven-cp.pl'
+    cpPlUrl=javaMavenDir + '/maven-cp.py'
 
     # the package.Classname of a tool used to generate a java impl Class given a java Interface.
     genImplClass = "com.emprogen.generate.impl.GenerateImplService"

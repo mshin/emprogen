@@ -53,7 +53,7 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     typToPkgtyp = ff.loadPropertiesAsDict(javaMavenDir + '/java_type.properties')
 
     # the location of the script that gets maven dependencies for calling from classpath context
-    cpPlUrl=javaMavenDir + '/maven-cp.pl'
+    cpPlUrl=javaMavenDir + '/maven-cp.py'
     # the location of the properties file with snippets used to create a camel route in java dsl.
     camelRouteChoiceUrl = thisFilesPath + '/camel_route_choice.properties'
     # the spring annotation for defining a spring managed bean.
