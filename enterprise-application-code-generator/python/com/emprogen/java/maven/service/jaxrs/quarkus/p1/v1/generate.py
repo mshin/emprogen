@@ -7,7 +7,7 @@ import re
 from com.emprogen.java.maven.models import Gav
 
 def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-quarkus-p1-archetype', '0.0.2')
-        , *, filesPath: 'str' = None, javaVersion: 'str' = '8') -> None:
+        , *, filesPath: 'str' = None, javaVersion: 'str' = '8', **kwargs) -> None:
 
     print('in service.jaxrs.quarkus.p1.v1.generate.py')
     print('javaVersion: ' + str(javaVersion))

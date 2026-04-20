@@ -11,7 +11,7 @@ from com.emprogen.java.maven.models import TableRelationship
 # MShin 2023 07: I a stopping development on this. It's too much work to try to get this working.
 # Switching over to microprofile annotations.
 # Reverting code back to compilable Swagger 2.0. Abandoning OpenAPI 3.0 annotations.
-def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
+def generate(descriptor: 'dict', *, filesPath: 'str' = None, **kwargs) -> None:
 
     print('in openapi.jaxrs.generate.py')
 

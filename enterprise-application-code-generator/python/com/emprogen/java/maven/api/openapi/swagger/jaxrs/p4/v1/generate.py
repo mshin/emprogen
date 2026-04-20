@@ -9,7 +9,7 @@ from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
-def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' = '8', jaxrs: 'str' = 'javax') -> None:
+def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' = '8', jaxrs: 'str' = 'javax', **kwargs) -> None:
 
     print('in openapi.swagger.jaxrs.p4.v1.generate.py')
 

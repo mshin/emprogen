@@ -7,7 +7,7 @@ from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
-def generate(descriptor: 'dict', *, filesPath: 'str' = None) -> None:
+def generate(descriptor: 'dict', *, filesPath: 'str' = None, **kwargs) -> None:
 
     print('in openapi.jaxrs.generate.py')
 

@@ -9,7 +9,7 @@ from com.emprogen.java.maven.models import Gav
 
 #def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.github.mshin', 'jaxrms-springboot-camel-archetype', '1.0.1')) -> None:
 def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'service-jaxrs-springboot-camel-p0-archetype', '0.0.1')
-        , *, filesPath: 'str' = None) -> None:
+        , *, filesPath: 'str' = None, **kwargs) -> None:
 
     # Do all 1 time loads and calculations up front.
 

@@ -1,7 +1,7 @@
 import importlib
 from com.emprogen.java.maven.models import Gav
 
-def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' = '21', jaxrs='jakarta') -> None:
+def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' = '21', jaxrs='jakarta', **kwargs) -> None:
 
     print('in openapi.swagger.jaxrs.p5.v21.generate.py')
 
@@ -13,6 +13,7 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
         'jackson_ann_gav': Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.21'),
         'jakarta_rs_gav': Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0')
     }
+    kwargs.update(extra_kwargs)
 
-    script.generate(descriptor, files_path=filesPath, java_version=javaVersion, jaxrs=jaxrs, **extra_kwargs)
+    script.generate(descriptor, files_path=filesPath, java_version=javaVersion, jaxrs=jaxrs, **kwargs)
  

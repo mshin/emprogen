@@ -5,7 +5,7 @@ from com.emprogen.java.maven.models import Gav
 import glob
 
 def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-domain-p1-archetype', '0.0.1'),
-       *, filesPath: 'str' = None) -> None:
+       *, filesPath: 'str' = None, **kwargs) -> None:
 
     # Do all 1 time loads and calculations up front.
 
