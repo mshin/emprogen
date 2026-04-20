@@ -32,23 +32,26 @@ if os.path.isfile(descriptorPath):
 elif os.path.isdir(descriptorDir):
     # if there is an order.txt file, use that as the order in which to read the yaml documents.
     docList = None
-    if os.path.isfile(descriptorDir + '/order.txt'):
-        with open(descriptorDir + '/order.txt', 'r') as f:
+    if os.path.isfile(descriptorDir + 'order.txt'):
+        with open(descriptorDir + 'order.txt', 'r') as f:
             docList = [line.rstrip() for line in f]
     # get all the files from the directory and add them to the descriptor list.
     fileToPath = {}
     for f in os.listdir(descriptorDir):
-        if os.path.isfile(descriptorDir + '/' + f):
-            fileToPath[f] = descriptorDir + '/' + f
+        if os.path.isfile(descriptorDir + f):
+            fileToPath[f] = descriptorDir + f
     # if there's an order.txt file, sort the documents based on that.
     if docList:
         tmpFileToPathDict = {}
         for doc in docList:
+            if doc.startswith('#') or doc.startswith('//'):
+                continue
             tmpFileToPathDict[doc] = fileToPath.get(doc, None)
         fileToPath = tmpFileToPathDict
 
     # get the yaml docs and store them from all files into a combined yaml document list.
     for k, v in fileToPath.items(): # after CPython 3.6, dict maintains insertion order
+        print('Loading yaml docs from file: ' + k + ' at path: ' + v)
         tmpYamlList = yf.loadYamlDocs(v)
         yamlList += tmpYamlList
 else:
