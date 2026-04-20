@@ -66,6 +66,14 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     opts['jaxrs_service_interface'] = serviceInterfaceName
     opts['jaxrs_service_package'] = serviceInterfacePackage
     print('service opts: ' + str(opts))
+
+    mvn_options = jmf.captureContextualCommandLineOptions(kwargs.get('command_args', []), 'mvn')
+    mvn_opts = {'mvn_options': mvn_options}
+    opts.update(mvn_opts)
+
+    print('mvn_options: ' + str(mvn_options))
+    print('opts: ' + str(opts))
+
     jmf.generateMavenProject(archGav, projGav, descriptor['author'], **opts)
 
     # get the maven dependencies for the module containing the jaxrs Interface from which the service will be generated.
@@ -188,5 +196,5 @@ def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'serv
     jmf.beautifyImports(projPomPath)
 
     # verify it compiles
-    jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
-    jmf.callMvnWithOptions(goal='clean', file=projPomPath)
+    jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=projPomPath)
+    jmf.callMvnWithOptions(**mvn_opts, goal='clean', file=projPomPath)

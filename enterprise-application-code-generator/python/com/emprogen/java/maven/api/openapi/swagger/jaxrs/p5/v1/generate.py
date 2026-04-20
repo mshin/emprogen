@@ -112,12 +112,20 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     opts['generatedGroupId'] = genGav.groupId
     opts['generatedArtifactId'] = genGav.artifactId
     opts['generatedVersion'] = genGav.version
+
+    mvn_options = jmf.captureContextualCommandLineOptions(kwargs.get('command_args', []), 'mvn')
+    mvn_opts = {'mvn_options': mvn_options}
+    opts.update(mvn_opts)
+
+    print('mvn_options: ' + str(mvn_options))
+    print('opts: ' + str(opts))
+
     #jmf.callMvnWithOptions(**opts, goal='clean package', file=pathToPom)
     jmf.generateMavenProject(mvn_gen_gav, genGav, descriptor['author'], **opts, file=pathToPom)
 
     print('finished generating generator project.')
 
-    jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
+    jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=projPomPath)
 
     print('finished generating project.')
     #quit(0)
@@ -265,11 +273,11 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     jmf.deleteFile(projPomPath + '.generating')
 
     print('Rebuilding project.')
-    jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
+    jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=projPomPath)
     print('Finished rebuilding project.')
 
     print('Removing target directory.')
-    jmf.callMvnWithOptions(goal='clean', file=projPomPath)
+    jmf.callMvnWithOptions(**mvn_opts, goal='clean', file=projPomPath)
     print('Removed target directory.')
 
     # collapse microprofile openapi annotations
@@ -480,9 +488,9 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
         print('Copied ' + oapidocPath + '/openapi.yaml to ' + oapidocPath + '/' + os.path.basename(pathToOpenApi))
 
     print('Rebuilding project 2.')
-    jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
+    jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=projPomPath)
     print('Finished rebuilding project 2.')
 
     print('Removing target directory 2.')
-    jmf.callMvnWithOptions(goal='clean', file=projPomPath)
+    jmf.callMvnWithOptions(**mvn_opts, goal='clean', file=projPomPath)
     print('Removed target directory 2.')

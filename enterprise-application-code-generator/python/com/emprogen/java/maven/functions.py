@@ -132,6 +132,9 @@ def generateMavenProject(archGav: 'Gav', genGav: 'Gav', author: 'str' = None, *,
 
 def callMvnWithOptions(*, goal='archetype:generate', file:'path to pom'=None, **options):
     call = 'mvn {} -B'.format(goal)
+    mvn_options = options.pop('mvn_options', [])
+    for mvn_option in mvn_options:
+        call += ' ' + mvn_option
     if file:
         call +=' -f {}'.format(file)
     argList = call.split()
@@ -148,6 +151,25 @@ def runSubprocess(argList: 'list') -> None:
 def runSubprocessCaptureOutput(argList: 'list') -> 'whatever the subprocess would return':
     print('running subprocess.. \n    ' + str(argList))
     return subprocess.run(argList, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
+
+def captureContextualCommandLineOptions(command_args: 'str', contextualCommand: 'str') -> 'list':
+    # list command_args is defined in run.py and captures command line args passed into script
+    # command_args follow the pattern contextualCommand=command1,command2,commandN
+    # example: mvn=-U,-DskipTests
+    output = []
+    for command_arg in command_args:
+        command_args_tmp = re.split('=', command_arg)
+        if not len(command_args_tmp) == 2:
+            print('Cannot process command line arg so skipping: ' + str(command_arg))
+            continue
+        command = command_args_tmp[0]
+        if not command == contextualCommand:
+            continue
+        args_tmp = re.split(',', command_args_tmp[1])
+
+        output += args_tmp
+
+    return output
 
 def addDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))

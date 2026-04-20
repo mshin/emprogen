@@ -12,6 +12,12 @@ import com.emprogen.validate_schema as vs
 if not len(argv) > 1:
     raise ValueError('Must pass yaml descriptor for generating code as arg.')
 
+# Command args should follow the pattern command=arg1,arg2,argN command2=arg21,arg22,arg2N, etc.
+command_args = []
+if len(argv) > 2:
+    command_args = argv[2:len(argv)]
+    print('Captured command args: ' + str(command_args))
+
 # pass 1 arg in to this script.
 # Can pass in a single descriptor yaml file.
 # Can pass in a directory containing artifacts and /descriptor directory containing yaml documents containing the definitions of the artifacts.
@@ -85,7 +91,8 @@ for documentDict in yamlList:
     scriptPath = documentDict['id'] + '.generate'
     print('scriptPath: ' + scriptPath)
     script = importlib.import_module(scriptPath)
-    script.generate(documentDict, filesPath = descriptorPath)
+    opts_dict = {'command_args': command_args}
+    script.generate(documentDict, filesPath=descriptorPath, **opts_dict)
     #script.generate(documentDict, yf.getArchetypeGav(documentDict))
 
 quit()
