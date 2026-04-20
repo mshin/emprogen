@@ -51,7 +51,10 @@ elif os.path.isdir(descriptorDir):
 
     # get the yaml docs and store them from all files into a combined yaml document list.
     for k, v in fileToPath.items(): # after CPython 3.6, dict maintains insertion order
-        print('Loading yaml docs from file: ' + k + ' at path: ' + v)
+        # for blank newline in order.txt doc
+        if k is None or v is None:
+            continue
+        print('Loading yaml docs from file: ' + str(k) + ' at path: ' + str(v))
         tmpYamlList = yf.loadYamlDocs(v)
         yamlList += tmpYamlList
 else:
