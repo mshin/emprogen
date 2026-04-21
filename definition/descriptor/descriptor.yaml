@@ -22,6 +22,13 @@ id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
 generatedGav: com.github.mshin:example-j21-api:1.0.0
 author: MunChul Shin
 openApiUrl: openapi.yaml
+license:
+    - licenseFile: licenses/LICENSE.txt
+      fileTypes:
+          - .java
+    - licenseFile: licenses/xmlHi.txt
+      fileTypes:
+          - .xml
 ---
 # id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v25
 # generatedGav: com.github.mshin:example-j25-api:1.0.0

@@ -1,6 +1,7 @@
 import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf
 import com.emprogen.java.maven.field_functions as ff
+import com.emprogen.prepend_license as pl
 import os
 import shutil
 import glob
@@ -486,6 +487,8 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
         jmf.copyFile(sourceDoc, targetDoc)
         jmf.deleteFile(oapidocPath + '/openapi.yaml')
         print('Copied ' + oapidocPath + '/openapi.yaml to ' + oapidocPath + '/' + os.path.basename(pathToOpenApi))
+
+    pl.prependLicenses(descriptor, genGav.artifactId, files_path)
 
     print('Rebuilding project 2.')
     jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=projPomPath)
