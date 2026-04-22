@@ -40,7 +40,7 @@ def processLicenses(licenseToExtDict: 'dict', dirPath: 'str', descriptorPath: 's
         # iterate over the file extensions
         for fileExt in fileExtList:
             # for each file of that file extension, prepend the license text to the file.
-            for filePath in extToFileListDict.get(fileExt, []):
+            for filePath in extToFileListDict.get(str(fileExt).strip(), []):
                 prependLicense(filePath, licenseText)
 
 def prependLicense(filePath: 'str', licenseText: 'str') -> None:
@@ -59,6 +59,7 @@ def getFilesListByExtensionDict(dirPath: 'str') -> 'dict':
         if ext not in extToFileListDict:
             extToFileListDict[ext] = []
         extToFileListDict[ext].append(filePath)
+    extToFileListDict['.*'] = files_list
     print('extToFileListDict: ' + str(extToFileListDict))
     return extToFileListDict
 
