@@ -16,7 +16,7 @@ def identifyNestedEnumClasses(javaClassFiles: 'list') -> 'dict':
     for javaClassFile in javaClassFiles:
         with open(javaClassFile, 'r') as f:
             contents = f.read()
-            if jmf.getInFile('\npublic class (?s).+\n\s*public enum ', javaClassFile):
+            if jmf.getInFile('(?s)\npublic class .+\n\s*public enum ', javaClassFile):
                 output[javaClassFile] = contents
 
     return output
