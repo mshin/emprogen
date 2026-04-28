@@ -2,6 +2,7 @@ import com.emprogen.java.maven.functions as jmf
 import com.emprogen.java.maven.yaml_functions as yf
 import com.emprogen.java.maven.field_functions as ff
 import com.emprogen.prepend_license as pl
+import com.emprogen.java.maven.api.openapi.swagger.jaxrs.fix_nested_enum as fne
 import os
 import shutil
 import glob
@@ -272,6 +273,9 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
 
     # Delete old generating pom file.
     jmf.deleteFile(projPomPath + '.generating')
+
+    # Fix potential nested public enum issue of missing closing bracket
+    fne.fixNestedEnumClasses(javaFileList)
 
     print('Rebuilding project.')
     jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=projPomPath)

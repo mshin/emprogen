@@ -32,10 +32,22 @@
 # #     - licenseFile: licenses/xmlHi.txt
 # #       fileTypes:
 # #           - .*
+# ---
+id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
+generatedGav: com.github.mshin:example-j21-enums-api:1.0.0
+author: MunChul Shin
+openApiUrl: enum_openapi.yaml
+license:
+    - licenseFile: licenses/LICENSE.txt
+      fileTypes:
+          - .java
+    - licenseFile: licenses/xmlHi.txt
+      fileTypes:
+          - .xml
 ---
 id: com.emprogen.java.maven.service.jaxrs.quarkus.p2.v21
-generatedGav: com.github.mshin:example-j21-rs:1.0.0
-serviceInterfaceGav: com.github.mshin:example-j21-api:1.0.0
+generatedGav: com.github.mshin:example-j21-enums-rs:1.0.0
+serviceInterfaceGav: com.github.mshin:example-j21-enums-api:1.0.0
 # ---
 # id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v25
 # generatedGav: com.github.mshin:example-j25-api:1.0.0

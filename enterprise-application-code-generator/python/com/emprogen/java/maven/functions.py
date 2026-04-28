@@ -7,8 +7,6 @@ import pathlib
 import shutil
 import importlib
 import zipfile
-#TODO see if I ned to import zipfile from requirements.txt
-
 #import com.emprogen.java.maven.yaml_functions as yml
 from com.emprogen.java.maven.models import Gav
 
