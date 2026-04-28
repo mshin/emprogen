@@ -6,11 +6,15 @@ import glob
 import pathlib
 import shutil
 import importlib
+import zipfile
+#TODO see if I ned to import zipfile from requirements.txt
+
 #import com.emprogen.java.maven.yaml_functions as yml
 from com.emprogen.java.maven.models import Gav
 
 rgjf = importlib.import_module("com.emprogen.java.run-google-java-format")
 
+# Keep this method in this file.
 def getJavaMavenPath() -> 'str':
     return str(pathlib.Path(__file__).parent.resolve())
 
@@ -18,12 +22,14 @@ def copyFile(src: 'str', dst: 'str') -> None:
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copy2(src, dst)
 
-def makeFile(pth: 'str', fle: 'str') -> None:
+def makeFile(pth: 'str', fle: 'str', *, fileContent: 'str' = None) -> None:
     os.makedirs(os.path.dirname(pth), exist_ok=True)
-    open(pth + '/' + fle, 'w+')
+    with open(pth + '/' + fle, 'w+') as f:
+        if fileContent:
+            f.write(fileContent)
 
 def getFilePath(file: '__file__') -> 'str':
-    return pathlib.Path(file).parent.resolve()
+    return str(pathlib.Path(file).parent.resolve())
 
 def lower1st(x: 'str') -> 'str':
     return x[0].lower() + x[1:]
@@ -90,6 +96,7 @@ def replaceFileContents(content: 'str', filePath: 'str') -> None:
         f.seek(0)
         f.write(content)
         f.truncate()
+
 
 def deleteFile(path: 'str'):
     print('deleting file ' + str(path) + '...')
@@ -349,6 +356,34 @@ def getInFile(regexFind: 'str', filePath: 'str') -> 'str':
             return match.group()
     return None
 
+def getFilesFromPath(dirPath: 'str') -> 'list':
+    print('dirPath: ' + str(dirPath))
+    file_list = []
+    for root, dirs, files in os.walk(dirPath):
+        for name in files:
+            file_list.append(os.path.join(root, name))
+    return file_list
+
+def getFilesFromJar(jarPath: 'str', *, excludeFolders: 'bool' = True, extensionFilter: 'str' = None) -> 'list':
+    filesFromJar = []
+    with zipfile.ZipFile(jarPath, 'r') as jar:
+        for file in jar.namelist():
+            filesFromJar.append(file)
+    if excludeFolders:
+        filesFromJar = [file for file in filesFromJar if not file.endswith('/')]
+    if extensionFilter:
+        filesFromJar = [file for file in filesFromJar if file.endswith(extensionFilter.strip())]
+    return filesFromJar
+
+def readContentFromJarClass(jarPath: 'str', className: 'str') -> 'str':
+    return runSubprocessCaptureOutput(['javap', '-v', '-cp', jarPath, className])
+
+def gav_to_path(gav: str) -> str:
+    group_id, artifact_id, version = gav.split(':')
+    group_path = group_id.replace('.', '/')
+    repo_base = os.path.expanduser('~/.m2/repository')
+    jar_path = f"{repo_base}/{group_path}/{artifact_id}/{version}/{artifact_id}-{version}.jar"
+    return os.path.abspath(jar_path)
 
 print('loaded ' + __file__)
 

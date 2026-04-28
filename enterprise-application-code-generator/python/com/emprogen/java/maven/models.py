@@ -7,8 +7,7 @@ class Gav:
         self.version = version
 
     def __repr__(self):
-        return '[%s %s:%s:%s]' % (self.__class__.__name__, 
-        self.groupId, self.artifactId, self.version)
+        return '%s:%s:%s' % (self.groupId, self.artifactId, self.version)
 
 class TableRelationship(Enum):
     ONE_TO_ONE = 1

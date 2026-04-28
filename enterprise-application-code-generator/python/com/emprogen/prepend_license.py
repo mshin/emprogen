@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import com.emprogen.java.maven.functions as jmf
 import yaml
 import glob
 import os
@@ -53,7 +53,7 @@ def prependLicense(filePath: 'str', licenseText: 'str') -> None:
 def getFilesListByExtensionDict(dirPath: 'str') -> 'dict':
     # get all of the files in generated code so we can process them.
     extToFileListDict = {}
-    files_list = getFilesList(dirPath)
+    files_list = jmf.getFilesFromPath(dirPath)
     for filePath in files_list:
         ext = os.path.splitext(filePath)[1]
         if ext not in extToFileListDict:
@@ -62,12 +62,3 @@ def getFilesListByExtensionDict(dirPath: 'str') -> 'dict':
     extToFileListDict['.*'] = files_list
     print('extToFileListDict: ' + str(extToFileListDict))
     return extToFileListDict
-
-def getFilesList(dirPath: 'str') -> 'list':
-    # get all of the files in generated code so we can process them.
-    print('dirPath: ' + str(dirPath))
-    file_list = []
-    for root, dirs, files in os.walk(dirPath):
-        for name in files:
-            file_list.append(os.path.join(root, name))
-    return file_list
