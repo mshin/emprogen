@@ -178,7 +178,8 @@ def removeTemplatePlaceholderFiles(modelPath: 'str', testModelPath: 'str') -> No
 def isClassFileAnApiDefinition(classFileContent: 'str') -> bool:
     hasApiDefAnn = False
     isInterface = False
-    if 'org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition' in classFileContent:
+    match = re.search(r'org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition', classFileContent)
+    if match:
         hasApiDefAnn = True
     if 'public interface' in classFileContent:
         isInterface = True

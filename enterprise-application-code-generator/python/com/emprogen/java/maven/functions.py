@@ -383,6 +383,9 @@ def gav_to_path(gav: str) -> str:
     jar_path = f"{repo_base}/{group_path}/{artifact_id}/{version}/{artifact_id}-{version}.jar"
     return os.path.abspath(jar_path)
 
+def clean_text(text: 'str') -> 'str':
+    return text.replace('\r', '').replace('-\n', '-').replace('\n', ' ').strip()
+
 print('loaded ' + __file__)
 
 if __name__ == '__main__':

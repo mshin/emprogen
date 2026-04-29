@@ -351,10 +351,10 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
 
     # add title back in
     for f in javaFileList:
-        jmf.replaceTextInFile('(@OpenAPIDefinition(\n|.)*@Info(\n|.)*title\s?=\s?)""', r'\g<1>"' + infoTitle + '"', f)
+        jmf.replaceTextInFile('(?s)(@OpenAPIDefinition.*@Info.*title\s?=\s?)""', r'\g<1>"' + jmf.clean_text(infoTitle) + '"', f)
     # add openapidefinition info description back in
     for f in javaFileList:
-        jmf.replaceTextInFile('(@OpenAPIDefinition(\n|.)*@Info(\n|.)*title\s?=\s?".*"(\n|.)*version\s?=\s?".*"(\n|.)*description\s?=\s?)""(?!\))', r'\g<1>"' + infoDescription + '"', f)
+        jmf.replaceTextInFile('(?s)(@OpenAPIDefinition.*?@Info.*?title\s?=\s?".*?"\s?,.*?version\s?=\s?".*?"\s?,.*?description\s?=\s?)""(?!\))', r'\g<1>"' + jmf.clean_text(infoDescription) + '"', f)
 
     # add tags back in
     tagAnnotations = ""
@@ -436,6 +436,8 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     jmf.removeDependency(projPomPath, removeJakartaRsGav)
     # removing json-nullable... hopefully never need.
     jmf.removeDependency(projPomPath, removeJsonNullableGav)
+    for javaFile in javaFileList:
+        jmf.replaceTextInFile(r'import org.openapitools.jackson.nullable.JsonNullable;\n', '', javaFile)
 
     # trim excess fat from generated pom, including properties, plugins and profiles.
     jmf.removePomPlugin(projPomPath, quarkusMavenPluginGav)
