@@ -15,7 +15,7 @@ paths:
             parameters:
                 -
                     name: limit
-                    description: How many items to return at one time (max 100)
+                    description: How many items to return at one time (max 100) "quote".
                     schema:
                         format: int32
                         maximum: 100

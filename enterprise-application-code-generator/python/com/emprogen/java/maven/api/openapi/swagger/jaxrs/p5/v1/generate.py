@@ -153,6 +153,9 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
         print('file: ' + str(f))
         # get rid of 'false' at end of generated annotation line
         jmf.replaceTextInFile('\n@(javax|jakarta)\.annotation\.Generated.*\n', '',f)
+        # fix double quote escaping in generated code.
+        jmf.replaceTextInFile(r'\\&quot;', r'\"', f)
+
         # get rid of broken toString
         with open(f,'r+') as f2:
 
