@@ -7,36 +7,44 @@ import pathlib
 import shutil
 import importlib
 import zipfile
+from deprecated import deprecated
 #import com.emprogen.java.maven.yaml_functions as yml
 from com.emprogen.java.maven.models import Gav
 
 rgjf = importlib.import_module("com.emprogen.java.run-google-java-format")
 
 # Keep this method in this file.
+@deprecated(reason="method renamed and moved")
 def getJavaMavenPath() -> 'str':
     return str(pathlib.Path(__file__).parent.resolve())
 
+@deprecated(reason="method renamed and moved")
 def copyFile(src: 'str', dst: 'str') -> None:
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copy2(src, dst)
 
+@deprecated(reason="method renamed and moved")
 def makeFile(pth: 'str', fle: 'str', *, fileContent: 'str' = None) -> None:
     os.makedirs(os.path.dirname(pth), exist_ok=True)
     with open(pth + '/' + fle, 'w+') as f:
         if fileContent:
             f.write(fileContent)
 
+@deprecated(reason="method renamed and moved")
 def getFilePath(file: '__file__') -> 'str':
     return str(pathlib.Path(file).parent.resolve())
 
+@deprecated(reason="method renamed and moved")
 def lower1st(x: 'str') -> 'str':
     return x[0].lower() + x[1:]
 
 ctsPattern = re.compile(r'(?<!^)(?=[A-Z])')
+@deprecated(reason="method renamed and moved")
 def camelToSnake(camelString: 'str') -> 'str':
     return ctsPattern.sub('_', camelString).lower()
 
 # Converts snake_case and kebob-case and space case to camelCase
+@deprecated(reason="method renamed and moved")
 def toCamel(s: 'str', is_lower_first: 'Bool' = True) -> 'str':
     word_list = filter(None, re.split(r'[_\- ]', s))
     s = ''.join(word.title() for word in word_list)
@@ -44,10 +52,12 @@ def toCamel(s: 'str', is_lower_first: 'Bool' = True) -> 'str':
         s = s[0].lower() + s[1:]
     return s
 
+@deprecated(reason="method renamed and moved")
 def getModelPath(gav: 'Gav') -> 'str':
-    return gav.artifactId + '/src/main/java/' + gav.groupId.replace('.', '/') + '/' + gav.artifactId.replace('-', '/')
+    return gav.artifact_id + '/src/main/java/' + gav.group_id.replace('.', '/') + '/' + gav.artifact_id.replace('-', '/')
 
 # google java format
+@deprecated(reason="method renamed and moved")
 def gjf(javaFiles: 'list; .java files to be formatted with google-java-format') -> None:
     #pathOfCheckGoogleJavaFormatPy = str(pathlib.Path(__file__).parent.parent.resolve()) + '/run-google-java-format.py'
     #print ('pathOfCheckGoogleJavaFormatPy:' + str(pathOfCheckGoogleJavaFormatPy))
@@ -55,6 +65,7 @@ def gjf(javaFiles: 'list; .java files to be formatted with google-java-format') 
         rgjf.run(javaFile)
     print('finished formatting ' + str(len(javaFiles)) + ' java files.')
 
+@deprecated(reason="method renamed and moved")
 def eclipseFormatterValidate(pathToPom: 'str; path to project pom') -> None:
     validate = 'net.revelc.code.formatter:formatter-maven-plugin:2.23.0:validate'
     print('running maven plugin eclipse formatter:validate at path: ' + pathToPom)
@@ -62,6 +73,7 @@ def eclipseFormatterValidate(pathToPom: 'str; path to project pom') -> None:
     opts = {'configFile': getJavaMavenPath() + '/mshin_formatter_java.xml'}
     callMvnWithOptions(**opts, goal=validate, file=pathToPom)
 
+@deprecated(reason="method renamed and moved")
 def eclipseFormatter(pathToPom: 'str; path to project pom') -> None:
     formatter = 'net.revelc.code.formatter:formatter-maven-plugin:2.23.0:format'
     print('running maven plugin eclipse formatter:format at path: ' + pathToPom)
@@ -69,6 +81,7 @@ def eclipseFormatter(pathToPom: 'str; path to project pom') -> None:
     opts = {'configFile': getJavaMavenPath() + '/mshin_formatter_java.xml'}
     callMvnWithOptions(**opts, goal=formatter, file=pathToPom)
 
+@deprecated(reason="method renamed and moved")
 def beautifyImports(pathToPom: 'str; path to project pom') -> None:
     beautify = 'org.andromda.maven.plugins:andromda-beautifier-plugin:3.4:beautify-imports'
     print('Beautifying imports at path: ' + pathToPom)
@@ -89,25 +102,29 @@ def beautifyImports(pathToPom: 'str; path to project pom') -> None:
             f.write(data)
             f.truncate()
 
+@deprecated(reason="method renamed and moved")
 def replaceFileContents(content: 'str', filePath: 'str') -> None:
     with open(filePath, 'r+') as f:
         f.seek(0)
         f.write(content)
         f.truncate()
 
-
+@deprecated(reason="method renamed and moved")
 def deleteFile(path: 'str'):
     print('deleting file ' + str(path) + '...')
     pathlib.Path(path).unlink(missing_ok=True)
 
+@deprecated(reason="method renamed and moved")
 def deleteDirectory(path: 'str'):
     print('deleting directory ' + str(path) + '...')
     shutil.rmtree(path, ignore_errors=True)
 
+@deprecated(reason="method renamed and moved")
 def getPackage(gav: 'Gav') -> 'str':
-    return gav.groupId + '.' + gav.artifactId.replace('-', '.')
+    return gav.group_id + '.' + gav.artifact_id.replace('-', '.')
 
 "Not efficient for getting multiple properties. Ok for getting 1 property."
+@deprecated(reason="method renamed and moved")
 def getProperty(prop: 'str', filePath: 'str') -> 'the property; str':
     pattern = re.compile(r'(?<=' + prop + r'=)(.*)')
     output = None
@@ -118,15 +135,16 @@ def getProperty(prop: 'str', filePath: 'str') -> 'the property; str':
             output = match.group()
     return output
 
+@deprecated(reason="method renamed and moved")
 def generateMavenProject(archGav: 'Gav', genGav: 'Gav', author: 'str' = None, *, file: 'path to pom' = None,
          **options: 'dict') -> None:
     pkg=getPackage(genGav)
     opts=options
-    opts['archetypeGroupId']=archGav.groupId
-    opts['archetypeArtifactId']=archGav.artifactId
+    opts['archetypeGroupId']=archGav.group_id
+    opts['archetypeArtifactId']=archGav.artifact_id
     opts['archetypeVersion']=archGav.version
-    opts['groupId']=genGav.groupId
-    opts['artifactId']=genGav.artifactId
+    opts['groupId']=genGav.group_id
+    opts['artifactId']=genGav.artifact_id
     opts['package']=pkg
     if author:
         opts['author']=author
@@ -135,6 +153,7 @@ def generateMavenProject(archGav: 'Gav', genGav: 'Gav', author: 'str' = None, *,
 
     callMvnWithOptions(**opts, file=file)
 
+@deprecated(reason="method renamed and moved")
 def callMvnWithOptions(*, goal='archetype:generate', file:'path to pom'=None, **options):
     call = 'mvn {} -B'.format(goal)
     mvn_options = options.pop('mvn_options', [])
@@ -149,14 +168,17 @@ def callMvnWithOptions(*, goal='archetype:generate', file:'path to pom'=None, **
     print('maven call: ' + str(argList))
     process = runSubprocess(argList)
 
+@deprecated(reason="method renamed and moved")
 def runSubprocess(argList: 'list') -> None:
     print('running subprocess.. \n    ' + str(argList))
     subprocess.run(argList, check=True, text=True)
 
+@deprecated(reason="method renamed and moved")
 def runSubprocessCaptureOutput(argList: 'list') -> 'whatever the subprocess would return':
     print('running subprocess.. \n    ' + str(argList))
     return subprocess.run(argList, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
 
+@deprecated(reason="method renamed and moved")
 def captureContextualCommandLineOptions(command_args: 'str', contextualCommand: 'str') -> 'list':
     # list command_args is defined in run.py and captures command line args passed into script
     # command_args follow the pattern contextualCommand=command1,command2,commandN
@@ -176,6 +198,7 @@ def captureContextualCommandLineOptions(command_args: 'str', contextualCommand: 
 
     return output
 
+@deprecated(reason="method renamed and moved")
 def addDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
     tree = et.parse(pomPath, parser) #ElementTree
@@ -185,10 +208,10 @@ def addDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     dep = et.Element('dependency')
 
     groupIdElement = et.Element('groupId')
-    groupIdElement.text = gav.groupId
+    groupIdElement.text = gav.group_id
     dep.append(groupIdElement)
     artifactIdElement = et.Element('artifactId')
-    artifactIdElement.text = gav.artifactId
+    artifactIdElement.text = gav.artifact_id
     dep.append(artifactIdElement)
     if gav.version:
         versionElement = et.Element('version')
@@ -202,6 +225,7 @@ def addDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     # print('root: ' + str(et.tostring(root)))
     tree.write(pomPath)
 
+@deprecated(reason="method renamed and moved")
 def removeDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
     tree = et.parse(pomPath, parser) #ElementTree
@@ -209,9 +233,9 @@ def removeDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None
     ns = {'x': 'http://maven.apache.org/POM/4.0.0'}
     # ./project/dependencies/dependency/groupId[.='io.swagger']/../artifactId[.='swagger-annotations']/..
     #elem = root.find(r"./x:dependencies/x:dependency/x:groupId[.='io.swagger']/../x:artifactId/..", ns)
-    elem = root.find("./x:dependencies/x:dependency/x:groupId[.='" + gav.groupId + "']/../x:artifactId[.='" + gav.artifactId + "']/..", ns)
+    elem = root.find("./x:dependencies/x:dependency/x:groupId[.='" + gav.group_id + "']/../x:artifactId[.='" + gav.artifact_id + "']/..", ns)
     if gav.version:
-        elem = root.find("./x:dependencies/x:dependency/x:groupId[.='" + gav.groupId + "']/../x:artifactId[.='" + gav.artifactId + "']/../x:version[.='" + gav.version + "']/..", ns)
+        elem = root.find("./x:dependencies/x:dependency/x:groupId[.='" + gav.group_id + "']/../x:artifactId[.='" + gav.artifact_id + "']/../x:version[.='" + gav.version + "']/..", ns)
 
     parentElem = root.find('./x:dependencies', ns)
     if None != elem:
@@ -224,6 +248,7 @@ def removeDependency(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None
 
 # pathToElementList does not contain the element identifier elements, only everything up to that point.
 # elementIdentifierDict element:value
+@deprecated(reason="method renamed and moved")
 def removeXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list', elementIdentifierDict: 'dict') -> None:
     parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
     tree = et.parse(filePath, parser) #ElementTree
@@ -249,6 +274,7 @@ def removeXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list
 
 # pathToElementList does not contain the element identifier elements, only everything up to that point.
 # elementToAddDict element:value
+@deprecated(reason="method renamed and moved")
 def addXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list', elementToAddDict: 'dict') -> None:
     parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
     tree = et.parse(filePath, parser) #ElementTree
@@ -278,29 +304,35 @@ def addXmlElement(filePath: 'str', namespace: 'str', pathToElementList: 'list', 
     et.register_namespace('', ns['x'])
     tree.write(filePath)
 
+@deprecated(reason="method renamed and moved")
 def removePomProperties(pomPath: 'str', propertiesList: 'list') -> None:
     for prop in propertiesList:
         removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['properties', prop], {})
         print ('removed pom property ' + prop + ' in pom ' + pomPath)
 
+@deprecated(reason="method renamed and moved")
 def addPomProperties(pomPath: 'str', propertiesDict: 'dict') -> None:
     for prop, value in propertiesDict.items():
         addXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['properties'], {prop: value})
         print ('added pom property ' + prop + ' in pom ' + pomPath)
 
+@deprecated(reason="method renamed and moved")
 def removePomPlugin(pomPath: 'str', gav: 'Gav' = Gav(None, None, None)) -> None:
     # Not including groupId because some plugins don't include them
-    removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['build', 'plugins', 'plugin'], {'artifactId': gav.artifactId})
+    removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['build', 'plugins', 'plugin'], {'artifactId': gav.artifact_id})
     print ('removed pom plugin ' + str(gav) + ' in pom ' + pomPath)
 
+@deprecated(reason="method renamed and moved")
 def removePomProfile(pomPath: 'str', profileId: 'str') -> None:
     removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['profiles', 'profile'], {'id': profileId})
     print ('removed pom profile ' + profileId + ' in pom ' + pomPath)
 
+@deprecated(reason="method renamed and moved")
 def removePomDependencyManagement(pomPath: 'str') -> None:
     removeXmlElement(pomPath, 'http://maven.apache.org/POM/4.0.0', ['dependencyManagement'], {})
     print ('removed dependencyManagement in pom ' + pomPath)
 
+@deprecated(reason="method renamed and moved")
 def replaceTextInFileMulti(searchToReplace: 'dict', filePath: 'str path', *, count: 'int' = 0) -> None:
     # Opening the file in read and write mode
     with open(filePath,'r+') as f:
@@ -323,14 +355,17 @@ def replaceTextInFileMulti(searchToReplace: 'dict', filePath: 'str path', *, cou
         # Writing replaced data in the file
         f.write(file0)
 
+@deprecated(reason="method renamed and moved")
 def replaceTextInFile(searchText: 'str regex', replaceText: 'str', filePath: 'str path', *, count: 'int' = 0) -> None:
     replaceTextInFileMulti({searchText: replaceText}, filePath, count = count)
 
+@deprecated(reason="method renamed and moved")
 def addJavaImports(imports: 'str', filePath: 'str path') -> None:
     print('adding imports to file: ' + str(filePath))
     searchText = '\n'
     replaceTextInFile(searchText, '\n\n' + imports + '\n', filePath, count = 1)
 
+@deprecated(reason="method renamed and moved")
 def buildAnnotationAttributeReplacementListOfTriples(annotationToSearchToReplace: 'list') -> 'dict':
     output = {}
     for annotation, searchString, replaceString in annotationToSearchToReplace:
@@ -346,6 +381,7 @@ def buildAnnotationAttributeReplacementListOfTriples(annotationToSearchToReplace
     print('buildAnnotationAttributeReplacementListOfTriples: ' + str(output))
     return output
 
+@deprecated(reason="method renamed and moved")
 def getInFile(regexFind: 'str', filePath: 'str') -> 'str':
     with open(filePath, 'r') as f:
         fileString = f.read()
@@ -354,6 +390,7 @@ def getInFile(regexFind: 'str', filePath: 'str') -> 'str':
             return match.group()
     return None
 
+@deprecated(reason="method renamed and moved")
 def getFilesFromPath(dirPath: 'str') -> 'list':
     print('dirPath: ' + str(dirPath))
     file_list = []
@@ -362,6 +399,7 @@ def getFilesFromPath(dirPath: 'str') -> 'list':
             file_list.append(os.path.join(root, name))
     return file_list
 
+@deprecated(reason="method renamed and moved")
 def getFilesFromJar(jarPath: 'str', *, excludeFolders: 'bool' = True, extensionFilter: 'str' = None) -> 'list':
     filesFromJar = []
     with zipfile.ZipFile(jarPath, 'r') as jar:
@@ -373,9 +411,11 @@ def getFilesFromJar(jarPath: 'str', *, excludeFolders: 'bool' = True, extensionF
         filesFromJar = [file for file in filesFromJar if file.endswith(extensionFilter.strip())]
     return filesFromJar
 
+@deprecated(reason="method renamed and moved")
 def readContentFromJarClass(jarPath: 'str', className: 'str') -> 'str':
     return runSubprocessCaptureOutput(['javap', '-v', '-cp', jarPath, className])
 
+@deprecated(reason="method renamed and moved")
 def gav_to_path(gav: str) -> str:
     group_id, artifact_id, version = gav.split(':')
     group_path = group_id.replace('.', '/')
@@ -383,6 +423,7 @@ def gav_to_path(gav: str) -> str:
     jar_path = f"{repo_base}/{group_path}/{artifact_id}/{version}/{artifact_id}-{version}.jar"
     return os.path.abspath(jar_path)
 
+@deprecated(reason="method renamed and moved")
 def clean_text(text: 'str') -> 'str':
     return text.replace('\r', '').replace('-\n', '-').replace('\n', ' ').strip()
 

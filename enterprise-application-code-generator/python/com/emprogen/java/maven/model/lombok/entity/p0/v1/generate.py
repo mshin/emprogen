@@ -5,246 +5,272 @@ from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
-def getJoinInstruction(joinDesc: 'str') -> 'JoinInstruction':
-    # Format is "- ${Entity.class} **-** ${OtherEntity.class}" Where first * is <|- second * is 1|n third * is 1|n and fourth star is >|-.
+def get_join_instruction(join_desc: str) -> JoinInstruction:
+    # Format: "- ${Entity.class} **-** ${OtherEntity.class}"
+    # Where first * is <|- second * is 1|n third * is 1|n and fourth * is >|-.
     # Example: FormEntity <1-1> AccountEntity
 
-    joinDescList = str(joinDesc).split()
-    entNameL = joinDescList[0]
-    entNameR = joinDescList[2]
-    joinStr = joinDescList[1]
-    isRefL = True
-    isRefR = True
-    isOwnerR = True
+    join_desc_list = str(join_desc).split()
+    ent_name_left = join_desc_list[0]
+    ent_name_right = join_desc_list[2]
+    join_str = join_desc_list[1]
+    is_ref_left = True
+    is_ref_right = True
+    is_owner_right = True
     mapping = None
 
-    if '-' == joinStr[0]:
-        isRefL = False
-    if '-' == joinStr[4]:
-        isRefR = False
+    if join_str[0] == '-':
+        is_ref_left = False
+    if join_str[4] == '-':
+        is_ref_right = False
 
-    if 'n' == joinStr[1]:
-        if 'n' == joinStr[3]:
+    if join_str[1] == 'n':
+        if join_str[3] == 'n':
             mapping = TableRelationship.MANY_TO_MANY
         else:
             mapping = TableRelationship.MANY_TO_ONE
     else:
-        if 'n' == joinStr[3]:
+        if join_str[3] == 'n':
             mapping = TableRelationship.ONE_TO_MANY
         else:
             mapping = TableRelationship.ONE_TO_ONE
 
-    if isRefR == False or mapping == TableRelationship.MANY_TO_ONE:
-        isOwnerR = False
+    if not is_ref_right or mapping == TableRelationship.MANY_TO_ONE:
+        is_owner_right = False
 
-    return JoinInstruction(entNameL, entNameR, mapping, isRefL, isRefR, isOwnerR)
+    return JoinInstruction(
+        ent_name_left,
+        ent_name_right,
+        mapping,
+        is_ref_left,
+        is_ref_right,
+        is_owner_right
+    )
 
-def replaceVarsInAnnotation(annotation: 'str', refingType: 'str', refingTypeVar: 'str', refingTypePkVar: 'str',
-        refingTypePkVarSnake: 'str', otherPkVarSnake: 'str', owningType: 'str', owningTypeVar: 'str') -> 'str':
-    annotation = annotation.replace(r'%0', refingType)
-    annotation = annotation.replace(r'%1', refingTypeVar)
-    annotation = annotation.replace(r'%4pk', refingTypePkVar)
-    annotation = annotation.replace(r'%5pksql', refingTypePkVarSnake)
-    annotation = annotation.replace(r'%6opksql', otherPkVarSnake)
-    annotation = annotation.replace(r'%2', owningType)
-    annotation = annotation.replace(r'%3', owningTypeVar)
+def replace_vars_in_annotation(
+    annotation: str,
+    refing_type: str,
+    refing_type_var: str,
+    refing_type_pk_var: str,
+    refing_type_pk_var_snake: str,
+    other_pk_var_snake: str,
+    owning_type: str,
+    owning_type_var: str
+) -> str:
+    annotation = annotation.replace(r'%0', refing_type)
+    annotation = annotation.replace(r'%1', refing_type_var)
+    annotation = annotation.replace(r'%4pk', refing_type_pk_var)
+    annotation = annotation.replace(r'%5pksql', refing_type_pk_var_snake)
+    annotation = annotation.replace(r'%6opksql', other_pk_var_snake)
+    annotation = annotation.replace(r'%2', owning_type)
+    annotation = annotation.replace(r'%3', owning_type_var)
     return annotation
 
 def generate(descriptor: 'dict', archetypeGav: 'Gav' = Gav('com.emprogen', 'model-lombok-entity-p0-archetype', '0.0.1'),
-        *, filesPath: 'str' = None, **kwargs) -> None:
+        *, filesPath: 'str' = None, javaVersion: 'str' = '17', **kwargs) -> None:
 
     # Do all 1 time loads and calculations up front.
 
     # define maven archetype used for this generator within script.
-    archGav = archetypeGav
+    arch_gav = archetypeGav
 
     # the maven groupId:artifactId:version for the code module to be generated
-    projGav = yf.getGeneratedProjectGav(descriptor)
+    proj_gav = yf.getGeneratedProjectGav(descriptor)
 
     # the directory of the maven pom for the generated code. Usually at the directory root of project.
-    projPomPath = projGav.artifactId + '/pom.xml'
+    proj_pom_path = proj_gav.artifact_id + '/pom.xml'
 
     # the directory of the java code.
-    modelPath = jmf.getModelPath(projGav)
+    model_path = jmf.getModelPath(proj_gav)
 
     # the template java entity class file.
-    templateFile = modelPath + '/class0.java'
+    template_file = model_path + '/class0.java'
 
     # the location of the java properties file mapping tpe to package.type.
-    typToPkgtyp = ff.loadPropertiesAsDict(jmf.getJavaMavenPath() + '/java_type.properties')
+    typ_to_pkgtyp = ff.loadPropertiesAsDict(jmf.getJavaMavenPath() + '/java_type.properties')
 
-    thisFilesPath = str(jmf.getFilePath(__file__))
+    this_files_path = str(jmf.getFilePath(__file__))
 
     # the locations of additional properties files.
-    jpaTypeAnnotationDict = ff.loadPropertiesAsDict(thisFilesPath + '/jpa_type_annotation.properties')
-    jpaJoinAnnotationDict = ff.loadPropertiesAsDict(thisFilesPath + '/jpa_join_annotation.properties')
-    depGavUrl = thisFilesPath + '/dep_gav.properties'
+    jpa_type_annotation_dict = ff.loadPropertiesAsDict(this_files_path + '/jpa_type_annotation.properties')
+    jpa_join_annotation_dict = ff.loadPropertiesAsDict(this_files_path + '/jpa_join_annotation.properties')
+    dep_gav_url = this_files_path + '/dep_gav.properties'
 
     # Geneate Maven project.
     opts = {}
     opts['class0'] = 'class0'
     opts['fields'] = 'fields'
-    jmf.generateMavenProject(archGav, projGav, descriptor['author'], **opts)
+    jmf.generateMavenProject(arch_gav, proj_gav, descriptor['author'], **opts)
 
     # some of the time types used in the jpa type annotations require additional dependencies.
-    needsConverterDependency = False
+    needs_converter_dependency = False
 
     # for each model file from descriptor
     for model in descriptor['model']:
 
         # by convention, all entity classes end in the word 'Entity'
-        newClassName = model['name']
-        if not newClassName.endswith('Entity'):
-            newClassName += 'Entity'
+        new_class_name = model['name']
+        if not new_class_name.endswith('Entity'):
+            new_class_name += 'Entity'
 
         # by convention, columns in database use snake case.
-        new_class_name = jmf.camelToSnake(newClassName)
+        new_class_name_snake = jmf.camelToSnake(new_class_name)
 
         # get the primary key value out of the descriptor file.
         pk = model['pk']
 
         # calculate the model class name to be created
-        newFileName = modelPath + '/' + newClassName + '.java'
+        new_file_name = model_path + '/' + new_class_name + '.java'
 
         # create the class file; replace name
-        jmf.copyFile(templateFile, newFileName)
+        jmf.copyFile(template_file, new_file_name)
 
         # set the class name in the file to the correct value.
-        jmf.replaceTextInFile('class0', newClassName, newFileName)
+        jmf.replaceTextInFile('class0', new_class_name, new_file_name)
 
         # calculate the raw field string for the class file
         # first, get the field to type dictionary
-        fieldToType = yf.getFieldsAndTypes(model)
+        field_to_type = yf.getFieldsAndTypes(model)
         # then, get the raw field list
-        fieldList = fieldToType.keys()
+        field_list = field_to_type.keys()
         # next, calculate the field to package.type dictionary.
-        fieldToPkgtyp = ff.mapFieldsToQualifiedTypes(fieldToType, typToPkgtyp)
+        field_to_pkgtyp = ff.mapFieldsToQualifiedTypes(field_to_type, typ_to_pkgtyp)
         # finally, generate the raw field string with annotation placeholders.
-        fieldString = ff.createFieldString(fieldToPkgtyp, True)
-        #print('fieldString: ' + fieldString)
+        field_string = ff.createFieldString(field_to_pkgtyp, True)
+        #print('field_string: ' + field_string)
 
         # for each entry in the field to package.type dictionary
-        for field, typ in fieldToPkgtyp.items():
+        for field, typ in field_to_pkgtyp.items():
 
             # get the snake case version of each field, because databases require snake case not camel case.
-            fieldSnake = jmf.camelToSnake(field)
+            field_snake = jmf.camelToSnake(field)
             # the property key defaults to the type, but if it's the primary key, get the primary key property.
-            propKey = typ
+            prop_key = typ
             # in most cases the anntation replacement string will be the field in snake case.
-            replacementString = fieldSnake
+            replacement_string = field_snake
             # fi the field is the primary key,
             if field == pk:
                 # the property we want is the primary key one
-                propKey = 'pk'
-                # the replacement string is classname isntead of field name.
-                replacmentString = new_class_name
+                prop_key = 'pk'
+                # the replacement string is classname instead of field name.
+                replacment_string = new_class_name_snake
             # get the annotation based on tye propKey. If it's not there, use the default annotation.
-            ann = jpaTypeAnnotationDict.get(propKey, '    @javax.persistence.Column( name = \"%\" )')
+            ann = jpa_type_annotation_dict.get(prop_key, '    @javax.persistence.Column( name = \"%\" )')
             # replace placeholders in annotation with replacementString
-            ann = ann.replace('%', replacementString)
+            ann = ann.replace('%', replacement_string)
 
             # add the processed annotation to the corresponding field in fieldString.
-            fieldString = fieldString.replace('&%' + field + '&%', ann)
+            field_string = field_string.replace('&%' + field + '&%', ann)
 
         # replace all caret symbols with newlines.
         # Some of the annotations are stored as properties and use caret instead of newline.
-        fieldString = fieldString.replace('^', '\n')
-        print('fieldString: ' + fieldString)
+        field_string = field_string.replace('^', '\n')
+        print('fieldString: ' + field_string)
         # replace contents of class file. 'fields' placeholder replaced with generated fields.
-        jmf.replaceTextInFile('    fields', fieldString, newFileName)
+        jmf.replaceTextInFile('    fields', field_string, new_file_name)
 
         # if certain types are used for fields, add a new dependency.
         # code: if set intersection of set('LocalDate', 'LocalDateTime') and set(type)
-        if {'LocalDate', 'LocalDateTime'} & set(fieldToType.values()):
-            needsConverterDependency = True
+        if {'LocalDate', 'LocalDateTime'} & set(field_to_type.values()):
+            needs_converter_dependency = True
 
     # get model to pk dictionary
-    modelNameToPkDict = {}
+    model_name_to_pk_dict = {}
     for model in descriptor['model']:
-        modelNameToPkDict[model.get('name')] = model.get('pk')
+        model_name_to_pk_dict[model.get('name')] = model.get('pk')
 
     # get joins dictionary
     # create list of the join instructions
-    joinInstructionList = []
+    join_instruction_list = []
     for join in descriptor['joins']:
-        joinInstruction = getJoinInstruction(join)
-        joinInstructionList.append(joinInstruction)
+        join_instruction = get_join_instruction(join)
+        join_instruction_list.append(join_instruction)
 
     # build the annotation and write it to file.
-    for joinInstruction in joinInstructionList:
+    for join_instruction in join_instruction_list:
 
         # set owner/not owner as either left or right entity
-        if joinInstruction.isOwnerR:
-            owner = joinInstruction.entNameR
-            notOwner = joinInstruction.entNameL
+        if join_instruction.is_owner_right:
+            owner = join_instruction.ent_name_right
+            not_owner = join_instruction.ent_name_left
         else:
-            owner = joinInstruction.entNameL
-            notOwner = joinInstruction.entNameR
+            owner = join_instruction.ent_name_left
+            not_owner = join_instruction.ent_name_right
 
         # set variables needed for placeholder replacement in join annotation.
-        owningType = owner
-        owningTypeVar = jmf.lower1st(owner)
-        refingType = notOwner
-        refingTypeVar = jmf.lower1st(notOwner)
-        refingTypePkVar = modelNameToPkDict.get(refingType)
-        refingTypePkVarSnake = jmf.camelToSnake(refingTypePkVar)
-        otherPkVar = modelNameToPkDict.get(owningType) # not used in annotation
-        otherPkVarSnake = jmf.camelToSnake(otherPkVar)
+        owning_type = owner
+        owning_type_var = jmf.lower1st(owner)
+        refing_type = not_owner
+        refing_type_var = jmf.lower1st(not_owner)
+        refing_type_pk_var = model_name_to_pk_dict.get(refing_type)
+        refing_type_pk_var_snake = jmf.camelToSnake(refing_type_pk_var)
+        other_pk_var = model_name_to_pk_dict.get(owning_type) # not used in annotation
+        other_pk_var_snake = jmf.camelToSnake(other_pk_var)
 
         # start with left Entity
-        if joinInstruction.isRefL:
+        if join_instruction.is_ref_left:
             # get the template annotation. Adding caret to the beginning to be replaced with newline.
-            annProp = joinInstruction.getAnnotationKeyLeft()
-            ann = '^' + jpaJoinAnnotationDict.get(annProp.name)
+            ann_prop = join_instruction.get_annotation_key_left()
+            ann = '^' + jpa_join_annotation_dict.get(ann_prop.name)
 
             # build annotation by replacing placeholders.
-            ann = replaceVarsInAnnotation(ann, refingType, refingTypeVar, refingTypePkVar, refingTypePkVarSnake, otherPkVarSnake, owningType, owningTypeVar)
+            ann = replace_vars_in_annotation(ann, refing_type, refing_type_var, refing_type_pk_var, refing_type_pk_var_snake, other_pk_var_snake, owning_type, owning_type_var)
             # we're going to replace the class's closing bracket with annotation, so must add it back in.
             ann += '^^}^'
             # caret for newline.
             ann = ann.replace('^', '\n')
 
             # make the path for entity to write to.
-            entityFilePath = modelPath + '/' + joinInstruction.entNameL + '.java'
+            entity_file_path = model_path + '/' + join_instruction.ent_name_left + '.java'
             # write the annotation to the respective file by appending it to the end.
-            jmf.replaceTextInFile('\n}', ann, entityFilePath)
+            jmf.replaceTextInFile('\n}', ann, entity_file_path)
 
         # then do right Entity
-        if joinInstruction.isRefR:
+        if join_instruction.is_ref_right:
             # get the template annotation
-            annProp = joinInstruction.getAnnotationKeyRight()
-            ann = jpaJoinAnnotationDict.get(annProp.name)
+            ann_prop = join_instruction.get_annotation_key_right()
+            ann = jpa_join_annotation_dict.get(ann_prop.name)
 
             # build annotation by replacing placeholders.
-            ann = replaceVarsInAnnotation(ann, refingType, refingTypeVar, refingTypePkVar, refingTypePkVarSnake, otherPkVarSnake, owningType, owningTypeVar)
+            ann = replace_vars_in_annotation(ann, refing_type, refing_type_var, refing_type_pk_var, refing_type_pk_var_snake, other_pk_var_snake, owning_type, owning_type_var)
             # we're going to replace the class's closing bracket with annotation, so must add it back in.
             ann += '^^}^'
             # caret for newline.
             ann = ann.replace('^', '\n')
 
             # make the path for entity to write to.
-            entityFilePath = modelPath + '/' + joinInstruction.entNameR + '.java'
+            entity_file_path = model_path + '/' + join_instruction.ent_name_right + '.java'
             # write the annotation to the respective file by appending it to the end.
-            jmf.replaceTextInFile('\n}', ann, entityFilePath)
+            jmf.replaceTextInFile('\n}', ann, entity_file_path)
 
     # delete placeholder model
-    jmf.deleteFile(templateFile)
+    jmf.deleteFile(template_file)
 
     # If converter in files, then add that dependency.
-    if needsConverterDependency:
-        typeConverterGavString = jmf.getProperty('typeConverterGav', depGavUrl)
-        tcGav = yf.getGav(typeConverterGavString)
-        print('adding dependency to pom: ' + typeConverterGavString)
-        jmf.addDependency(projPomPath, tcGav)
+    if needs_converter_dependency:
+        type_converter_gav_string = jmf.getProperty('typeConverterGav', dep_gav_url)
+        tc_gav = yf.getGav(type_converter_gav_string)
+        print('adding dependency to pom: ' + type_converter_gav_string)
+        jmf.addDependency(proj_pom_path, tc_gav)
 
     # add addtl dependencies to the pom.
     # if no items in optional dependencyGav, default {} for null safety
     for dependency in descriptor.get('dependencyGav', {}):
         print('adding dependency to pom: ' + dependency)
-        jmf.addDependency(projPomPath, yf.getGav(dependency))
+        jmf.addDependency(proj_pom_path, yf.getGav(dependency))
+
+    # set java version to javaVersion
+    maven_compiler_source = 'maven.compiler.source'
+    maven_compiler_target = 'maven.compiler.target'
+    jmf.removePomProperties(proj_pom_path, [maven_compiler_source, maven_compiler_target])
+    jmf.addPomProperties(proj_pom_path, {maven_compiler_source: javaVersion, maven_compiler_target: javaVersion})
+
+    # update lombok version so it compiles.
+    jmf.removeDependency(proj_pom_path, yf.getGav('org.projectlombok:lombok'))
+    jmf.addDependency(proj_pom_path, yf.getGav('org.projectlombok:lombok:1.18.30'))
 
     # update imports
-    jmf.beautifyImports(projPomPath)
+    jmf.beautifyImports(proj_pom_path)
 
     # verify it compiles
-    jmf.callMvnWithOptions(goal='clean install', file=projPomPath)
+    jmf.callMvnWithOptions(goal='clean install', file=proj_pom_path)

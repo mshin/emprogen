@@ -56,33 +56,4 @@ def getEnumValues(enumDict: 'dict') -> 'list':
         enumValues = enumDict['values']
     return enumValues
 
-# "if modelName given, use that. Otherwise, use index. If neither, index=0"
-# def getFieldsAndTypes(yaml: 'dict', index: 'int' = 0, *, modelName: 'str' = None) -> 'dict field:type':
-#     # get the model list out of the yaml document dictionary
-#     modelList = yaml['model']
-#
-#     if not modelList or not len(modelList):
-#         return {}
-#     # get the fields list for the model with name modelName
-#     modelDict = None
-#     fieldsDict = {}
-#     if modelName:
-#         for d in modelList:
-#             if d['name'] == modelName:
-#                 modelDict = d
-#                 break
-#     else:
-#         modelDict = modelList[index]
-#     # convert the fields list to a dictionary field:type
-#     if modelDict:
-#         fieldList = modelDict['fields']
-#         for f in fieldList:
-#             typeToField = f.split(':')
-#             fieldsDict[typeToField[1]] = typeToField[0]
-#     # print ('fieldsDict: ' + str(fieldsDict))
-#     return fieldsDict
-# #    dict1 for dict1 in modelList
-# #    d = {dict1 for dict1 in modelList if dict1['name'] == modelName}
-# #    model = dict1 in modelList where dict1[name] == modelName
-
 print('loaded ' + __file__)
