@@ -3,7 +3,7 @@ import tempfile
 import os
 import shutil
 
-from file_functions import (
+from com.emprogen.file_functions import (
     copy_file, make_file, get_file_path, replace_file_contents,
     delete_file, delete_directory, replace_text_in_file_multi,
     replace_text_in_file, get_in_file, get_files_from_path

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #
-# maven-cp.py
+# maven_cp.py
 #
 # A script to output a Java classpath for the given Maven GAVs,
 # including their dependencies.
@@ -9,7 +9,7 @@
 # Requires command line mvn to be installed.
 #
 # Example of usage:
-#   maven-cp.py edu.ucar:netcdf:4.2.20
+#   maven_cp.py edu.ucar:netcdf:4.2.20
 
 import sys
 import os
@@ -19,6 +19,7 @@ import subprocess
 # Prefix to local Maven repository cache
 HOME_DIR = os.environ.get('HOME', os.path.expanduser('~'))
 REPO = os.path.join(HOME_DIR, '.m2', 'repository')
+
 
 def path_prefix(gav):
     try:
@@ -31,6 +32,7 @@ def path_prefix(gav):
     artifact_id_path = artifact_id.replace('.', '/')
     
     return os.path.join(REPO, group_id_path, artifact_id_path, version, f"{artifact_id_path}-{version}")
+
 
 def process(gav_hash, gav):
     if gav in gav_hash:
@@ -80,6 +82,7 @@ def process(gav_hash, gav):
                 dep_gav = f"{group_id}:{dep_artifact_id}:{version}"
                 dep_prefix = path_prefix(dep_gav)
                 gav_hash[dep_gav] = dep_prefix
+
 
 def main():
     if not shutil.which('mvn'):

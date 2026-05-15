@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-import com.emprogen.java.maven.functions as jmf
-import yaml
 import glob
 import os
+import yaml
 
+import com.emprogen.file_functions as FILEF
 # input yaml from descriptor file; basically a dict of licensePath to file extensions.
 
 # input the set of all the project files and put them into a dict based on file extension. ext to file list.
@@ -68,7 +68,7 @@ def get_files_list_by_extension_dict(dir_path: str) -> dict:
     Return a dict mapping file extensions to lists of file paths.
     """
     ext_to_file_list_dict = {}
-    files_list = jmf.getFilesFromPath(dir_path)  # get all files in the project path
+    files_list = FILEF.get_files_from_path(dir_path)  # get all files in the project path
     for file_path in files_list:
         ext = os.path.splitext(file_path)[1]  # get file extension
         if ext not in ext_to_file_list_dict:

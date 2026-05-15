@@ -2,6 +2,7 @@
 import xml.etree.ElementTree as ET
 from typing import List, Dict
 
+
 def remove_xml_element(
     file_path: str,
     namespace: str,

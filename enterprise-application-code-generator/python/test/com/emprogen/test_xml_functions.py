@@ -1,25 +1,9 @@
-import sys
-print(sys.path)
-
-try:
-    import xml.etree.ElementTree as ET
-    print("Import successful")
-except ModuleNotFoundError as e:
-    print("Import failed:", e)
-
-
-import xml.etree.ElementTree as ET
-import unittest
 import os
 import tempfile
+import unittest
+import xml.etree.ElementTree as ET
 
-import xml
-import xml.etree
-
-
-
-
-from xml_functions import add_xml_element, remove_xml_element
+from com.emprogen.xml_functions import add_xml_element, remove_xml_element
 
 NAMESPACE = "http://example.com/ns"
 ET.register_namespace('', NAMESPACE)

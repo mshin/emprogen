@@ -2,6 +2,7 @@
 import jsonschema as js
 import yaml
 
+
 def validate_yaml(yaml_doc_to_test_url: str, schema_url: str) -> None:
     """
     Validate a YAML document against a schema.
@@ -12,6 +13,7 @@ def validate_yaml(yaml_doc_to_test_url: str, schema_url: str) -> None:
     with open(schema_url, 'r') as schema_file:
         schema = yaml.safe_load(schema_file)
     return validate(yaml_doc_to_test, schema)
+
 
 def validate(yaml_doc_to_test: dict, schema: dict) -> None:
     """

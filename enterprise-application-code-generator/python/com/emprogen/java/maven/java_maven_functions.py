@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
-
 import os
 import pathlib
 import xml.etree.ElementTree as ET
-import zipfile
-
 from typing import Optional, List, Dict
 
 import com.emprogen.file_functions as FILEF
@@ -54,29 +51,6 @@ def get_package(gav: 'Gav') -> str:
     """
     artifact_part = gav.artifact_id.replace('-', '.')
     return f"{gav.group_id}.{artifact_part}"
-
-
-def get_property(prop: str, file_path: str) -> Optional[str]:
-    """
-    Retrieves the value of a property from a file with 'key=value' lines.
-
-    Args:
-        prop: The property name to search for.
-        file_path: Path to the file.
-
-    Returns:
-        The property value as a string, or None if not found.
-    Notes:
-        Not efficient for getting multiple properties. Ok for getting 1 property.
-    """
-    with open(file_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-            if line.startswith(f"{prop}="):
-                return line.split('=', 1)[1].strip()
-    return None
 
 
 def generate_maven_project(
@@ -285,48 +259,6 @@ def add_java_imports(imports: str, file_path: str) -> None:
     print(f'adding imports to file: {file_path}')
     search_text = '\n'
     FILEF.replace_text_in_file(search_text, '\n\n' + imports + '\n', file_path, count = 1)
-
-
-def get_files_from_jar(
-    jar_path: str,
-    *,
-    exclude_folders: bool = True,
-    extension_filter: Optional[str] = None
-) -> List[str]:
-    """
-    Returns a list of files from a JAR file, optionally excluding folders and filtering by extension.
-
-    Args:
-        jar_path: Path to the JAR file.
-        exclude_folders: If True, exclude folder entries.
-        extension_filter: If set, only include files with this extension.
-
-    Returns:
-        List of file paths in the JAR.
-    """
-    files_from_jar = []
-    with zipfile.ZipFile(jar_path, 'r') as jar:
-        for file in jar.namelist():
-            files_from_jar.append(file)
-    if exclude_folders:
-        files_from_jar = [file for file in files_from_jar if not file.endswith('/')]
-    if extension_filter:
-        files_from_jar = [file for file in files_from_jar if file.endswith(extension_filter.strip())]
-    return files_from_jar
-
-
-def read_content_from_jar_class(jar_path: str, class_name: str) -> str:
-    """
-    Returns the output of running 'javap -v' on a class from a JAR file.
-
-    Args:
-        jar_path: Path to the JAR file.
-        class_name: Fully qualified class name.
-
-    Returns:
-        Output from the javap command as a string.
-    """
-    return SPF.run_subprocess_capture_output(['javap', '-v', '-cp', jar_path, class_name])
 
 
 def gav_to_path(gav: str) -> str:

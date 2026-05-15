@@ -1,59 +1,101 @@
-from com.emprogen.java.maven.models import Gav
-import yaml
+#!/usr/bin/env python3
 import json
+import yaml
+from typing import Any
 
-def yamlToJson(yamlStr: 'str') -> 'str':
-    return json.dumps(yaml.safe_load(yamlStr), indent=2)
+from com.emprogen.java.maven.models import Gav
 
-def jsonToYaml(jsonStr: 'str') -> 'str':
-    return yaml.dump(json.loads(jsonStr), default_flow_style=False)
 
-def loadOpenApi3(docPath: 'str') -> 'dict':
-    ext = docPath.split('.')[-1]
+def yamlToJson(yaml_str: str) -> str:
+    return yaml_to_json(yaml_str)
+
+def jsonToYaml(json_str: str) -> str:
+    return json_to_yaml(json_str)
+
+def loadOpenApi3(doc_path: str) -> dict:
+    return load_open_api3(doc_path)
+
+def loadYamlDocs(proj_desc_loc: str) -> list[dict]:
+    return load_yaml_docs(proj_desc_loc)
+
+def getArchetypeGav(yaml: dict) -> Gav:
+    return get_archetype_gav(yaml)
+
+def getGeneratedProjectGav(yaml: dict) -> Gav:
+    return get_generated_project_gav(yaml)
+
+def getGav(gav_str: str) -> Gav:
+    return get_gav(gav_str)
+
+def getFieldsAndTypes(model_dict: dict) -> dict[str, str]:
+    return get_fields_and_types(model_dict)
+
+def getEnumValues(enum_dict: dict) -> list:
+    return get_enum_values(enum_dict)
+
+
+def yaml_to_json(yaml_str: str) -> str:
+    return json.dumps(yaml.safe_load(yaml_str), indent=2)
+
+
+def json_to_yaml(json_str: str) -> str:
+    return yaml.dump(json.loads(json_str), default_flow_style=False)
+
+
+def load_open_api3(doc_path: str) -> dict:
+    ext = doc_path.split('.')[-1]
     print('ext: ' + ext)
     if ext == 'json':
-        with open(docPath) as f:
+        with open(doc_path) as f:
             return json.load(f)
     elif ext == 'yaml' or ext == 'yml':
-        with open(docPath) as f:
+        with open(doc_path) as f:
             return yaml.safe_load(f)
+    else:
+        raise ValueError(f"Unsupported file extension: {ext}")
 
-def loadYamlDocs(projDescLoc: 'str') -> 'list:dict': 
-    with open(projDescLoc) as f:
+
+def load_yaml_docs(proj_desc_loc: str) -> list[dict]: 
+    with open(proj_desc_loc) as f:
         gen = yaml.safe_load_all(f)
         #file closes before can read all stuff out of gen, so turn to list
         return list(gen)
 
-def getArchetypeGav(yaml: 'dict') -> 'Gav':
-    gavStr = yaml['archetypeGAV']
-    return getGav(gavStr)
 
-def getGeneratedProjectGav(yaml: 'dict') -> 'Gav':
-    gavStr = yaml['generatedGav']
-    return getGav(gavStr)
+def get_archetype_gav(yaml: dict) -> Gav:
+    gav_str = yaml['archetypeGAV']
+    return get_gav(gav_str)
 
-"gavStr is groupId:artifactId:version"
-def getGav(gavStr: 'str') -> 'Gav':
-    gavList = gavStr.split(':')
+
+def get_generated_project_gav(yaml: dict) -> Gav:
+    gav_str = yaml['generatedGav']
+    return get_gav(gav_str)
+
+
+"gav_str is groupId:artifactId:version"
+def get_gav(gav_str: str) -> Gav:
+    gav_list = gav_str.split(':')
     version = None
-    if len(gavList) > 2:
-        version = gavList[2]
-    return Gav(gavList[0], gavList[1], version)
+    if len(gav_list) > 2:
+        version = gav_list[2]
+    return Gav(gav_list[0], gav_list[1], version)
 
-def getFieldsAndTypes(modelDict: 'dict') -> 'dict field:type':
-    fieldsDict = {}
-    if modelDict:
-        fieldList = modelDict.get('fields', [])
-        for f in fieldList:
-            typeToField = f.split(':')
-            fieldsDict[typeToField[1]] = typeToField[0]
-    # print ('fieldsDict: ' + str(fieldsDict))
-    return fieldsDict
 
-def getEnumValues(enumDict: 'dict') -> 'list':
-    enumValues = []
-    if enumDict:
-        enumValues = enumDict['values']
-    return enumValues
+"dict field:type"
+def get_fields_and_types(model_dict: dict) -> dict[str, str]:
+    fields_dict = {}
+    if model_dict:
+        field_list = model_dict.get('fields', [])
+        for f in field_list:
+            type_to_field = f.split(':')
+            fields_dict[type_to_field[1]] = type_to_field[0]
+    return fields_dict
+
+
+def get_enum_values(enum_dict: dict) -> list:
+    enum_values = []
+    if enum_dict:
+        enum_values = enum_dict['values']
+    return enum_values
 
 print('loaded ' + __file__)

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-
-import com.emprogen.java.maven.functions as jmf
-import com.emprogen.java.maven.yaml_functions as yf
+import importlib
 import os
 import pathlib
 from sys import argv
-import importlib
-import com.emprogen.validate_schema as vs
+
+import com.emprogen.file_functions as FILEF
+import com.emprogen.java.maven.yaml_functions as YF
+import com.emprogen.validate_schema as VS
 
 if not len(argv) > 1:
     raise ValueError('Must pass yaml descriptor for generating code as arg.')
@@ -26,7 +26,7 @@ descriptor_path = argv[1]
 descriptor_dir = os.path.join(descriptor_path, 'descriptor/')
 yaml_list = []
 if os.path.isfile(descriptor_path):
-    yaml_list = yf.loadYamlDocs(descriptor_path)
+    yaml_list = YF.load_yaml_docs(descriptor_path)
 # if directory passed in, iterate over every .yaml and .yml file in the directory and get the documents out to scan.
 elif os.path.isdir(descriptor_dir):
     # if there is an order.txt file, use that as the order in which to read the yaml documents.
@@ -56,7 +56,7 @@ elif os.path.isdir(descriptor_dir):
         if k is None or v is None:
             continue
         print('Loading yaml docs from file: ' + str(k) + ' at path: ' + str(v))
-        tmp_yaml_list = yf.loadYamlDocs(v)
+        tmp_yaml_list = YF.load_yaml_docs(v)
         yaml_list += tmp_yaml_list
 else:
     print('Error while loading file descriptors. No descriptors found at expected locations: ' +
@@ -71,15 +71,15 @@ for i, document_dict in enumerate(yaml_list):
     if document_dict is None:
         continue
     # Validate yaml descriptors against their schemas.
-    pwd = str(jmf.getFilePath(__file__)) + '/'
+    pwd = str(FILEF.get_file_path(__file__)) + '/'
     schema_path = os.path.join(pwd, document_dict['id'].replace('.', '/'), 'schema.yaml')
     print('schema_path: ' + str(schema_path))
-    schema_yaml_list = yf.loadYamlDocs(schema_path)
+    schema_yaml_list = YF.load_yaml_docs(schema_path)
     schema = ''
     if schema_yaml_list and len(schema_yaml_list) > 0:
         schema = schema_yaml_list[0]
 
-    vs.validate(document_dict, schema)
+    VS.validate(document_dict, schema)
     if i == 0 and document_dict['id'] == 'idForStackDescriptor':
         first_document_is_stack_descriptor = True
 
@@ -97,6 +97,6 @@ for document_dict in yaml_list:
     print('script_path: ' + script_path)
     script = importlib.import_module(script_path)
     opts_dict = {'command_args': command_args}
-    script.generate(document_dict, filesPath=descriptor_path, **opts_dict)
+    script.generate(document_dict, files_path=descriptor_path, **opts_dict)
 
 quit()
