@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+import importlib
 import glob
-import pathlib
+from pathlib import Path
 
 # Have to import like this due to dashes in the script name.
 rgjf = importlib.import_module("com.emprogen.java.run-google-java-format")
@@ -17,7 +18,7 @@ def eclipse_formatter_validate(path_to_pom: str) -> None:
     validate = f"{FORMATTER_MAVEN_PLUGIN_GAV}:validate"
     print('running maven plugin eclipse formatter:validate at path: ' + path_to_pom)
 
-    opts = {'configFile': str(pathlib.Path(JMF.get_java_maven_path()) / 'mshin_formatter_java.xml')}
+    opts = {'configFile': str(JMF.get_java_maven_path() / Path('mshin_formatter_java.xml'))}
     JMF.call_mvn_with_options(**opts, goal=validate, file=path_to_pom)
 
 
@@ -25,7 +26,7 @@ def eclipse_formatter(path_to_pom: str) -> None:
     formatter = f"{FORMATTER_MAVEN_PLUGIN_GAV}:format"
     print(f'running maven plugin eclipse formatter:format at path: {path_to_pom}')
 
-    opts = {'configFile': str(pathlib.Path(JMF.get_java_maven_path()) / 'mshin_formatter_java.xml')}
+    opts = {'configFile': str(JMF.get_java_maven_path() / Path('mshin_formatter_java.xml'))}
     JMF.call_mvn_with_options(**opts, goal=formatter, file=path_to_pom)
 
 
@@ -41,7 +42,7 @@ def beautify_imports(path_to_pom: str) -> None:
     JMF.call_mvn_with_options(goal=beautify, file=path_to_pom)
 
     # get all java files
-    pom_path = str(pathlib.Path(path_to_pom).parent.resolve())
+    pom_path = str(Path(path_to_pom).parent.resolve())
     print(f'pom_path: {pom_path}')
     java_files = glob.glob('**/*.java', root_dir=pom_path, recursive=True)
     print(f'java_files: {java_files}')
@@ -49,7 +50,7 @@ def beautify_imports(path_to_pom: str) -> None:
     # need to clean \r from all java files due to andromda beautifier
     print('Removing carriage return from files..')
     for java_file in java_files:
-        file_path = pathlib.Path(pom_path) / java_file
+        file_path = Path(pom_path) / java_file
         try:
             with open(file_path, 'r+', encoding='utf-8') as f:
                 data = f.read().replace('\r', '')

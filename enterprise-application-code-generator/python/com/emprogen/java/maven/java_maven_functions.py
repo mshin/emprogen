@@ -2,6 +2,7 @@
 import os
 import pathlib
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from typing import Optional, List, Dict
 
 import com.emprogen.file_functions as FILEF
@@ -12,14 +13,14 @@ from com.emprogen.java.maven.models import Gav
 POM_NAMESPACE = 'http://maven.apache.org/POM/4.0.0'
 
 
-def get_java_maven_path() -> str:
+def get_java_maven_path() -> Path:
     """
     Returns the absolute path to the directory containing this file.
     """
-    return str(pathlib.Path(__file__).parent.resolve())
+    return Path(__file__).parent.resolve()
 
 
-def get_model_path(gav: 'Gav') -> str:
+def get_model_path(gav: Gav) -> Path:
     """
     Constructs the model path for a given GAV object.
 
@@ -29,14 +30,24 @@ def get_model_path(gav: 'Gav') -> str:
     Returns:
         The model path as a string.
     """
-    group_path = gav.group_id.replace('.', os.sep)
-    artifact_path = gav.artifact_id.replace('-', os.sep)
-    return os.path.join(
-        gav.artifact_id,
-        'src', 'main', 'java',
-        group_path,
-        artifact_path
-    )
+    group_path = Path(*gav.group_id.split('.'))
+    artifact_path = Path(*gav.artifact_id.split('-'))
+    return Path(gav.artifact_id) / 'src' / 'main' / 'java' / group_path / artifact_path
+
+
+def get_test_model_path(gav: Gav) -> Path:
+    """
+    Constructs the test model path for a given GAV object.
+
+    Args:
+        gav: GAV object with group_id and artifact_id.
+
+    Returns:
+        The test model path as a string.
+    """
+    group_path = Path(*gav.group_id.split('.'))
+    artifact_path = Path(*gav.artifact_id.split('-'))
+    return Path(gav.artifact_id) / 'src' / 'test' / 'java' / group_path / artifact_path
 
 
 def get_package(gav: 'Gav') -> str:
@@ -58,7 +69,7 @@ def generate_maven_project(
     gen_gav: 'Gav',
     author: str = None,
     *,
-    file: str = None,
+    file: str | Path = None,
     **options: dict
 ) -> None:
     """
@@ -87,7 +98,7 @@ def generate_maven_project(
     call_mvn_with_options(**opts, file=file)
 
 
-def call_mvn_with_options(*, goal: str = 'archetype:generate', file: str = None, **options):
+def call_mvn_with_options(*, goal: str = 'archetype:generate', file: str | Path = None, **options):
     """
     Constructs and runs a Maven command with the given options.
 
@@ -101,7 +112,8 @@ def call_mvn_with_options(*, goal: str = 'archetype:generate', file: str = None,
     for mvn_option in mvn_options:
         call += ' ' + mvn_option
     if file:
-        call +=' -f {}'.format(file)
+        file_str = str(file)
+        call +=' -f {}'.format(file_str)
     arg_list = call.split()
     for k, v in options.items():
         arg_str = '-D{key}={value}'.format(key=k, value=v)
@@ -110,7 +122,7 @@ def call_mvn_with_options(*, goal: str = 'archetype:generate', file: str = None,
     SPF.run_subprocess(arg_list)
 
 
-def add_dependency(pom_path: str, gav: Optional['Gav'] = None) -> None:
+def add_dependency(pom_path: str | Path, gav: Optional['Gav'] = None) -> None:
     """
     Adds a dependency to a Maven POM file based on the provided GAV.
 
@@ -120,9 +132,10 @@ def add_dependency(pom_path: str, gav: Optional['Gav'] = None) -> None:
     """
     if gav is None:
         gav = Gav(None, None, None)
+    pom_path_str = str(pom_path)
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    tree = ET.parse(pom_path, parser) #ElementTree
+    tree = ET.parse(pom_path_str, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': POM_NAMESPACE}
     dependencies_elem = root.find('./x:dependencies', ns)
@@ -146,10 +159,10 @@ def add_dependency(pom_path: str, gav: Optional['Gav'] = None) -> None:
 
     ET.indent(tree, space="    ", level=0)
     ET.register_namespace('', ns['x'])
-    tree.write(pom_path)
+    tree.write(pom_path_str)
 
 
-def remove_dependency(pom_path: str, gav: Optional['Gav'] = None) -> None:
+def remove_dependency(pom_path: str | Path, gav: Optional['Gav'] = None) -> None:
     """
     Removes a dependency from a Maven POM file based on the provided GAV.
 
@@ -159,9 +172,10 @@ def remove_dependency(pom_path: str, gav: Optional['Gav'] = None) -> None:
     """
     if gav is None:
         gav = Gav(None, None, None)
+    pom_path_str = str(pom_path)
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    tree = ET.parse(pom_path, parser) #ElementTree
+    tree = ET.parse(pom_path_str, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': POM_NAMESPACE}
     # ./project/dependencies/dependency/groupId[.='io.swagger']/../artifactId[.='swagger-annotations']/..
@@ -181,10 +195,10 @@ def remove_dependency(pom_path: str, gav: Optional['Gav'] = None) -> None:
 
     ET.indent(tree, space="    ", level=0)
     ET.register_namespace('', ns['x'])
-    tree.write(pom_path)
+    tree.write(pom_path_str)
 
 
-def remove_pom_properties(pom_path: str, properties_list: List[str]) -> None:
+def remove_pom_properties(pom_path: str | Path, properties_list: List[str]) -> None:
     """
     Removes specified properties from the properties section of a Maven POM file.
 
@@ -192,9 +206,11 @@ def remove_pom_properties(pom_path: str, properties_list: List[str]) -> None:
         pom_path: Path to the pom.xml file.
         properties_list: List of property names to remove.
     """
+    pom_path_str = str(pom_path)
+
     for prop in properties_list:
-        XMLF.remove_xml_element(pom_path, POM_NAMESPACE, ['properties', prop], {})
-        print(f'removed pom property {prop} in pom {pom_path}')
+        XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['properties', prop], {})
+        print(f'removed pom property {prop} in pom {pom_path_str}')
 
 
 def add_pom_properties(pom_path: str, properties_dict: Dict[str, str]) -> None:
@@ -205,12 +221,14 @@ def add_pom_properties(pom_path: str, properties_dict: Dict[str, str]) -> None:
         pom_path: Path to the pom.xml file.
         properties_dict: Dictionary of property names and values to add.
     """
+    pom_path_str = str(pom_path)
+
     for prop, value in properties_dict.items():
-        XMLF.add_xml_element(pom_path, POM_NAMESPACE, ['properties'], {prop: value})
-        print(f'added pom property {prop} in pom {pom_path}')
+        XMLF.add_xml_element(pom_path_str, POM_NAMESPACE, ['properties'], {prop: value})
+        print(f'added pom property {prop} in pom {pom_path_str}')
 
 
-def remove_pom_plugin(pom_path: str, gav: Optional['Gav'] = None) -> None:
+def remove_pom_plugin(pom_path: str | Path, gav: Optional['Gav'] = None) -> None:
     """
     Removes a plugin from the build/plugins section of a Maven POM file by artifactId.
 
@@ -220,12 +238,13 @@ def remove_pom_plugin(pom_path: str, gav: Optional['Gav'] = None) -> None:
     """
     if gav is None:
         gav = Gav(None, None, None)
+    pom_path_str = str(pom_path)
 
-    XMLF.remove_xml_element(pom_path, POM_NAMESPACE, ['build', 'plugins', 'plugin'], {'artifactId': gav.artifact_id})
-    print(f'removed pom plugin {gav} in pom {pom_path}')
+    XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['build', 'plugins', 'plugin'], {'artifactId': gav.artifact_id})
+    print(f'removed pom plugin {gav} in pom {pom_path_str}')
 
 
-def remove_pom_profile(pom_path: str, profile_id: str) -> None:
+def remove_pom_profile(pom_path: str | Path, profile_id: str) -> None:
     """
     Removes a profile from the profiles section of a Maven POM file by profile id.
 
@@ -233,22 +252,26 @@ def remove_pom_profile(pom_path: str, profile_id: str) -> None:
         pom_path: Path to the pom.xml file.
         profile_id: The id of the profile to remove.
     """
-    XMLF.remove_xml_element(pom_path, POM_NAMESPACE, ['profiles', 'profile'], {'id': profile_id})
-    print(f'removed pom profile {profile_id} in pom {pom_path}')
+    pom_path_str = str(pom_path)
+
+    XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['profiles', 'profile'], {'id': profile_id})
+    print(f'removed pom profile {profile_id} in pom {pom_path_str}')
 
 
-def remove_pom_dependency_management(pom_path: str) -> None:
+def remove_pom_dependency_management(pom_path: str | Path) -> None:
     """
     Removes the dependencyManagement section from a Maven POM file.
 
     Args:
         pom_path: Path to the pom.xml file.
     """
-    XMLF.remove_xml_element(pom_path, POM_NAMESPACE, ['dependencyManagement'], {})
-    print(f'removed dependencyManagement in pom {pom_path}')
+    pom_path_str = str(pom_path)
+
+    XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['dependencyManagement'], {})
+    print(f'removed dependencyManagement in pom {pom_path_str}')
 
 
-def add_java_imports(imports: str, file_path: str) -> None:
+def add_java_imports(imports: str, file_path: str | Path) -> None:
     """
     Adds Java import statements to the specified file after the first line.
 
@@ -256,14 +279,17 @@ def add_java_imports(imports: str, file_path: str) -> None:
         imports: The import statements to add.
         file_path: Path to the Java source file.
     """
-    print(f'adding imports to file: {file_path}')
+    file_path_str = str(file_path)
+
+    print(f'adding imports to file: {file_path_str}')
     search_text = '\n'
-    FILEF.replace_text_in_file(search_text, '\n\n' + imports + '\n', file_path, count = 1)
+    FILEF.replace_text_in_file(search_text, '\n\n' + imports + '\n', file_path_str, count = 1)
 
 
-def gav_to_path(gav: str) -> str:
+def gav_to_jar_local_abs_path_str(gav: str | Gav) -> str:
     """
     Converts a Maven GAV string to the absolute path of the corresponding JAR in the local Maven repository.
+    Old gav_to_path method.
 
     Args:
         gav: Maven coordinates in the format 'group:artifact:version'.
@@ -271,12 +297,13 @@ def gav_to_path(gav: str) -> str:
     Returns:
         Absolute path to the JAR file.
     """
-    group_id, artifact_id, version = gav.split(':')
-    group_path = group_id.replace('.', '/')
-    repo_base = os.path.expanduser('~/.m2/repository')
-    jar_path = f'{repo_base}/{group_path}/{artifact_id}/{version}/{artifact_id}-{version}.jar'
-    return os.path.abspath(jar_path)
-
+    gav_str = str(gav)
+    group_id, artifact_id, version = gav_str.split(':')
+    group_path = Path(*group_id.split('.'))
+    repo_base = Path.home() / '.m2' / 'repository'
+    mvn_jar_name = f'{artifact_id}-{version}.jar'
+    jar_path = repo_base / group_path / artifact_id / version / mvn_jar_name
+    return str(jar_path.resolve())
 
 print('loaded ' + __file__)
 

@@ -14,7 +14,7 @@ import com.emprogen.file_functions as FILEF
 #         for each file of that file extension, prepend the license text to the file.
 
 
-def prepend_licenses(yaml_dict: dict, project_path: str, descriptor_path: str) -> None:
+def prepend_licenses(yaml_dict: dict, project_path: str | Path, descriptor_path: str | Path) -> None:
     """
     Parse licenses from yaml and prepend them to project files.
     """
@@ -30,19 +30,20 @@ def prepend_licenses(yaml_dict: dict, project_path: str, descriptor_path: str) -
     process_licenses(license_to_ext_dict, project_path, descriptor_path)
 
 
-def process_licenses(license_to_ext_dict: dict, dir_path: str, descriptor_path: str) -> None:
+def process_licenses(license_to_ext_dict: dict, dir_path: str | Path, descriptor_path: str | Path) -> None:
     """
     For each license, prepend its text to all files matching its extensions.
     """
+    descriptor_path_str = str(descriptor_path)
     # get the set of all the project files and put them into a dict based on file extension
-    ext_to_file_list_dict = get_files_list_by_extension_dict(dir_path)
+    ext_to_file_list_dict = FILEF.get_files_list_by_extension_dict(dir_path)
 
     print('pwd:', os.getcwd())
     # iterate over the licenses
     for license_path, file_ext_list in license_to_ext_dict.items():
         # get the text of the license
-        with open(os.path.join(descriptor_path, license_path), 'r') as f:
-            print('descriptorPath:', descriptor_path)
+        with open(os.path.join(descriptor_path_str, license_path), 'r') as f:
+            print(f'descriptorPath: {descriptor_path_str}')
             license_text = f.read()
 
         # iterate over the file extensions
@@ -52,28 +53,13 @@ def process_licenses(license_to_ext_dict: dict, dir_path: str, descriptor_path: 
                 prepend_license(file_path, license_text)
 
 
-def prepend_license(file_path: str, license_text: str) -> None:
+def prepend_license(file_path: str | Path, license_text: str) -> None:
     """
     Prepend the license text to the given file.
     """
-    with open(file_path, 'r+') as f:
+    file_path_str = str(file_path)
+    with open(file_path_str, 'r+') as f:
         content = f.read()
         f.seek(0)
         f.write(license_text + '\n' + content)
         f.truncate()
-
-
-def get_files_list_by_extension_dict(dir_path: str) -> dict:
-    """
-    Return a dict mapping file extensions to lists of file paths.
-    """
-    ext_to_file_list_dict = {}
-    files_list = FILEF.get_files_from_path(dir_path)  # get all files in the project path
-    for file_path in files_list:
-        ext = os.path.splitext(file_path)[1]  # get file extension
-        if ext not in ext_to_file_list_dict:
-            ext_to_file_list_dict[ext] = []
-        ext_to_file_list_dict[ext].append(file_path)
-    ext_to_file_list_dict['.*'] = files_list  # wildcard for all files
-    print('extToFileListDict:', ext_to_file_list_dict)
-    return ext_to_file_list_dict
