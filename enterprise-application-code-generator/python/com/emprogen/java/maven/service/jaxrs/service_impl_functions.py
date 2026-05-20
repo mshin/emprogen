@@ -115,7 +115,7 @@ def process_api_interface(
     )
 
     # the generated content for the service class
-    service_class_str = service_template_replacment(
+    service_class_str = service_template_replacement(
         generated_package,
         service_interface_name_without_package,
         author=author
@@ -126,7 +126,7 @@ def process_api_interface(
     )
 
     # the generated content for the service Impl test class
-    impl_class_test_str = impl_template_test_replacment(
+    impl_class_test_str = impl_template_test_replacement(
         generated_package,
         service_interface_name_without_package,
         author=author
@@ -136,7 +136,7 @@ def process_api_interface(
     )
 
     # the generated content for the service test class
-    service_class_test_str = service_template_test_replacment(
+    service_class_test_str = service_template_test_replacement(
         generated_package,
         service_interface_name_without_package,
         author=author

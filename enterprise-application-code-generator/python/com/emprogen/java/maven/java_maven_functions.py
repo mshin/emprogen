@@ -209,8 +209,11 @@ def remove_pom_properties(pom_path: str | Path, properties_list: List[str]) -> N
     pom_path_str = str(pom_path)
 
     for prop in properties_list:
-        XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['properties', prop], {})
-        print(f'removed pom property {prop} in pom {pom_path_str}')
+        try:
+            XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['properties', prop], {})
+            print(f'removed pom property {prop} in pom {pom_path_str}')
+        except Exception as e:
+            print(f'Could not remove property {prop} from pom {pom_path_str}: {e}')
 
 
 def add_pom_properties(pom_path: str, properties_dict: Dict[str, str]) -> None:
@@ -240,8 +243,11 @@ def remove_pom_plugin(pom_path: str | Path, gav: Optional['Gav'] = None) -> None
         gav = Gav(None, None, None)
     pom_path_str = str(pom_path)
 
-    XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['build', 'plugins', 'plugin'], {'artifactId': gav.artifact_id})
-    print(f'removed pom plugin {gav} in pom {pom_path_str}')
+    try:
+        XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['build', 'plugins', 'plugin'], {'artifactId': gav.artifact_id})
+        print(f'removed pom plugin {gav} in pom {pom_path_str}')
+    except Exception as e:
+        print(f'Could not remove plugin {gav} from pom {pom_path_str}: {e}')
 
 
 def remove_pom_profile(pom_path: str | Path, profile_id: str) -> None:
@@ -254,9 +260,11 @@ def remove_pom_profile(pom_path: str | Path, profile_id: str) -> None:
     """
     pom_path_str = str(pom_path)
 
-    XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['profiles', 'profile'], {'id': profile_id})
-    print(f'removed pom profile {profile_id} in pom {pom_path_str}')
-
+    try:
+        XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['profiles', 'profile'], {'id': profile_id})
+        print(f'removed pom profile {profile_id} in pom {pom_path_str}')
+    except Exception as e:
+        print(f'Could not remove profile {profile_id} from pom {pom_path_str}: {e}')
 
 def remove_pom_dependency_management(pom_path: str | Path) -> None:
     """
@@ -267,9 +275,11 @@ def remove_pom_dependency_management(pom_path: str | Path) -> None:
     """
     pom_path_str = str(pom_path)
 
-    XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['dependencyManagement'], {})
-    print(f'removed dependencyManagement in pom {pom_path_str}')
-
+    try:
+        XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['dependencyManagement'], {})
+        print(f'removed dependencyManagement in pom {pom_path_str}')
+    except Exception as e:
+        print(f'Could not remove dependencyManagement from pom {pom_path_str}: {e}')
 
 def add_java_imports(imports: str, file_path: str | Path) -> None:
     """

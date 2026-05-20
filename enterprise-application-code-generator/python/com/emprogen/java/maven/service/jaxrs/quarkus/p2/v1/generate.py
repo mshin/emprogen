@@ -108,12 +108,11 @@ def generate(
     jmf.remove_pom_properties(proj_pom_path, [maven_compiler_source, maven_compiler_target])
     jmf.add_pom_properties(proj_pom_path, {maven_compiler_source: java_version, maven_compiler_target: java_version})
 
-    #TODO see if this actually works
     # set jaxrs package and java version based on the openapi3 module
     if None != re.search('javax.ws.rs.javax.ws.rs-api', service_implementation_classpath):
         print('Using javax in API definition module. Reducing Quarkus version in impl module to use javax instad of jakarta code packages. Reducing java version to 8.')
         # Fix java imports
-        java_files = filef.get_files_list_by_extension_dict(Path(proj_gav.artifact_id) / 'src')
+        java_files = filef.get_files_list_by_extension_dict(Path(proj_gav.artifact_id) / 'src').get('.java', [])
         for java_file in java_files:
             filef.replace_text_in_file('import jakarta.', 'import javax.', java_file)
         # Reduce Quarkus version
@@ -123,6 +122,11 @@ def generate(
         # Reduce Java version to 8
         jmf.remove_pom_properties(proj_pom_path, [maven_compiler_source, maven_compiler_target])
         jmf.add_pom_properties(proj_pom_path, {maven_compiler_source: '8', maven_compiler_target: '8'})
+
+        # Reduce rest impl library from quarkus-rest-jackson to quarkus-resteasy-reactive-jackson.
+        jmf.remove_dependency(proj_pom_path, Gav('io.quarkus', 'quarkus-rest-jackson', None))
+        jmf.remove_dependency(proj_pom_path, Gav('io.quarkus', 'quarkus-resteasy-reactive-jackson', None))
+        jmf.add_dependency(proj_pom_path, Gav('io.quarkus', 'quarkus-resteasy-reactive-jackson', None))
 
     elif None != re.search('jakarta.ws.rs.jakarta.ws.rs-api', service_implementation_classpath):
         print('Using jakarta code packages in API definition module.')

@@ -171,5 +171,5 @@ def get_files_list_by_extension_dict(dir_path: str | Path) -> dict:
             ext_to_file_list_dict[ext] = []
         ext_to_file_list_dict[ext].append(file_path)
     ext_to_file_list_dict['.*'] = files_list  # wildcard for all files
-    print('extToFileListDict:', ext_to_file_list_dict)
+    print(f'ext_to_file_list_dict: {ext_to_file_list_dict}')
     return ext_to_file_list_dict

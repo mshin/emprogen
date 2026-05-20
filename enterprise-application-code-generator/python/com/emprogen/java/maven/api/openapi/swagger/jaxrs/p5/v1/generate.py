@@ -291,7 +291,7 @@ def generate(
     print(f'rest_application_file: {rest_application_file}')
 
     # Delete old generating pom file.
-    filef.delete_file(proj_pom_path + '.generating')
+    filef.delete_file(str(proj_pom_path) + '.generating')
 
     # Fix potential nested public enum issue of missing closing bracket
     fne.fix_nested_enum_classes(java_file_list)
