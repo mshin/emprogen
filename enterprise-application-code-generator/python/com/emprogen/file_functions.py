@@ -72,6 +72,15 @@ def delete_directory(path: str | Path) -> None:
     shutil.rmtree(path_obj, ignore_errors=True)
 
 
+def clear_directory(directory: str | Path) -> None:
+    directory_path = Path(directory)
+    for item in directory_path.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
+            item.unlink()
+
+
 def replace_text_in_file_multi(
     search_to_replace: Dict[str, str],
     file_path: str | Path,

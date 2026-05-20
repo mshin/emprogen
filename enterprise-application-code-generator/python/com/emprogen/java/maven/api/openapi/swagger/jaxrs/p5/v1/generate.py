@@ -1,17 +1,30 @@
-import com.emprogen.java.maven.functions as jmf
-import com.emprogen.java.maven.yaml_functions as yf
-import com.emprogen.java.maven.field_functions as ff
-import com.emprogen.prepend_license as pl
-import com.emprogen.java.maven.api.openapi.swagger.jaxrs.fix_nested_enum as fne
-import os
-import shutil
 import glob
+import os
 import re
+import shutil
+from pathlib import Path
+
+import com.emprogen.file_functions as filef
+import com.emprogen.java.maven.api.openapi.swagger.jaxrs.fix_nested_enum as fne
+import com.emprogen.java.maven.format_functions as formatf
+import com.emprogen.java.maven.java_maven_functions as jmf
+import com.emprogen.java.maven.yaml_functions as yf
+import com.emprogen.prepend_license as pl
+import com.emprogen.subprocess_functions as spf
+import com.emprogen.text_functions as textf
 from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
-def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str' = '8', jaxrs: 'str' = 'javax', **kwargs) -> None:
+
+def generate(
+    descriptor: dict,
+    *,
+    files_path: str | Path = None,
+    java_version: str = '8',
+    jaxrs: str = 'javax',
+    **kwargs
+) -> None:
 
     print('in openapi.swagger.jaxrs.p5.v1.generate.py')
 
@@ -26,7 +39,7 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     elif 'jakarta' == jaxrs:
         mvn_gen_gav = jakarta_gen_gav
     else:
-        print('Unsupported jaxrs: ' + str(jaxrs) + '. Must be javax or jakarta.')
+        print(f'Unsupported jaxrs: {jaxrs}. Must be javax or jakarta.')
         quit(1)
 
     #add these for annotations (defaults are approx java 8 era versions)
@@ -82,29 +95,29 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     mp_fqdn_ann_to_short_ann_to_import_list = list(zip(mp_fqdn_ann_list, mp_short_ann_list, mp_ann_imports_list))
 
     # END CONSTANTS
-
     
 
-    gen_gav = yf.getGav(descriptor['generatedGav'])
-    package = jmf.getPackage(gen_gav)
-    path_to_open_api = files_path + '/' + descriptor['openApiUrl']
+    gen_gav = yf.get_gav(descriptor['generatedGav'])
+    package = jmf.get_package(gen_gav)
+    path_to_open_api = Path(files_path) / descriptor['openApiUrl']
     author = descriptor['author']
     path_to_pom = None
     # the directory of the java code.
-    model_path = jmf.getModelPath(gen_gav) + '/model'
+    model_path = jmf.get_model_path(gen_gav) / 'model'
 
     # the directory of the maven pom for the generated code. Usually at the directory root of project.
-    proj_pom_path = gen_gav.artifact_id + '/pom.xml'
+    gen_proj_path = Path(gen_gav.artifact_id)
+    proj_pom_path = gen_proj_path / 'pom.xml'
 
     # load OpenAPI3 spec doc, so can get values out
-    oa3dict = yf.loadOpenApi3(path_to_open_api)
+    oa3dict = yf.load_open_api3(path_to_open_api)
 
-    print('genGav: ' + str(gen_gav))
-    print('package: ' + str(package))
-    print('pathToOpenApi: ' + str(path_to_open_api))
-    print('pathToPom: ' + str(path_to_pom))
-    print('author: ' + str(author))
-    print('modelPath: ' + str(model_path))
+    print(f'gen_gav: {gen_gav}')
+    print(f'package: {package}')
+    print(f'path_to_open_api: {path_to_open_api}')
+    print(f'pathToPom: {path_to_pom}')
+    print(f'author: {author}')
+    print(f'modelPath: {model_path}')
 
     # Geneate Maven project.
     opts = {}
@@ -115,46 +128,49 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     opts['generatedArtifactId'] = gen_gav.artifact_id
     opts['generatedVersion'] = gen_gav.version
 
-    mvn_options = jmf.captureContextualCommandLineOptions(kwargs.get('command_args', []), 'mvn')
+    mvn_options = spf.capture_contextual_command_line_options(kwargs.get('command_args', []), 'mvn')
     mvn_opts = {'mvn_options': mvn_options}
     opts.update(mvn_opts)
 
-    print('mvn_options: ' + str(mvn_options))
-    print('opts: ' + str(opts))
+    print(f'mvn_options: {mvn_options}')
+    print(f'opts: {opts}')
 
     #jmf.callMvnWithOptions(**opts, goal='clean package', file=pathToPom)
-    jmf.generateMavenProject(mvn_gen_gav, gen_gav, descriptor['author'], **opts, file=path_to_pom)
+    jmf.generate_maven_project(mvn_gen_gav, gen_gav, descriptor['author'], **opts, file=path_to_pom)
 
     print('finished generating generator project.')
 
-    jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=proj_pom_path)
+    jmf.call_mvn_with_options(**mvn_opts, goal='clean install', file=proj_pom_path)
 
     print('finished generating project.')
     #quit(0)
     # remove generating pom (rename first)
-    os.rename(gen_gav.artifact_id + '/pom.xml', gen_gav.artifact_id + '/pom.xml.generating')
+    os.rename(gen_proj_path / 'pom.xml', gen_proj_path / 'pom.xml.generating')
 
     print('Renamed generating pom.')
 
     # copy contents to directory.
-    gen_sources_dir = gen_gav.artifact_id + "/target/generated-sources/openapi"
-    shutil.move(gen_sources_dir + '/pom.xml', gen_gav.artifact_id + '/pom.xml')
-    shutil.move(gen_sources_dir + '/src', gen_gav.artifact_id + '/src')
+    gen_sources_dir_path = gen_proj_path / 'target' / 'generated-sources' / 'openapi'
+    shutil.move(gen_sources_dir_path / 'pom.xml', gen_proj_path / 'pom.xml')
+    shutil.move(gen_sources_dir_path / 'src', gen_proj_path / 'src')
 
     print('Moved generating sources.')
 
     # get all of the java files in generated code so we can process them.
-    java_file_list = glob.glob(gen_gav.artifact_id + '/src/main/java/**/*.java', recursive=True)
-    print('javaFileList: ' + str(java_file_list))
+    java_file_list = filef.get_files_list_by_extension_dict(
+        gen_proj_path / 'src' / 'main' / 'java'
+    ).get('.java', [])
+
+    print(f'java_file_list: {java_file_list}')
 
     # the jaxrs-spec generator is terrible, need to fix some code.
     # delete lines starting with @javax.annotation.Generated (OR @jakarta.annotation.Generated) in all files.
     for f in java_file_list:
-        print('file: ' + str(f))
+        print(f'file: {f}')
         # get rid of 'false' at end of generated annotation line
-        jmf.replaceTextInFile('\n@(javax|jakarta)\.annotation\.Generated.*\n', '',f)
+        filef.replace_text_in_file('\n@(javax|jakarta)\.annotation\.Generated.*\n', '',f)
         # fix double quote escaping in generated code.
-        jmf.replaceTextInFile(r'\\&quot;', r'\"', f)
+        filef.replace_text_in_file(r'\\&quot;', r'\"', f)
 
         # get rid of broken toString
         with open(f,'r+') as f2:
@@ -184,15 +200,15 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
 
     # if no items in optional dependencyGav, default {} for null safety
     for dependency in descriptor.get('dependencyGav', {}):
-        print('adding dependency to pom: ' + dependency)
-        jmf.addDependency(proj_pom_path, yf.getGav(dependency))
+        print(f'adding dependency to pom: {dependency}')
+        jmf.add_dependency(proj_pom_path, yf.get_gav(dependency))
 
     #add openapi microprofile (openapi3) annotations
     # TODO adding oldest version of microprofile annotations here; maybe check version needed before this point.
-    jmf.addDependency(proj_pom_path, microprofile_gav)
+    jmf.add_dependency(proj_pom_path, microprofile_gav)
 
     #add jackson-databind-nullable because generator likes to sometimes throw that in there for no reason.
-    jmf.addDependency(proj_pom_path, jackson_dbndnb_gav)
+    jmf.add_dependency(proj_pom_path, jackson_dbndnb_gav)
 
     #fix oneOf interface generated class
     # if oneof in schema:
@@ -221,11 +237,11 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
         regex = r'public\s*?class\s*?' + model_name + r'\s*?\{\n(\n|.)+' # find the class declaration; match everything after it.
         replacement = 'public interface ' + model_name + ' {\n'
         model_description = model.get('description', None)
-        print('model_description: ' + str(model_description))
+        print(f'model_description: {model_description}')
         model_discriminator = model.get('discriminator', None)
-        print('model_discriminator: ' + str(model_discriminator))
+        print(f'model_discriminator: {model_discriminator}')
         model_subclasses = model.get('oneOf', [])
-        print('model_subclasses: ' + str(model_subclasses))
+        print(f'model_subclasses: {model_subclasses}')
         model_discriminator_name = None
         model_discriminator_type = None
         # If there is a discriminator, get info so an abstract method can be added to the interface.
@@ -235,12 +251,12 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
             
             subclass0_name = model_subclass_path.split('/')[-1]
 
-            print('subclass0_name: ' + str(subclass0_name))
+            print(f'subclass0_name: {subclass0_name}')
 
             subclass0 = model_dict.get(subclass0_name, None)
 
-            print('subclass0: ' + str(subclass0))
-            print('model_subclasses[0]: ' + str(model_subclasses[0]))
+            print(f'subclass0: {subclass0}')
+            print(f'model_subclasses[0]: {model_subclasses[0]}')
 
             if subclass0:
                 descriminator_property = subclass0.get('properties', {}).get(model_discriminator_name, {})
@@ -251,41 +267,41 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
                 elif discriminator_type:
                     model_discriminator_type = discriminator_type
                 else:
-                    print('Could not find discriminator ' + model_discriminator_name + ' type.')
+                    print(f'Could not find discriminator {model_discriminator_name} type.')
                     quit(1)
-            print('model_discriminator_name: ' + str(model_discriminator_name))
+            print(f'model_discriminator_name: {model_discriminator_name}')
 
             replacement += '\n\n    @org.eclipse.microprofile.openapi.annotations.media.Schema(required = true)\n'
             replacement += '    @JsonProperty("' + model_discriminator_name + '")\n'
             replacement += '    @NotNull public abstract ' + model_discriminator_type + ' ' + 'get'
-            replacement += jmf.toCamel(model_discriminator_name, False) + '();\n'
+            replacement += textf.to_camel(model_discriminator_name, False) + '();\n'
 
         replacement += '\n}\n'
-        jmf.replaceTextInFile(regex, replacement, interface_file_path)
+        filef.replace_text_in_file(regex, replacement, interface_file_path)
 
         # remove package imports from same package?!
         package_pattern = r'(?<=package\s).+(?=;)'
-        package_string = jmf.getInFile(package_pattern, interface_file_path)
-        jmf.replaceTextInFile('import ' + package_string + '.*;\n', '', interface_file_path)
+        package_string = filef.get_in_file(package_pattern, interface_file_path)
+        filef.replace_text_in_file('import ' + package_string + '.*;\n', '', interface_file_path)
 
     # comment out @ApplicationPath (causing quarkus error)
     rest_application_file = java_file_simple_names_to_path.get('RestApplication.java', {})
-    jmf.replaceTextInFile(r'@ApplicationPath', r'//@ApplicationPath', rest_application_file)
-    jmf.replaceTextInFile(r'extends Application \{', r'{ // extends Application', rest_application_file)
-    print('rest_application_file: ' + str(rest_application_file))
+    filef.replace_text_in_file(r'@ApplicationPath', r'//@ApplicationPath', rest_application_file)
+    filef.replace_text_in_file(r'extends Application \{', r'{ // extends Application', rest_application_file)
+    print(f'rest_application_file: {rest_application_file}')
 
     # Delete old generating pom file.
-    jmf.deleteFile(proj_pom_path + '.generating')
+    filef.delete_file(proj_pom_path + '.generating')
 
     # Fix potential nested public enum issue of missing closing bracket
     fne.fix_nested_enum_classes(java_file_list)
 
     print('Rebuilding project.')
-    jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=proj_pom_path)
+    jmf.call_mvn_with_options(**mvn_opts, goal='clean install', file=proj_pom_path)
     print('Finished rebuilding project.')
 
     print('Removing target directory.')
-    jmf.callMvnWithOptions(**mvn_opts, goal='clean', file=proj_pom_path)
+    jmf.call_mvn_with_options(**mvn_opts, goal='clean', file=proj_pom_path)
     print('Removed target directory.')
 
     # collapse microprofile openapi annotations
@@ -302,8 +318,8 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
                 number_of_replacements_made = ann_sub_result[1]
                 # if a replacement was made, insert the corresponding import statement at top of file.
                 if number_of_replacements_made > 0:
-                    print('file: ' + str(f) + ' ... annotation searched: ' + replace_text + ' ... results found: ' + str(number_of_replacements_made))
-                    file0 = re.sub('\n', '\n' + import_statement, file0, count = 1)
+                    print(f'file: {f} ... annotation searched: {replace_text} ... results found: {number_of_replacements_made}')
+                    file0 = file0.replace('\n', '\n' + import_statement, 1)
 
             # Delete the current content of the file before writing.
             fopen.truncate(0)
@@ -323,12 +339,12 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     tag_dict = {'\n@Tag.*\n': '\n', '(?<=tags\s=\s)@Tag.*\)\n': '{@%@}\n'}
     print('before replacing tags.')
     for f in java_file_list:
-        jmf.replaceTextInFileMulti(tag_dict, f)
+        filef.replace_text_in_file_multi(tag_dict, f)
     print('after replacing tags.')
     # get values from OpenAPI3 spec doc
-    info_title = oa3dict.get("info", {}).get("title", "")
-    info_description = oa3dict.get("info", {}).get("description", "")
-    tags_list = oa3dict.get("tags", "")
+    info_title = oa3dict.get('info', {}).get('title', '')
+    info_description = oa3dict.get('info', {}).get('description', '')
+    tags_list = oa3dict.get('tags', '')
     # schemesList = []
     # securitySchemesDict = oa3dict.get("components", {}).get("securitySchemes", "")
     # if isinstance(securitySchemesDict, dict):
@@ -337,31 +353,39 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
     method_security_scheme_scopes = [] #list:dict:list
     # print('oa3dict: ' + str(oa3dict))
     oas3_http_methods = {'get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'}
-    for k, v in oa3dict.get("paths", {}).items():
+    for k, v in oa3dict.get('paths', {}).items():
         for k2, v2 in v.items():
             if k2 in oas3_http_methods:
-                method_security_scheme_scopes.append({k + ' ' + k2: v2.get("security", "")})
+                method_security_scheme_scopes.append({k + ' ' + k2: v2.get('security', '')})
                 # examplesDict = v2.get("requestBody", {}).get("content", {}).get("application/json", {}).get("examples", {})
                 # if len(examplesDict) > 0:
                     # pathMethodToExampleDict[k + ' ' + k2] = examplesDict
 
     # add title back in
     for f in java_file_list:
-        jmf.replaceTextInFile('(?s)(@OpenAPIDefinition.*@Info.*title\s?=\s?)""', r'\g<1>"' + jmf.clean_text(info_title) + '"', f)
+        filef.replace_text_in_file(
+            '(?s)(@OpenAPIDefinition.*@Info.*title\s?=\s?)""',
+            r'\g<1>"' + textf.clean_text(info_title) + '"',
+            f
+        )
     # add openapidefinition info description back in
     for f in java_file_list:
-        jmf.replaceTextInFile('(?s)(@OpenAPIDefinition.*?@Info.*?title\s?=\s?".*?"\s?,.*?version\s?=\s?".*?"\s?,.*?description\s?=\s?)""(?!\))', r'\g<1>"' + jmf.clean_text(info_description) + '"', f)
+        filef.replace_text_in_file(
+            '(?s)(@OpenAPIDefinition.*?@Info.*?title\s?=\s?".*?"\s?,.*?version\s?=\s?".*?"\s?,.*?description\s?=\s?)""(?!\))',
+            r'\g<1>"' + textf.clean_text(info_description) + '"',
+            f
+        )
 
     # add tags back in
-    tag_annotations = ""
+    tag_annotations = ''
     for index, tag in enumerate(tags_list):
         tag_annotations += '@Tag(name="' + tag.get("name", "") + '", description="' + tag.get("description", "") + '")'
         if index < len(tags_list) - 1:
             tag_annotations += ', '
 
     for f in java_file_list:
-        jmf.replaceTextInFile('(tags\s?=\s?\{)@%@\}', r'\g<1>' + tag_annotations +  '}', f)
-        print('added tags back in. ')
+        filef.replace_text_in_file('(tags\s?=\s?\{)@%@\}', r'\g<1>' + tag_annotations +  '}', f)
+        print('added tags back in.')
 
     # add security scopes in.
 
@@ -378,14 +402,14 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
                             with open(f, 'r') as fil:
                                 file_string = fil.read()
                             update_file = False
-                            root_path_annotation = jmf.getInFile('@Path\s*\(\s*"(.*)"\s*\)(\n|.)*public\s+(interface|class)', f)
+                            root_path_annotation = filef.get_in_file('@Path\s*\(\s*"(.*)"\s*\)(\n|.)*public\s+(interface|class)', f)
                             root_path = ''
                             if None != root_path_annotation:
-                                print('rootPathAnnotation: ' + str(root_path_annotation) + ' in file: ' + str(f))
+                                print(f'root_path_annotation: {root_path_annotation} in file: {f}')
                                 root_path_matches = re.search('@Path\s*\(\s*"(.*)"\s*\)', root_path_annotation, re.MULTILINE)
                                 if None != root_path_matches:
                                     root_path = root_path_matches.group(1)
-                                print('rootPath: ' + str(root_path))
+                                print(f'root_path: {root_path}')
                             # for each method in the file, find path and httpMethod
                             match_iter = re.finditer('@(POST|PUT|GET|DELETE|PATCH|OPTIONS|HEAD|TRACE|CONNECT)\s+(@Path\s*\(\s*"(.*)"\s*\))?', file_string, re.MULTILINE)
                             for match in match_iter:
@@ -398,12 +422,12 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
                                     match_url_http_method = match_path + ' ' + match_http_method
                                     compare_url_http_method = url + ' ' + http_method
                                     if match_url_http_method == compare_url_http_method:
-                                        print('matchUrl_httpMethod: ' + str(match_url_http_method) + ' == ' + str(compare_url_http_method))
+                                        print(f'match_url_http_method: {match_url_http_method} == {compare_url_http_method}')
                                         # find the method with the url_httpMethod and add the scopes to the securityRequirement annotation.
                                         search_text = '(@' + match_http_method + r'(\n|.)+' + match_relative_path.replace('/', '\/') + r'(\n|.)*@SecurityRequirement\s?\(\s?name\s?=\s?"' + security_scheme_name + '"\s?)\)'
-                                        print('searchText: ' + str(search_text))
+                                        print(f'search_text: {search_text}')
                                         replace_text = r'\g<1>, scopes = {"' + '", "'.join(scopes) + '"})'
-                                        print('replaceText: ' + str(replace_text))
+                                        print(f'replace_text: {replace_text}')
                                         file_string = re.sub(search_text, replace_text, file_string, count = 1)
                                         update_file = True
 
@@ -411,89 +435,90 @@ def generate(descriptor: 'dict', *, files_path: 'str' = None, java_version: 'str
                             if update_file:
                                 with open(f, 'w') as fil:
                                     fil.write(file_string)
-                                    print('file updated: ' + str(f) + ' at ' + url_http_method + ' with scopes: ' + str(scopes))
+                                    print(f'file updated: {f} at {url_http_method} with scopes: {scopes}')
 
     # TODO add examples back in
 
 
     # remove swagger2 annotations dependency from pom
-    jmf.removeDependency(proj_pom_path, swagger_gav)
+    jmf.remove_dependency(proj_pom_path, swagger_gav)
     # Trim down pom by removing all unnecessary transitive dependencies.
     # Only keep mandatory dependencies, mostly annotation libraries.
-    jmf.removeDependency(proj_pom_path, quarkus_junit_gav)
-    jmf.removeDependency(proj_pom_path, rest_assured_gav)
-    jmf.removeDependency(proj_pom_path, quarkus_resteasy_gav)
-    jmf.removeDependency(proj_pom_path, quarkus_smallrye_gav)
-    jmf.removeDependency(proj_pom_path, remove_javax_rs_gav)
-    jmf.removeDependency(proj_pom_path, remove_javax_ann_gav)
-    jmf.removeDependency(proj_pom_path, remove_jakarta_ann_gav)
-    jmf.removeDependency(proj_pom_path, remove_jakarta_rs_gav)
+    jmf.remove_dependency(proj_pom_path, quarkus_junit_gav)
+    jmf.remove_dependency(proj_pom_path, rest_assured_gav)
+    jmf.remove_dependency(proj_pom_path, quarkus_resteasy_gav)
+    jmf.remove_dependency(proj_pom_path, quarkus_smallrye_gav)
+    jmf.remove_dependency(proj_pom_path, remove_javax_rs_gav)
+    jmf.remove_dependency(proj_pom_path, remove_javax_ann_gav)
+    jmf.remove_dependency(proj_pom_path, remove_jakarta_ann_gav)
+    jmf.remove_dependency(proj_pom_path, remove_jakarta_rs_gav)
     # removing json-nullable... hopefully never need.
-    jmf.removeDependency(proj_pom_path, remove_json_nullable_gav)
+    jmf.remove_dependency(proj_pom_path, remove_json_nullable_gav)
     for java_file in java_file_list:
-        jmf.replaceTextInFile(r'import org.openapitools.jackson.nullable.JsonNullable;\n', '', java_file)
+        filef.replace_text_in_file(r'import org.openapitools.jackson.nullable.JsonNullable;\n', '', java_file)
 
     # trim excess fat from generated pom, including properties, plugins and profiles.
-    jmf.removePomPlugin(proj_pom_path, quarkus_maven_plugin_gav)
-    jmf.removePomPlugin(proj_pom_path, maven_surefire_plugin_gav)
-    jmf.removePomPlugin(proj_pom_path, build_helper_maven_plugin_gav)
-    jmf.removePomProfile(proj_pom_path, 'native')
-    jmf.removePomDependencyManagement(proj_pom_path)
-    jmf.removePomProperties(proj_pom_path, pom_properties_to_remove)
-    jmf.removePomProperties(proj_pom_path, java_version_pom_properties)
+    jmf.remove_pom_plugin(proj_pom_path, quarkus_maven_plugin_gav)
+    jmf.remove_pom_plugin(proj_pom_path, maven_surefire_plugin_gav)
+    jmf.remove_pom_plugin(proj_pom_path, build_helper_maven_plugin_gav)
+    jmf.remove_pom_profile(proj_pom_path, 'native')
+    jmf.remove_pom_dependency_management(proj_pom_path)
+    jmf.remove_pom_properties(proj_pom_path, pom_properties_to_remove)
+    jmf.remove_pom_properties(proj_pom_path, java_version_pom_properties)
 
     # must remove default microprofile_gav before adding version correct one.
-    jmf.removeDependency(proj_pom_path, microprofile_gav)
+    jmf.remove_dependency(proj_pom_path, microprofile_gav)
 
     # Add annotation Gavs in. Defaulting to jakarta.
-    jmf.addDependency(proj_pom_path, microprofile_gav)
-    jmf.addDependency(proj_pom_path, jakarta_validation_gav)
-    jmf.addDependency(proj_pom_path, jackson_ann_gav)
-    jmf.addDependency(proj_pom_path, jakarta_rs_gav)
+    jmf.add_dependency(proj_pom_path, microprofile_gav)
+    jmf.add_dependency(proj_pom_path, jakarta_validation_gav)
+    jmf.add_dependency(proj_pom_path, jackson_ann_gav)
+    jmf.add_dependency(proj_pom_path, jakarta_rs_gav)
 
     if 'javax' == jaxrs:
-        jmf.removeDependency(proj_pom_path, jakarta_rs_gav)
-        jmf.addDependency(proj_pom_path, javax_rs_gav)
+        jmf.remove_dependency(proj_pom_path, jakarta_rs_gav)
+        jmf.add_dependency(proj_pom_path, javax_rs_gav)
         for f in java_file_list:
-            jmf.replaceTextInFileMulti({'jakarta\.ws\.rs': 'javax.ws.rs'}, f)
-        print('Only Java version 8 supported with javax jaxrs. Setting java version to 8 if it is not otherwise. If you want to use a different version of Java, you must use jakarta jaxrs.')
+            filef.replace_text_in_file_multi({'jakarta\.ws\.rs': 'javax.ws.rs'}, f)
+        print(
+            'Only Java version 8 supported with javax jaxrs. '
+            'Setting java version to 8 if it is not otherwise. '
+            'If you want to use a different version of Java, you must use jakarta jaxrs.'
+        )
         java_version = '8'
     elif 'jakarta' == jaxrs:
         None
     else:
-        print('Unsupported jaxrs: ' + str(jaxrs))
+        print(f'Unsupported jaxrs: {jaxrs}')
         quit(1)
 
     # set java version to java_version
-    jmf.addPomProperties(proj_pom_path, dict(zip(java_version_pom_properties, [java_version, java_version])))
+    jmf.add_pom_properties(proj_pom_path, dict(zip(java_version_pom_properties, [java_version, java_version])))
 
     # update imports
-    #jmf.gjf(javaFileList)
-    jmf.eclipseFormatter(proj_pom_path)
-    #jmf.eclipseFormatterValidate(projPomPath)
-    #jmf.beautifyImports(projPomPath)
+    formatf.eclipse_formatter(proj_pom_path)
 
     # create src/main/resources/META-INF/beans.xml
-    jmf.makeFile(gen_gav.artifact_id + '/src/main/resources/META-INF/', 'beans.xml') 
+    filef.make_file(gen_proj_path / 'src' / 'main' / 'resources' / 'META-INF' / 'beans.xml') 
 
     # remove docker folder
-    jmf.deleteDirectory(gen_gav.artifact_id + '/src/main/docker')
+    filef.delete_directory(gen_proj_path / 'src' / 'main' / 'docker')
 
     # rename src/main/openapi/openapi.yaml to real doc name
-    oapidoc_path = gen_gav.artifact_id + '/src/main/openapi'
-    source_doc = oapidoc_path + '/openapi.yaml'
-    target_doc = oapidoc_path + '/' + os.path.basename(path_to_open_api)
+    oapidoc_path = gen_proj_path / 'src' / 'main' / 'openapi'
+    source_doc = oapidoc_path / 'openapi.yaml'
+    target_doc = oapidoc_path / os.path.basename(path_to_open_api)
     if target_doc != source_doc:
-        jmf.copyFile(source_doc, target_doc)
-        jmf.deleteFile(oapidoc_path + '/openapi.yaml')
-        print('Copied ' + oapidoc_path + '/openapi.yaml to ' + oapidoc_path + '/' + os.path.basename(path_to_open_api))
+        filef.copy_file(source_doc, target_doc)
+        filef.delete_file(oapidoc_path / 'openapi.yaml')
+        print(f'Copied {oapidoc_path}/openapi.yaml to {oapidoc_path}/{os.path.basename(path_to_open_api)}')
 
-    pl.prepend_licenses(descriptor, gen_gav.artifact_id, files_path)
+    pl.prepend_licenses(descriptor, gen_proj_path, files_path)
 
     print('Rebuilding project 2.')
-    jmf.callMvnWithOptions(**mvn_opts, goal='clean install', file=proj_pom_path)
+    jmf.call_mvn_with_options(**mvn_opts, goal='clean install', file=proj_pom_path)
     print('Finished rebuilding project 2.')
 
     print('Removing target directory 2.')
-    jmf.callMvnWithOptions(**mvn_opts, goal='clean', file=proj_pom_path)
+    jmf.call_mvn_with_options(**mvn_opts, goal='clean', file=proj_pom_path)
     print('Removed target directory 2.')

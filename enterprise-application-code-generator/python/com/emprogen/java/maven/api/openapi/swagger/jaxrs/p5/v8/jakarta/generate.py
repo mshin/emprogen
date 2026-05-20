@@ -1,8 +1,17 @@
 import importlib
+from pathlib import Path
+
 from com.emprogen.java.maven.models import Gav
 
-def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' = '8', jaxrs='jakarta', **kwargs) -> None:
 
+def generate(
+    descriptor: dict,
+    *,
+    files_path: str | Path = None,
+    java_version: str = '8',
+    jaxrs='jakarta',
+    **kwargs
+) -> None:
     print('in openapi.swagger.jaxrs.p5.v8.jakarta.generate.py')
 
     script = importlib.import_module('com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v1.generate')
@@ -15,5 +24,5 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
     }
     kwargs.update(extra_kwargs)
 
-    script.generate(descriptor, files_path=filesPath, java_version=javaVersion, jaxrs=jaxrs, **kwargs)
+    script.generate(descriptor, files_path=files_path, java_version=java_version, jaxrs=jaxrs, **kwargs)
  

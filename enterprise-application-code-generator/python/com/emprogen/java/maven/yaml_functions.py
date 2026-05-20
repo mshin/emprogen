@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import yaml
+from pathlib import Path
 from typing import Any
 
 from com.emprogen.java.maven.models import Gav
@@ -42,20 +43,21 @@ def json_to_yaml(json_str: str) -> str:
     return yaml.dump(json.loads(json_str), default_flow_style=False)
 
 
-def load_open_api3(doc_path: str) -> dict:
-    ext = doc_path.split('.')[-1]
+def load_open_api3(doc_path: str | Path) -> dict:
+    doc_path_str = str(doc_path)
+    ext = doc_path_str.split('.')[-1]
     print('ext: ' + ext)
     if ext == 'json':
-        with open(doc_path) as f:
+        with open(doc_path_str) as f:
             return json.load(f)
     elif ext == 'yaml' or ext == 'yml':
-        with open(doc_path) as f:
+        with open(doc_path_str) as f:
             return yaml.safe_load(f)
     else:
         raise ValueError(f"Unsupported file extension: {ext}")
 
 
-def load_yaml_docs(proj_desc_loc: str) -> list[dict]: 
+def load_yaml_docs(proj_desc_loc: str | Path) -> list[dict]: 
     with open(proj_desc_loc) as f:
         gen = yaml.safe_load_all(f)
         #file closes before can read all stuff out of gen, so turn to list

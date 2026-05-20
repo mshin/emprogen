@@ -2,6 +2,7 @@
 import glob
 import os
 import yaml
+from pathlib import Path
 
 import com.emprogen.file_functions as FILEF
 # input yaml from descriptor file; basically a dict of licensePath to file extensions.
