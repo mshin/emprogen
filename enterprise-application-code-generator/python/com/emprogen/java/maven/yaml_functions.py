@@ -7,32 +7,8 @@ from typing import Any
 from com.emprogen.java.maven.models import Gav
 
 
-def yamlToJson(yaml_str: str) -> str:
-    return yaml_to_json(yaml_str)
-
-def jsonToYaml(json_str: str) -> str:
-    return json_to_yaml(json_str)
-
-def loadOpenApi3(doc_path: str) -> dict:
-    return load_open_api3(doc_path)
-
-def loadYamlDocs(proj_desc_loc: str) -> list[dict]:
-    return load_yaml_docs(proj_desc_loc)
-
-def getArchetypeGav(yaml: dict) -> Gav:
-    return get_archetype_gav(yaml)
-
-def getGeneratedProjectGav(yaml: dict) -> Gav:
-    return get_generated_project_gav(yaml)
-
-def getGav(gav_str: str) -> Gav:
+def get_gav(gav_str: str) -> Gav:
     return get_gav(gav_str)
-
-def getFieldsAndTypes(model_dict: dict) -> dict[str, str]:
-    return get_fields_and_types(model_dict)
-
-def getEnumValues(enum_dict: dict) -> list:
-    return get_enum_values(enum_dict)
 
 
 def yaml_to_json(yaml_str: str) -> str:

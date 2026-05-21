@@ -309,8 +309,8 @@ def generate(
     jmf.add_pom_properties(proj_pom_path, {maven_compiler_source: java_version, maven_compiler_target: java_version})
 
     # update lombok version so it compiles.
-    jmf.remove_dependency(proj_pom_path, yf.getGav('org.projectlombok:lombok'))
-    jmf.add_dependency(proj_pom_path, yf.getGav('org.projectlombok:lombok:1.18.30'))
+    jmf.remove_dependency(proj_pom_path, yf.get_gav('org.projectlombok:lombok'))
+    jmf.add_dependency(proj_pom_path, yf.get_gav('org.projectlombok:lombok:1.18.30'))
 
     # update imports
     formatf.beautify_imports(proj_pom_path)
