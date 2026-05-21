@@ -8,7 +8,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>dozer</module>
         <module>mapstruct</module>
     </modules>
 </project>

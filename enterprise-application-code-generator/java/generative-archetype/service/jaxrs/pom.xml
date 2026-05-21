@@ -8,13 +8,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>quarkus-camel-k8s-p0</module>
-        <module>quarkus-camel-ocp-p0</module>
-        <module>quarkus-camel-p0</module>
         <module>quarkus-p0</module>
         <module>quarkus-p1</module>
-        <module>springboot-camel-k8s-p0</module>
-        <module>springboot-camel-ocp-p0</module>
         <module>springboot-camel-p0</module>
     </modules>
 </project>

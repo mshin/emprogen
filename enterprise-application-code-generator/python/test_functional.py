@@ -2,11 +2,14 @@
 import subprocess
 import sys
 from pathlib import Path
+import argparse
 
 import com.emprogen.file_functions as filef
 
 ROOT_PATH = Path(__file__).parent
 CEJM_PATH = ROOT_PATH / 'test_functional' / 'com' / 'emprogen' / 'java' / 'maven'
+TMP_PATH = ROOT_PATH / 'test_functional' / 'tmp'
+
 
 def run_for_definition_path_str(definition_path_str) -> None:
     result = subprocess.run(
@@ -19,8 +22,17 @@ def run_for_definition_path_str(definition_path_str) -> None:
     print(result.stderr)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run functional tests or clear tmp directory.")
+    parser.add_argument('-c', '--clear', action='store_true', help='Only clear the tmp directory and exit.')
+    args = parser.parse_args()
+
+    if args.clear:
+        print('clearing tmp directory')
+        filef.clear_directory(TMP_PATH)
+        sys.exit(0)
+
     print('clearing tmp directory')
-    filef.clear_directory(ROOT_PATH / 'test_functional' / 'tmp')
+    filef.clear_directory(TMP_PATH)
 
     print('Running functional tests.')
     print('This may take a few minutes...')
