@@ -16,6 +16,8 @@ from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
+SCRIPT_VERSION = 'openapi.swagger.jaxrs.p5.v1.generate.py'
+
 
 def generate(
     descriptor: dict,
@@ -26,10 +28,11 @@ def generate(
     **kwargs
 ) -> None:
 
-    print('in openapi.swagger.jaxrs.p5.v1.generate.py')
+    print(f'in {SCRIPT_VERSION}')
 
     # BEGIN CONSTANTS
 
+    script_version = kwargs.get('script_version', SCRIPT_VERSION)
     mvn_gen_gav = None
     javax_gen_gav = kwargs.get('javax_gen_gav', Gav('com.emprogen', 'api-openapi-swagger-jaxrs-2-archetype', '0.0.2'))
     jakarta_gen_gav = kwargs.get('jakarta_gen_gav', Gav('com.emprogen', 'api-openapi-swagger-jakarta-3-archetype', '0.0.1'))
@@ -99,7 +102,7 @@ def generate(
 
     gen_gav = yf.get_gav(descriptor['generatedGav'])
     package = jmf.get_package(gen_gav)
-    path_to_open_api = Path(files_path) / descriptor['openApiUrl']
+    path_to_open_api = Path(files_path) / descriptor['openapiFile']
     author = descriptor['author']
     path_to_pom = None
     # the directory of the java code.
@@ -522,3 +525,4 @@ def generate(
     print('Removing target directory 2.')
     jmf.call_mvn_with_options(**mvn_opts, goal='clean', file=proj_pom_path)
     print('Removed target directory 2.')
+    print(f'Finished generating script {script_version}.')

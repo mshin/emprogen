@@ -3,6 +3,8 @@ from pathlib import Path
 
 from com.emprogen.java.maven.models import Gav
 
+SCRIPT_VERSION = 'openapi.swagger.jaxrs.p5.v21.generate.py'
+
 
 def generate(
     descriptor: dict,
@@ -12,7 +14,7 @@ def generate(
     jaxrs='jakarta',
     **kwargs
 ) -> None:
-    print('in openapi.swagger.jaxrs.p5.v21.generate.py')
+    print(f'in {SCRIPT_VERSION}')
 
     script = importlib.import_module('com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v1.generate')
 
@@ -20,7 +22,8 @@ def generate(
         'microprofile_gav': Gav('org.eclipse.microprofile.openapi', 'microprofile-openapi-api', '4.1.1'),
         'jakarta_validation_gav': Gav('jakarta.validation', 'jakarta.validation-api', '3.1.1'),
         'jackson_ann_gav': Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.21'),
-        'jakarta_rs_gav': Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0')
+        'jakarta_rs_gav': Gav('jakarta.ws.rs', 'jakarta.ws.rs-api', '3.1.0'),
+        'script_version': SCRIPT_VERSION
     }
     kwargs.update(extra_kwargs)
 
