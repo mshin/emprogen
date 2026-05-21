@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import re
+from pathlib import Path
 from typing import Optional
 
 
-def get_property(prop: str, file_path: str) -> Optional[str]:
+def get_property(prop: str, file_path: str | Path) -> Optional[str]:
     """
     Retrieves the value of a property from a file with 'key=value' lines.
 
@@ -26,7 +27,7 @@ def get_property(prop: str, file_path: str) -> Optional[str]:
     return None
 
 
-def load_properties_as_dict(properties_file_url: str) -> dict:
+def load_properties_as_dict(properties_file_url: str | Path) -> dict:
     """
     Given a url to .properties file, return the key=value items in a dict.
 
@@ -48,7 +49,7 @@ def load_properties_as_dict(properties_file_url: str) -> dict:
         for line in key_value_list:
             if not line: continue
             if line and line[0] == '#':
-                print("got rid of comment: " + str(line))
+                print(f'got rid of comment: {line}')
                 continue
 
             match = re.match(pattern, line)
@@ -58,7 +59,7 @@ def load_properties_as_dict(properties_file_url: str) -> dict:
                 properties_dict[key] = value
             else:
                 e = Exception('Property was not in format k=v.')
-                print('file: ' + str(properties_file_url) + '| prop: ' + str(p))
+                print(f'file: {properties_file_url}| prop: {p}')
                 raise e
-    print('properties_dict: ' + str(properties_dict))
+    print(f'properties_dict: {properties_dict}')
     return properties_dict

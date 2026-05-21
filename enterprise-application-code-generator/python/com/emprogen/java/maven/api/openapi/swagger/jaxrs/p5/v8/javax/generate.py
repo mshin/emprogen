@@ -3,7 +3,7 @@ from pathlib import Path
 
 from com.emprogen.java.maven.models import Gav
 
-SCRIPT_VERSION = 'openapi.swagger.jaxrs.p5.v8.javax.generate.py'
+SCRIPT_VERSION = 'java.maven.api.openapi.swagger.jaxrs.p5.v8.javax.generate.py'
 
 
 def generate(

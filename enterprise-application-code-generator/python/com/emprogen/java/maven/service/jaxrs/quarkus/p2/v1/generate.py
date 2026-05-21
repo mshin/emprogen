@@ -12,6 +12,8 @@ import com.emprogen.prepend_license as pl
 import com.emprogen.subprocess_functions as spf
 from com.emprogen.java.maven.models import Gav
 
+SCRIPT_VERSION = 'java.maven.service.jaxrs.quarkus.p2.v1.generate.py'
+
 
 def generate(
     descriptor: dict,
@@ -25,9 +27,10 @@ def generate(
     java_version: str = '17',
     **kwargs
 ) -> None:
-    print('in service.jaxrs.quarkus.p2.v1.generate.py')
+    print(f'in {SCRIPT_VERSION}')
     print(f'java_version: {java_version}')
 
+    script_version = kwargs.get('script_version', SCRIPT_VERSION)
     # define maven archetype used for this generator within script.
     arch_gav = archetype_gav
 
@@ -38,8 +41,9 @@ def generate(
     service_interface_gav_string = descriptor['serviceInterfaceGav']
     api_gav = yf.get_gav(service_interface_gav_string)
 
+    proj_path = Path(proj_gav.artifact_id)
     # the directory of the maven pom for the generated code. Usually at the directory root of project.
-    proj_pom_path = Path(proj_gav.artifact_id) / 'pom.xml'
+    proj_pom_path = proj_path / 'pom.xml'
 
     author = descriptor.get('author', sif.AUTHOR_DEFAULT)
 
@@ -137,8 +141,10 @@ def generate(
     formatf.beautify_imports(proj_pom_path)
 
     # add licenses to files
-    pl.prepend_licenses(descriptor, proj_gav.artifact_id, files_path)
+    pl.prepend_licenses(descriptor, proj_path, files_path)
 
     # verify it compiles
     jmf.call_mvn_with_options(**mvn_opts, goal='clean install', file=proj_pom_path)
     jmf.call_mvn_with_options(**mvn_opts, goal='clean', file=proj_pom_path)
+
+    print(f'Finished generation for script {script_version}.')

@@ -1,4 +1,3 @@
-import glob
 import os
 import re
 import shutil
@@ -16,7 +15,7 @@ from com.emprogen.java.maven.models import Gav
 from com.emprogen.java.maven.models import JoinInstruction
 from com.emprogen.java.maven.models import TableRelationship
 
-SCRIPT_VERSION = 'openapi.swagger.jaxrs.p5.v1.generate.py'
+SCRIPT_VERSION = 'java.maven.api.openapi.swagger.jaxrs.p5.v1.generate.py'
 
 
 def generate(
@@ -27,7 +26,6 @@ def generate(
     jaxrs: str = 'javax',
     **kwargs
 ) -> None:
-
     print(f'in {SCRIPT_VERSION}')
 
     # BEGIN CONSTANTS
@@ -525,4 +523,5 @@ def generate(
     print('Removing target directory 2.')
     jmf.call_mvn_with_options(**mvn_opts, goal='clean', file=proj_pom_path)
     print('Removed target directory 2.')
-    print(f'Finished generating script {script_version}.')
+
+    print(f'Finished generation for script {script_version}.')

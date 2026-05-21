@@ -39,7 +39,7 @@ elif os.path.isdir(descriptor_dir):
     file_to_path = {}
     for f in os.listdir(descriptor_dir):
         file_path = os.path.join(descriptor_dir, f)
-        if os.path.isfile(file_path):
+        if os.path.isfile(file_path) and f.lower().endswith(('.yml', '.yaml')):
             file_to_path[f] = file_path
     # if there's an order.txt file, sort the documents based on that.
     if doc_list:

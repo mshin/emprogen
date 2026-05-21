@@ -66,3 +66,11 @@ enum:
           - GREASE
           - BUTTER
           - OLIVE
+    - name: Enum2
+      fields:
+          - String:id
+          - Integer:code
+      values:
+          - ORANGE,"orangeId",3141
+          - LONGAN:"longanId":2718
+          - CARDAMOM;"cardamomId";1618
