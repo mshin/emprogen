@@ -12,3 +12,7 @@ license:
     - licenseFile: license/xmlHi.txt
       fileTypes:
           - .xml
+---
+id: com.emprogen.java.maven.service.jaxrs.quarkus.p2.v17
+generatedGav: com.github.mshin:example-j17-rs:1.0.0
+serviceInterfaceGav: com.github.mshin:example-j21-rs-api:1.0.0

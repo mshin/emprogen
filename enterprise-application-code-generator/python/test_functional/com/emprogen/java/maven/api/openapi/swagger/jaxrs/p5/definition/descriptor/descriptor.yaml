@@ -1,24 +1,33 @@
 id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v8.javax
 generatedGav: com.github.mshin:example-j8javax-api:1.0.0
 author: MunChul Shin
-openApiUrl: enum_openapi.yaml
+openapiFile: enum_openapi.yaml
 ---
 id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v8.jakarta
 generatedGav: com.github.mshin:example-j8jakarta-api:1.0.0
 author: MunChul Shin
-openApiUrl: enum_openapi.yaml
+openapiFile: enum_openapi.yaml
 ---
 id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v11
 generatedGav: com.github.mshin:example-j11-api:1.0.0
 author: MunChul Shin
-openApiUrl: enum_openapi.yaml
+openapiFile: enum_openapi.yaml
+dependencyGav:
+    - com.github.mshin:example-j8jakarta-api:1.0.0
+license:
+    - licenseFile: license/LICENSE.txt
+      fileTypes:
+          - .java
+    - licenseFile: license/xmlHi.txt
+      fileTypes:
+          - .xml
 ---
 id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v17
 generatedGav: com.github.mshin:example-j17-api:1.0.0
 author: MunChul Shin
-openApiUrl: enum_openapi.yaml
+openapiFile: enum_openapi.yaml
 ---
 id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
 generatedGav: com.github.mshin:example-j21-rs-api:1.0.0
 author: MunChul Shin
-openApiUrl: enum_openapi.yaml
+openapiFile: enum_openapi.yaml

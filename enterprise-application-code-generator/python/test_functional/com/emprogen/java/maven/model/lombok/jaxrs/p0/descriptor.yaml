@@ -1,0 +1,14 @@
+id: com.emprogen.java.maven.model.lombok.jaxrs.p0.v1
+generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
+author: MunChul Shin
+model:
+    - name: JaxrsModel0
+      fields:
+          - Map<BigDecimal, List<BigDecimal>>:field3
+          - ArrayList:field2
+          - BigDecimal:field1
+    - name: JaxrsModel1
+      fields:
+          - Integer:field1
+          - String:field2
+          - Date:field3
