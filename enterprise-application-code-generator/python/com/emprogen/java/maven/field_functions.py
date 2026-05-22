@@ -1,10 +1,5 @@
+#!/usr/bin/env python3
 import re
-
-def mapFieldsToQualifiedTypes(field_to_type: dict, type_to_pkg_type: dict) -> dict:
-    return map_fields_to_qualified_types(field_to_type, type_to_pkg_type)
-
-def createFieldString(field_to_pkg_type: dict, is_add_annotation_placeholder: bool) -> str:
-    return create_field_string(field_to_pkg_type, is_add_annotation_placeholder)
 
 
 "Given the field:type and type:pkgtype dictionaries, return a field:pkgtype dict."
@@ -45,9 +40,11 @@ def map_fields_to_qualified_types(field_to_type: dict, type_to_pkg_type: dict) -
     return output
 
 
-"""Given the field:pkgtype dict, create field str for generated classes. 
-Alternatively, add annotation placeholder that must be replaced later."""
 def create_field_string(field_to_pkg_type: dict, is_add_annotation_placeholder: bool) -> str:
+    """
+    Given the field:pkgtype dict, create field str for generated classes. 
+    Alternatively, add annotation placeholder that must be replaced later.
+    """
     output_str = ''
     for field, pkgtype in field_to_pkg_type.items():
         field_str = '\n    private ' + pkgtype + ' ' + field + ';\n'

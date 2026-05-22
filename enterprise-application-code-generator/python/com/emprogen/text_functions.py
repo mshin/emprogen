@@ -24,6 +24,10 @@ def to_camel(s: str, is_lower_first: bool = True) -> str:
     """
     Converts snake_case, kebab-case, and space case to camelCase.
     """
+    if not re.search(r'[_\- ]', s):
+        if is_lower_first and s:
+            s = s[0].lower() + s[1:]
+        return s
     word_list = filter(None, re.split(r'[_\- ]', s))
     s = ''.join(word.title() for word in word_list)
     if is_lower_first and s:

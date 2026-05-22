@@ -3,7 +3,7 @@ import os
 import zipfile
 from typing import Optional, List
 
-import com.emprogen.subprocess_functions as SPF
+import com.emprogen.subprocess_functions as spf
 
 
 def get_files_from_jar(
@@ -46,4 +46,4 @@ def read_content_from_jar_class(jar_path: str, class_name: str) -> str:
         Output from the javap command as a string.
     """
     print(f'pwd: {os.getcwd()}')
-    return SPF.run_subprocess_capture_output(['javap', '-v', '-cp', jar_path, class_name])
+    return spf.run_subprocess_capture_output(['javap', '-v', '-cp', jar_path, class_name])

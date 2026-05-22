@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import re
 
-import com.emprogen.file_functions as FILEF
+import com.emprogen.file_functions as filef
 
 
 def fix_nested_enum_classes(java_class_files: list) -> None:
@@ -30,7 +30,7 @@ def identify_nested_enum_classes(java_class_files: list) -> dict:
     for java_class_file in java_class_files:
         with open(java_class_file, 'r') as f:
             contents = f.read()
-            if FILEF.get_in_file(
+            if filef.get_in_file(
                 '(?s)\npublic class .+\n\s*public enum ', java_class_file
             ):
                 output[java_class_file] = contents

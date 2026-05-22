@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import os
 import pathlib
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 from pathlib import Path
 from typing import Optional, List, Dict
 
-import com.emprogen.file_functions as FILEF
-import com.emprogen.subprocess_functions as SPF
-import com.emprogen.xml_functions as XMLF
+import com.emprogen.file_functions as filef
+import com.emprogen.subprocess_functions as spf
+import com.emprogen.xml_functions as xmlf
 from com.emprogen.java.maven.models import Gav
 
 POM_NAMESPACE = 'http://maven.apache.org/POM/4.0.0'
@@ -119,7 +119,7 @@ def call_mvn_with_options(*, goal: str = 'archetype:generate', file: str | Path 
         arg_str = '-D{key}={value}'.format(key=k, value=v)
         arg_list.append(arg_str)
     print(f'maven call: {arg_list}')
-    SPF.run_subprocess(arg_list)
+    spf.run_subprocess(arg_list)
 
 
 def add_dependency(pom_path: str | Path, gav: Optional['Gav'] = None) -> None:
@@ -134,31 +134,31 @@ def add_dependency(pom_path: str | Path, gav: Optional['Gav'] = None) -> None:
         gav = Gav(None, None, None)
     pom_path_str = str(pom_path)
 
-    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    tree = ET.parse(pom_path_str, parser) #ElementTree
+    parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
+    tree = et.parse(pom_path_str, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': POM_NAMESPACE}
     dependencies_elem = root.find('./x:dependencies', ns)
 
     if dependencies_elem is None:
-        dependencies_elem = ET.SubElement(root, 'dependencies')
+        dependencies_elem = et.SubElement(root, 'dependencies')
 
-    dep_elem = ET.Element('dependency')
+    dep_elem = et.Element('dependency')
 
-    group_id_elem = ET.SubElement(dep_elem, 'groupId')
+    group_id_elem = et.SubElement(dep_elem, 'groupId')
     group_id_elem.text = gav.group_id
 
-    artifact_id_elem = ET.SubElement(dep_elem, 'artifactId')
+    artifact_id_elem = et.SubElement(dep_elem, 'artifactId')
     artifact_id_elem.text = gav.artifact_id
 
     if gav.version:
-        version_elem = ET.SubElement(dep_elem, 'version')
+        version_elem = et.SubElement(dep_elem, 'version')
         version_elem.text = gav.version
 
     dependencies_elem.append(dep_elem)
 
-    ET.indent(tree, space="    ", level=0)
-    ET.register_namespace('', ns['x'])
+    et.indent(tree, space="    ", level=0)
+    et.register_namespace('', ns['x'])
     tree.write(pom_path_str)
 
 
@@ -174,8 +174,8 @@ def remove_dependency(pom_path: str | Path, gav: Optional['Gav'] = None) -> None
         gav = Gav(None, None, None)
     pom_path_str = str(pom_path)
 
-    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    tree = ET.parse(pom_path_str, parser) #ElementTree
+    parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
+    tree = et.parse(pom_path_str, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': POM_NAMESPACE}
     # ./project/dependencies/dependency/groupId[.='io.swagger']/../artifactId[.='swagger-annotations']/..
@@ -193,8 +193,8 @@ def remove_dependency(pom_path: str | Path, gav: Optional['Gav'] = None) -> None
     if elem is not None and parent_elem is not None:
         parent_elem.remove(elem)
 
-    ET.indent(tree, space="    ", level=0)
-    ET.register_namespace('', ns['x'])
+    et.indent(tree, space="    ", level=0)
+    et.register_namespace('', ns['x'])
     tree.write(pom_path_str)
 
 
@@ -210,7 +210,7 @@ def remove_pom_properties(pom_path: str | Path, properties_list: List[str]) -> N
 
     for prop in properties_list:
         try:
-            XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['properties', prop], {})
+            xmlf.remove_xml_element(pom_path_str, POM_NAMESPACE, ['properties', prop], {})
             print(f'removed pom property {prop} in pom {pom_path_str}')
         except Exception as e:
             print(f'Could not remove property {prop} from pom {pom_path_str}: {e}')
@@ -227,7 +227,7 @@ def add_pom_properties(pom_path: str, properties_dict: Dict[str, str]) -> None:
     pom_path_str = str(pom_path)
 
     for prop, value in properties_dict.items():
-        XMLF.add_xml_element(pom_path_str, POM_NAMESPACE, ['properties'], {prop: value})
+        xmlf.add_xml_element(pom_path_str, POM_NAMESPACE, ['properties'], {prop: value})
         print(f'added pom property {prop} in pom {pom_path_str}')
 
 
@@ -244,7 +244,7 @@ def remove_pom_plugin(pom_path: str | Path, gav: Optional['Gav'] = None) -> None
     pom_path_str = str(pom_path)
 
     try:
-        XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['build', 'plugins', 'plugin'], {'artifactId': gav.artifact_id})
+        xmlf.remove_xml_element(pom_path_str, POM_NAMESPACE, ['build', 'plugins', 'plugin'], {'artifactId': gav.artifact_id})
         print(f'removed pom plugin {gav} in pom {pom_path_str}')
     except Exception as e:
         print(f'Could not remove plugin {gav} from pom {pom_path_str}: {e}')
@@ -261,7 +261,7 @@ def remove_pom_profile(pom_path: str | Path, profile_id: str) -> None:
     pom_path_str = str(pom_path)
 
     try:
-        XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['profiles', 'profile'], {'id': profile_id})
+        xmlf.remove_xml_element(pom_path_str, POM_NAMESPACE, ['profiles', 'profile'], {'id': profile_id})
         print(f'removed pom profile {profile_id} in pom {pom_path_str}')
     except Exception as e:
         print(f'Could not remove profile {profile_id} from pom {pom_path_str}: {e}')
@@ -276,7 +276,7 @@ def remove_pom_dependency_management(pom_path: str | Path) -> None:
     pom_path_str = str(pom_path)
 
     try:
-        XMLF.remove_xml_element(pom_path_str, POM_NAMESPACE, ['dependencyManagement'], {})
+        xmlf.remove_xml_element(pom_path_str, POM_NAMESPACE, ['dependencyManagement'], {})
         print(f'removed dependencyManagement in pom {pom_path_str}')
     except Exception as e:
         print(f'Could not remove dependencyManagement from pom {pom_path_str}: {e}')
@@ -293,7 +293,7 @@ def add_java_imports(imports: str, file_path: str | Path) -> None:
 
     print(f'adding imports to file: {file_path_str}')
     search_text = '\n'
-    FILEF.replace_text_in_file(search_text, '\n\n' + imports + '\n', file_path_str, count = 1)
+    filef.replace_text_in_file(search_text, '\n\n' + imports + '\n', file_path_str, count = 1)
 
 
 def gav_to_jar_local_abs_path_str(gav: str | Gav) -> str:

@@ -4,7 +4,7 @@ import os
 import yaml
 from pathlib import Path
 
-import com.emprogen.file_functions as FILEF
+import com.emprogen.file_functions as filef
 # input yaml from descriptor file; basically a dict of licensePath to file extensions.
 
 # input the set of all the project files and put them into a dict based on file extension. ext to file list.
@@ -37,7 +37,7 @@ def process_licenses(license_to_ext_dict: dict, dir_path: str | Path, descriptor
     """
     descriptor_path_str = str(descriptor_path)
     # get the set of all the project files and put them into a dict based on file extension
-    ext_to_file_list_dict = FILEF.get_files_list_by_extension_dict(dir_path)
+    ext_to_file_list_dict = filef.get_files_list_by_extension_dict(dir_path)
 
     print('pwd:', os.getcwd())
     # iterate over the licenses

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 from typing import List, Dict
 
 
@@ -21,10 +21,10 @@ def remove_xml_element(
         path_to_element_list does not contain the element identifier elements,
         only everything up to that point.
     """
-    ET.register_namespace('', namespace)
+    et.register_namespace('', namespace)
 
-    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    tree = ET.parse(file_path, parser) #ElementTree
+    parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
+    tree = et.parse(file_path, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': namespace}
 
@@ -45,7 +45,7 @@ def remove_xml_element(
 
     parent_elem.remove(elem)
 
-    ET.indent(tree, space="    ", level=0)
+    et.indent(tree, space="    ", level=0)
     tree.write(file_path, encoding="utf-8", xml_declaration=True)
 
 
@@ -67,8 +67,8 @@ def add_xml_element(
         path_to_element_list does not contain the element identifier elements,
         only everything up to that point.
     """
-    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    tree = ET.parse(file_path, parser) #ElementTree
+    parser = et.XMLParser(target=et.TreeBuilder(insert_comments=True))
+    tree = et.parse(file_path, parser) #ElementTree
     root = tree.getroot() #Element
     ns = {'x': namespace}
 
@@ -79,8 +79,8 @@ def add_xml_element(
     parent_elem = root.find(path_to_element, ns)
     if parent_elem is not None:
         for e, value in element_to_add_dict.items():
-            ET.SubElement(parent_elem, e).text = value
+            element_to_add_dict.SubElement(parent_elem, e).text = value
 
-        ET.indent(tree, space="    ", level=0)
-        ET.register_namespace('', namespace)
+        et.indent(tree, space="    ", level=0)
+        et.register_namespace('', namespace)
         tree.write(file_path)

@@ -34,5 +34,29 @@ properties:
     items:
       type: string
       pattern: "^[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+:[\\w\\-\\$\\.]+$"
+  license:
+    type: array
+    description: |
+      A list of license files and the file types they should be applied to.
+      Licenses will be prepended to files of the corresponding type.
+      Licenses will be prepended in the order they are listed, so if multiple licenses apply to a file type, the first license in the list will be the bottom-most license in the file.
+    items:
+      type: object
+      properties:
+        licenseFile:
+          type: string
+          description: |
+            The path to where the license file is located.
+        fileTypes:
+          type: array
+          description: |
+            The file extension types corresponding to the license.
+            All files of these extensions will have the license prepended.
+          items:
+            type: string
+            pattern: "^\\.([\\w~]+|\\*)$"
+            description: |
+              A specific file extension starting with '.' ex: '.java' or '.xml'.
+              '.*' can be used to specify all file types.
 required: [id, generatedGav]
 additionalProperties: false
