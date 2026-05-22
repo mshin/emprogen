@@ -1,3 +1,0 @@
-openAPI annotations
-
-ABANDONED

@@ -1,0 +1,151 @@
+openapi: 3.0.0
+info:
+    title: Swagger Petstore
+    version: 1.0.0
+    license:
+        name: MIT
+servers:
+    -
+        url: 'http://petstore.swagger.io/v1'
+paths:
+    /pets:
+        get:
+            tags:
+                - pets
+            parameters:
+                -
+                    name: limit
+                    description: How many items to return at one time (max 100) "quote".
+                    schema:
+                        format: int32
+                        maximum: 100
+                        type: integer
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    headers:
+                        x-next:
+                            schema:
+                                type: string
+                            description: A link to the next page of responses
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Pets'
+                    description: A paged array of pets
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                    description: unexpected error
+            operationId: listPets
+            summary: List all pets
+        post:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreatePetRequest'
+                required: true
+            tags:
+                - pets
+            responses:
+                '201':
+                    description: Null response
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                    description: unexpected error
+            operationId: createPets
+            summary: Create a pet
+    '/pets/{petId}':
+        get:
+            tags:
+                - pets
+            parameters:
+                -
+                    name: petId
+                    description: The id of the pet to retrieve
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Pet'
+                    description: Expected response to a valid request
+                default:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                    description: unexpected error
+            operationId: showPetById
+            summary: Info for a specific pet
+    /mypath:
+        get:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: string
+                    description: Success!
+components:
+    schemas:
+        Pet:
+            required:
+                - id
+                - name
+            type: object
+            properties:
+                id:
+                    format: int64
+                    type: integer
+                name:
+                    type: string
+                tag:
+                    type: string
+                color:
+                    description: ''
+                    enum:
+                        - BROWN
+                        - CALICO
+                        - BLACK
+                        - WHITE
+                    type: string
+        Pets:
+            maxItems: 100
+            type: array
+            items:
+                $ref: '#/components/schemas/Pet'
+        Error:
+            required:
+                - code
+                - message
+            type: object
+            properties:
+                code:
+                    format: int32
+                    type: integer
+                message:
+                    type: string
+        CreatePetRequest:
+            description: ''
+            required:
+                - type
+            type: object
+            properties:
+                type:
+                    description: The type of pet to create.
+                    enum:
+                        - CAT
+                        - DOG
+                    type: string

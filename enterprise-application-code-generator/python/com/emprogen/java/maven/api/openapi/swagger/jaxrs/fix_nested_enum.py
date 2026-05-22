@@ -1,33 +1,60 @@
-import com.emprogen.java.maven.functions as jmf
+#!/usr/bin/env python3
 import re
 
-def fixNestedEnumClasses(javaClassFiles: 'list') -> None:
-    nestedEnumClasses = identifyNestedEnumClasses(javaClassFiles)
-    for nestedEnumClassFile, nestedEnumClassContent in nestedEnumClasses.items():
-        if isNestedEnumClassMissingClosingBracket(nestedEnumClassContent):
-            print('Nested enum class: ' + str(nestedEnumClassFile) + ' ...is missing closing bracket.')
-            fixedContents = fixNestedEnumClass(nestedEnumClassContent)
-            print('Adding closing bracket to end of file ' + str(nestedEnumClassFile))
-            with open(nestedEnumClassFile, 'w') as f:
-                f.write(fixedContents)
+import com.emprogen.file_functions as filef
 
-def identifyNestedEnumClasses(javaClassFiles: 'list') -> 'dict':
+
+def fix_nested_enum_classes(java_class_files: list) -> None:
+    """
+    Fixes nested enum classes missing closing brackets in the given Java files.
+    """
+    nested_enum_classes = identify_nested_enum_classes(java_class_files)
+    for nested_enum_class_file, nested_enum_class_content in nested_enum_classes.items():
+        if is_nested_enum_class_missing_closing_bracket(nested_enum_class_content):
+            print(
+                f'Nested enum class: {nested_enum_class_file} ...is missing closing bracket.'
+            )
+            fixed_contents = fix_nested_enum_class(nested_enum_class_content)
+            print(
+                f'Adding closing bracket to end of file {nested_enum_class_file}'
+            )
+            with open(nested_enum_class_file, 'w') as f:
+                f.write(fixed_contents)
+
+
+def identify_nested_enum_classes(java_class_files: list) -> dict:
+    """
+    Identifies Java files containing nested enum classes.
+    """
     output = {}
-    for javaClassFile in javaClassFiles:
-        with open(javaClassFile, 'r') as f:
+    for java_class_file in java_class_files:
+        with open(java_class_file, 'r') as f:
             contents = f.read()
-            if jmf.getInFile('(?s)\npublic class .+\n\s*public enum ', javaClassFile):
-                output[javaClassFile] = contents
-
+            if filef.get_in_file(
+                '(?s)\npublic class .+\n\s*public enum ', java_class_file
+            ):
+                output[java_class_file] = contents
     return output
 
-def fixNestedEnumClass(nestedEnumClassContent: 'str') -> 'str':
-    return nestedEnumClassContent + '\n}'
 
-def isNestedEnumClassMissingClosingBracket(nestedEnumClassContent: 'str') -> bool:
-    openCurlyBracketCount = len(re.findall(r'\{', nestedEnumClassContent, re.MULTILINE))
-    closedCurlyBracketCount = len(re.findall(r'\}', nestedEnumClassContent, re.MULTILINE))
-    if openCurlyBracketCount > closedCurlyBracketCount:
-        return True
-    else:
-        return False
+def fix_nested_enum_class(nested_enum_class_content: str) -> str:
+    """
+    Appends a closing bracket to the nested enum class content.
+    In future, more changes could be added here.
+    """
+    return nested_enum_class_content + '\n}'
+
+
+def is_nested_enum_class_missing_closing_bracket(
+    nested_enum_class_content: str
+) -> bool:
+    """
+    Checks if the nested enum class content is missing a closing bracket.
+    """
+    open_curly_bracket_count = len(
+        re.findall(r'\{', nested_enum_class_content, re.MULTILINE)
+    )
+    closed_curly_bracket_count = len(
+        re.findall(r'\}', nested_enum_class_content, re.MULTILINE)
+    )
+    return open_curly_bracket_count > closed_curly_bracket_count

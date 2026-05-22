@@ -11,14 +11,21 @@ examples:
   - |
     id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
     generatedGav: com.github.mshin:example-api:1.0.0
+    openapiFile: openapi.yml
+  - |
+    id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
+    generatedGav: com.github.mshin:example-api:1.0.0
     author: MunChul Shin
-    openApiUrl: my_openapi.yaml
+    openapiFile: openapi.yml
     dependencyGav:
         - com.github.mshin:example-domain-model:0.0.1
     license:
         - licenseFile: licenses/LICENSE.txt
           fileTypes:
               - .java
+        - licenseFile: licenses/License2.txt
+          fileTypes:
+              - .xml
 type: object
 properties:
   id:
@@ -35,10 +42,10 @@ properties:
     type: string
     description: |
       The person who authored the code.
-  openApiUrl:
+  openapiFile:
     type: string
     description: |
-      The path to where the OpenAPI document is located.
+      The path to the file where the OpenAPI document is located.
   dependencyGav:
     type: array
     description: |
@@ -51,7 +58,9 @@ properties:
     description: |
       A list of license files and the file types they should be applied to.
       Licenses will be prepended to files of the corresponding type.
-      Licenses will be prepended in the order they are listed, so if multiple licenses apply to a file type, the first license in the list will be the bottom-most license in the file.
+      Licenses will be prepended in the order they are listed,
+      so if multiple licenses apply to a file type,
+      the first license in the list will be the bottom-most license in the file.
     items:
       type: object
       properties:
@@ -70,5 +79,5 @@ properties:
             description: |
               A specific file extension starting with '.' ex: '.java' or '.xml'.
               '.*' can be used to specify all file types.
-required: [id, generatedGav]
+required: [id, generatedGav, openapiFile]
 additionalProperties: false

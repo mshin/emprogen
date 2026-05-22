@@ -1,55 +1,27 @@
+#!/usr/bin/env python3
 import re
 
-"Given a url to .properties file, return the key=value items in a dict."
-def loadPropertiesAsDict(propertiesFileUrl: 'str') -> 'dict':
-
-    propertiesDict = {}
-
-    # key is ([^=]+) aka one or more characters starting at the beginning of line that are not equals sign.
-    # value is (.*) aka any characters after the first equals sign until the end of the line.
-    pattern = re.compile('^([^=]+)=(.*)$')
-
-    with open(propertiesFileUrl) as f:
-        keyValueList = f.read().split('\n')
-
-        for line in keyValueList:
-            if not line: continue
-            if line and line[0] == '#':
-                print("got rid of comment: " + str(line))
-                continue
-
-            match = re.match(pattern, line)
-            if match:
-                key = match.group(1)
-                value = match.group(2)
-                propertiesDict[key] = value
-            else:
-                e = Exception('Property was not in format k=v.')
-                print('file: ' + str(propertiesFileUrl) + '| prop: ' + str(p))
-                raise e
-    print('propertiesDict: ' + str(propertiesDict))
-    return propertiesDict
 
 "Given the field:type and type:pkgtype dictionaries, return a field:pkgtype dict."
-def mapFieldsToQualifiedTypes(fieldToType: 'dict', typeToPkgtype: 'dict') -> 'dict':
-    output = fieldToType.copy()
+def map_fields_to_qualified_types(field_to_type: dict, type_to_pkg_type: dict) -> dict:
+    output = field_to_type.copy()
     # for each field, get the types.
     for k, v in output.items():
-        rawTypes = v.replace('<', ' ').replace('>', ' ').replace(',', ' ').split(' ')
-        typesSet = set(rawTypes)
-        typesSet.discard('')
+        raw_types = v.replace('<', ' ').replace('>', ' ').replace(',', ' ').split(' ')
+        types_set = set(raw_types)
+        types_set.discard('')
         # For each type, map to the package info. 
-        typesMap = {}
-        for t in typesSet:
+        types_map = {}
+        for t in types_set:
             # Make the type set. If it's not there, either:
             # the type doesn't require pkg or it's not in the properties file.
-            if typeToPkgtype.__contains__(t):
-                typesMap[t] = typeToPkgtype[t]
+            if type_to_pkg_type.__contains__(t):
+                types_map[t] = type_to_pkg_type[t]
         # For each type for field, replace with pkgtype.
         # Sorted to prevent replacing parts of words.
         # replacing largest words first should help.
-        print('typesMap: ' + str(typesMap))
-        for ke in sorted(typesMap.keys(), key=len, reverse=True):
+        print('types_map: ' + str(types_map))
+        for ke in sorted(types_map.keys(), key=len, reverse=True):
             #for first type in the type map, find occurances in fieldType, replace all.
             # lookahead/behind matches but doesn't include characters in match
             #(?!foo) negative lookahead (match if pattern immediately following is not foo)
@@ -58,35 +30,29 @@ def mapFieldsToQualifiedTypes(fieldToType: 'dict', typeToPkgtype: 'dict') -> 'di
             pattern = re.compile(r'(?<![a-zA-Z\.])(' + ke + r')(?![a-zA-Z])')
             # need to find the last item of all matches first, so replacement doesn't change indexes.
             while True:
-                matchList = list(re.finditer(pattern, v))
-                if not len(matchList):
+                match_list = list(re.finditer(pattern, v))
+                if not len(match_list):
                     break
-                match = matchList[-1]
+                match = match_list[-1]
                 # Replace the type with pkgtype
-                v = v[:match.start()] + typesMap[ke] + v[match.end():]
+                v = v[:match.start()] + types_map[ke] + v[match.end():]
         output[k] = v
     return output
 
-"""Given the field:pkgtype dict, create field str for generated classes. 
-Alternatively, add annotation placeholder that must be replaced later."""
-def createFieldString(fieldToPkgtype: 'dict', isAddAnnotationPlaceholder: 'bool') -> 'str':
-    outputStr = ''
-    for field, pkgtype in fieldToPkgtype.items():
-        fieldStr = '\n    private ' + pkgtype + ' ' + field + ';\n'
-        if isAddAnnotationPlaceholder:
-            annotationPlaceholderStr = '\n&%' + field + '&%'
-            outputStr += annotationPlaceholderStr + fieldStr
+
+def create_field_string(field_to_pkg_type: dict, is_add_annotation_placeholder: bool) -> str:
+    """
+    Given the field:pkgtype dict, create field str for generated classes. 
+    Alternatively, add annotation placeholder that must be replaced later.
+    """
+    output_str = ''
+    for field, pkgtype in field_to_pkg_type.items():
+        field_str = '\n    private ' + pkgtype + ' ' + field + ';\n'
+        if is_add_annotation_placeholder:
+            annotation_placeholder_str = '\n&%' + field + '&%'
+            output_str += annotation_placeholder_str + field_str
         else:
-            outputStr += fieldStr
-    return outputStr
-
-"Given fieldList, replace colon with space, add private and semicolon."
-def createFieldString2():
-    # can't fina a place where this method was called.
-    pass
-
-def createFieldStringWithAnnotations():
-    # can't fina a place where this method was called.
-    pass
+            output_str += field_str
+    return output_str
 
 print('loaded ' + __file__)

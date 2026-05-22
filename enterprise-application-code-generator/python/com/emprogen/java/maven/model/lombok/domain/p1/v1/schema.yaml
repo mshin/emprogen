@@ -11,7 +11,16 @@ examples:
   - |
     id: com.emprogen.java.maven.model.lombok.domain.p1.v1
     generatedGav: com.github.mshin:example-domain-model:0.0.1
+    model:
+        - name: Cookies
+          fields:
+              - String:tastiness
+  - |
+    id: com.emprogen.java.maven.model.lombok.domain.p1.v1
+    generatedGav: com.github.mshin:example-domain-model:0.0.1
     author: MunChul Shin
+    dependencyGav:
+        - com.github.mshin:example-domain-model2:0.0.1
     model:
         - name: DomainModel0
           abstract: false
@@ -41,6 +50,10 @@ examples:
               - ORANGE,"orangeId",3141
               - LONGAN:"longanId":2718
               - CARDAMOM;"cardamomId";1618
+    license:
+        - licenseFile: licenses/LICENSE.txt
+          fileTypes:
+              - .java
 type: object
 properties:
   id:
@@ -130,5 +143,31 @@ properties:
           items:
             type: string
             pattern: "^[\\w<> ,]+:[\\w\\$]+$"
+  license:
+    type: array
+    description: |
+      A list of license files and the file types they should be applied to.
+      Licenses will be prepended to files of the corresponding type.
+      Licenses will be prepended in the order they are listed,
+      so if multiple licenses apply to a file type,
+      the first license in the list will be the bottom-most license in the file.
+    items:
+      type: object
+      properties:
+        licenseFile:
+          type: string
+          description: |
+            The path to where the license file is located.
+        fileTypes:
+          type: array
+          description: |
+            The file extension types corresponding to the license.
+            All files of these extensions will have the license prepended.
+          items:
+            type: string
+            pattern: "^\\.([\\w~]+|\\*)$"
+            description: |
+              A specific file extension starting with '.' ex: '.java' or '.xml'.
+              '.*' can be used to specify all file types.
 required: [id, generatedGav]
 additionalProperties: false

@@ -1,9 +1,20 @@
 import importlib
+from pathlib import Path
+
 from com.emprogen.java.maven.models import Gav
 
-def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' = '8', jaxrs='javax', **kwargs) -> None:
+SCRIPT_VERSION = 'java.maven.api.openapi.swagger.jaxrs.p5.v8.javax.generate.py'
 
-    print('in openapi.swagger.jaxrs.p5.v8.javax.generate.py')
+
+def generate(
+    descriptor: dict,
+    *,
+    files_path: str | Path = None,
+    java_version: str = '8',
+    jaxrs: str = 'javax',
+    **kwargs
+) -> None:
+    print(f'in {SCRIPT_VERSION}')
 
     script = importlib.import_module('com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v1.generate')
 
@@ -13,9 +24,10 @@ def generate(descriptor: 'dict', *, filesPath: 'str' = None, javaVersion: 'str' 
         'jakarta_validation_gav': Gav('jakarta.validation', 'jakarta.validation-api', '3.0.2'),
         # 'javax_validation_gav': Gav('javax.validation', 'javax.validation-api', '2.0.1.Final'), # 1.1.0.Final-redhat-00002
         'jackson_ann_gav': Gav('com.fasterxml.jackson.core', 'jackson-annotations', '2.9.10'),
-        'javax_rs_gav': Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1')
+        'javax_rs_gav': Gav('javax.ws.rs', 'javax.ws.rs-api', '2.1.1'),
+        'script_version': SCRIPT_VERSION
     }
     kwargs.update(extra_kwargs)
 
-    script.generate(descriptor, files_path=filesPath, java_version=javaVersion, jaxrs=jaxrs, **kwargs)
+    script.generate(descriptor, files_path=files_path, java_version=java_version, jaxrs=jaxrs, **kwargs)
  

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-
-import com.emprogen.java.maven.functions as jmf
-import com.emprogen.java.maven.yaml_functions as yf
-#import com.emprogen.java.maven.field_functions as ff
+import importlib
 import os
 import pathlib
 from sys import argv
-import importlib
+
+import com.emprogen.file_functions as filef
+import com.emprogen.java.maven.yaml_functions as yf
 import com.emprogen.validate_schema as vs
 
 if not len(argv) > 1:
@@ -23,84 +22,81 @@ if len(argv) > 2:
 # Can pass in a directory containing artifacts and /descriptor directory containing yaml documents containing the definitions of the artifacts.
 # /descriptor/order.yaml contains the order of the documents to be generated in.
 
-descriptorPath = argv[1]
-descriptorDir = descriptorPath + '/descriptor/'
-yamlList = []
-if os.path.isfile(descriptorPath):
-    yamlList = yf.loadYamlDocs(descriptorPath)
+descriptor_path = argv[1]
+descriptor_dir = os.path.join(descriptor_path, 'descriptor/')
+yaml_list = []
+if os.path.isfile(descriptor_path):
+    yaml_list = yf.load_yaml_docs(descriptor_path)
 # if directory passed in, iterate over every .yaml and .yml file in the directory and get the documents out to scan.
-elif os.path.isdir(descriptorDir):
+elif os.path.isdir(descriptor_dir):
     # if there is an order.txt file, use that as the order in which to read the yaml documents.
-    docList = None
-    if os.path.isfile(descriptorDir + 'order.txt'):
-        with open(descriptorDir + 'order.txt', 'r') as f:
-            docList = [line.rstrip() for line in f]
+    doc_list = None
+    order_txt_path = os.path.join(descriptor_dir, 'order.txt')
+    if os.path.isfile(order_txt_path):
+        with open(order_txt_path, 'r') as f:
+            doc_list = [line.rstrip() for line in f]
     # get all the files from the directory and add them to the descriptor list.
-    fileToPath = {}
-    for f in os.listdir(descriptorDir):
-        if os.path.isfile(descriptorDir + f):
-            fileToPath[f] = descriptorDir + f
+    file_to_path = {}
+    for f in os.listdir(descriptor_dir):
+        file_path = os.path.join(descriptor_dir, f)
+        if os.path.isfile(file_path) and f.lower().endswith(('.yml', '.yaml')):
+            file_to_path[f] = file_path
     # if there's an order.txt file, sort the documents based on that.
-    if docList:
-        tmpFileToPathDict = {}
-        for doc in docList:
+    if doc_list:
+        tmp_file_to_path_dict = {}
+        for doc in doc_list:
             if doc.startswith('#') or doc.startswith('//'):
                 continue
-            tmpFileToPathDict[doc] = fileToPath.get(doc, None)
-        fileToPath = tmpFileToPathDict
+            tmp_file_to_path_dict[doc] = file_to_path.get(doc, None)
+        file_to_path = tmp_file_to_path_dict
 
     # get the yaml docs and store them from all files into a combined yaml document list.
-    for k, v in fileToPath.items(): # after CPython 3.6, dict maintains insertion order
+    for k, v in file_to_path.items():  # after CPython 3.6, dict maintains insertion order
         # for blank newline in order.txt doc
         if k is None or v is None:
             continue
         print('Loading yaml docs from file: ' + str(k) + ' at path: ' + str(v))
-        tmpYamlList = yf.loadYamlDocs(v)
-        yamlList += tmpYamlList
+        tmp_yaml_list = yf.load_yaml_docs(v)
+        yaml_list += tmp_yaml_list
 else:
-    print('Error while loading file descriptors. No descriptors found at expected locations: ' + descriptorPath + ' or: ' + descriptorDir)
+    print('Error while loading file descriptors. No descriptors found at expected locations: ' +
+        descriptor_path + ' or: ' + descriptor_dir)
     quit()
 
-#print('yamlList: ' + str(yamlList))
-
 # check if the 1st document is a stack descriptor. If so, run
-firstDocumentIsStackDescriptor = False
+first_document_is_stack_descriptor = False
 
-for i, documentDict in enumerate(yamlList):
+for i, document_dict in enumerate(yaml_list):
     # prevent "---" end of doc in yaml from being treated as a document with no content.
-    if documentDict is None:
+    if document_dict is None:
         continue
     # Validate yaml descriptors against their schemas.
-    pwd = str(jmf.getFilePath(__file__)) + '/'
-    schemaPath = documentDict['id'].replace('.', '/') + '/schema.yaml'
-    print('schemaPath: ' + str(schemaPath))
-    schemaYamlList = yf.loadYamlDocs(pwd + schemaPath)
+    pwd = str(filef.get_file_path(__file__)) + '/'
+    schema_path = os.path.join(pwd, document_dict['id'].replace('.', '/'), 'schema.yaml')
+    print('schema_path: ' + str(schema_path))
+    schema_yaml_list = yf.load_yaml_docs(schema_path)
     schema = ''
-    if schemaYamlList and len(schemaYamlList) > 0:
-        schema = schemaYamlList[0]
-    # print ('schema: ' + str(schema))
+    if schema_yaml_list and len(schema_yaml_list) > 0:
+        schema = schema_yaml_list[0]
 
-    vs.validate(documentDict, schema)
-    if i == 0 and documentDict['id'] == 'idForStackDescriptor':
-        firstDocumentIsStackDescriptor = True
+    vs.validate(document_dict, schema)
+    if i == 0 and document_dict['id'] == 'idForStackDescriptor':
+        first_document_is_stack_descriptor = True
 
-if firstDocumentIsStackDescriptor:
+if first_document_is_stack_descriptor:
     pass
     # TODO run stack descriptor.
 
-for documentDict in yamlList:
+for document_dict in yaml_list:
     # prevent "---" end of doc in yaml from being treated as a document with no content.
-    if documentDict is None:
+    if document_dict is None:
         continue
     # if not a stack descriptor,
     # find the script to run and run it.
-    scriptPath = documentDict['id'] + '.generate'
-    print('scriptPath: ' + scriptPath)
-    script = importlib.import_module(scriptPath)
+    script_path = document_dict['id'] + '.generate'
+    print('script_path: ' + script_path)
+    script = importlib.import_module(script_path)
     opts_dict = {'command_args': command_args}
-    script.generate(documentDict, filesPath=descriptorPath, **opts_dict)
-    #script.generate(documentDict, yf.getArchetypeGav(documentDict))
+    script.generate(document_dict, files_path=descriptor_path, **opts_dict)
 
 quit()
-
-

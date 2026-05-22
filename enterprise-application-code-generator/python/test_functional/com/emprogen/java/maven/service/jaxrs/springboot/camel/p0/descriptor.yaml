@@ -1,0 +1,7 @@
+id: com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
+generatedGav: com.github.mshin:example-springboot-camel-jaxrms-rs
+author: MunChul Shin
+serviceInterfaceGav: com.github.mshin:jaxrms-rs-api:1.0.3
+serviceInterface: com.github.mshin.jaxrms.rs.api.JaxrmsService
+dependencyGav:
+    - com.github.mshin:example-domain-model:0.0.1
