@@ -1,12 +1,12 @@
 import os
 import tempfile
 import unittest
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 
 from com.emprogen.xml_functions import add_xml_element, remove_xml_element
 
 NAMESPACE = "http://example.com/ns"
-ET.register_namespace('', NAMESPACE)
+et.register_namespace('', NAMESPACE)
 
 SAMPLE_XML = f'''<?xml version="1.0"?>
 <root xmlns="{NAMESPACE}">
@@ -34,7 +34,7 @@ class TestXMLFunctions(unittest.TestCase):
             ['parent'],
             {'newchild': 'newvalue'}
         )
-        tree = ET.parse(self.file_path)
+        tree = et.parse(self.file_path)
         root = tree.getroot()
         ns = {'x': NAMESPACE}
         new_elem = root.find('./x:parent/x:newchild', ns)
@@ -56,7 +56,7 @@ class TestXMLFunctions(unittest.TestCase):
             ['parent'],
             {'toremove': 'toremovevalue'}
         )
-        tree = ET.parse(self.file_path)
+        tree = et.parse(self.file_path)
         root = tree.getroot()
         ns = {'x': NAMESPACE}
         removed_elem = root.find('./x:parent/x:toremove', ns)

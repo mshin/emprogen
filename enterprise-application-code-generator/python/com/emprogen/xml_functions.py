@@ -79,7 +79,7 @@ def add_xml_element(
     parent_elem = root.find(path_to_element, ns)
     if parent_elem is not None:
         for e, value in element_to_add_dict.items():
-            element_to_add_dict.SubElement(parent_elem, e).text = value
+            et.SubElement(parent_elem, e).text = value
 
         et.indent(tree, space="    ", level=0)
         et.register_namespace('', namespace)
