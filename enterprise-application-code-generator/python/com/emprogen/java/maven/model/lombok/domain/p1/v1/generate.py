@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import re
 from pathlib import Path
 
 import com.emprogen.file_functions as filef
@@ -121,17 +122,21 @@ def generate(
         enums = []
         enum_vals = []
         for enum_value in enum_values:
-            enum_array = enum_value.split(',')
+            enum_array = [s for s in re.split(r'[^a-zA-Z0-9_$"\']', enum_value) if s]
+            print(f'enum_array: {enum_array}')
             enums.append(enum_array[0])
 
             enum_val = enum_array[1:]
             if len(enum_val) > 0:
                 enum_vals.append(enum_val)
+        print(f'enums: {enums}')
+        print(f'enum_vals: {enum_vals}')
 
         # if there are fields set by enum values, add the enum values to the enumerated list items.
         if len(enum_vals) > 0:
             for i, enumm in enumerate(enums):
-                enums[i] = enumm + '(' + ', '.join(enum_vals[i]) + ')'
+                vals = enum_vals[i] if i < len(enum_vals) else []
+                enums[i] = enumm + '(' + ', '.join(vals) + ')'
 
         # if there are enums, add them to the enum string.
         if len(enums) > 0:

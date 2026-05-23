@@ -6,6 +6,13 @@ import argparse
 
 import com.emprogen.file_functions as filef
 
+# python test_functional.py
+# python test_functional.py -c
+# To run this script, call it from the command line and it will try to generate
+# code from the listed generators. To not run a set of generators, comment that
+# generator out. After running the generator, can call the script with the -c
+# option to clear the tmp directory and recreate the README.md placeholder file.
+
 ROOT_PATH = Path(__file__).parent
 CEJM_PATH = ROOT_PATH / 'test_functional' / 'com' / 'emprogen' / 'java' / 'maven'
 TMP_PATH = ROOT_PATH / 'test_functional' / 'tmp'
@@ -58,6 +65,6 @@ if __name__ == "__main__":
     definition_path = str(CEJM_PATH / 'model' / 'lombok' / 'jaxrs' / 'p0' / 'descriptor.yaml')
     run_for_definition_path_str(definition_path)
 
-    print('com.emprogen.java.maven.service.jaxrs.springboot.camel.p0')
-    definition_path = str(CEJM_PATH / 'service' / 'jaxrs' / 'springboot' / 'camel' / 'p0' / 'descriptor.yaml')
-    run_for_definition_path_str(definition_path)
+    # print('com.emprogen.java.maven.service.jaxrs.springboot.camel.p0')
+    # definition_path = str(CEJM_PATH / 'service' / 'jaxrs' / 'springboot' / 'camel' / 'p0' / 'descriptor.yaml')
+    # run_for_definition_path_str(definition_path)
