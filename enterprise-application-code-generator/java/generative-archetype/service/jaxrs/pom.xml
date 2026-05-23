@@ -10,6 +10,6 @@
     <modules>
         <module>quarkus-p0</module>
         <module>quarkus-p1</module>
-        <module>springboot-camel-p0</module>
+        <!-- module>springboot-camel-p0</module -->
     </modules>
 </project>
