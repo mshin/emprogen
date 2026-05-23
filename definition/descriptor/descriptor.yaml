@@ -1,162 +1,63 @@
-# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v8.javax
-# generatedGav: com.github.mshin:example-j8javax-api:1.0.0
-# author: MunChul Shin
-# openApiUrl: openapi.yaml
-# ---
-# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v8.jakarta
-# generatedGav: com.github.mshin:example-j8jakarta-api:1.0.0
-# author: MunChul Shin
-# openApiUrl: openapi.yaml
-# ---
-# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v11
-# generatedGav: com.github.mshin:example-j11-api:1.0.0
-# author: MunChul Shin
-# openApiUrl: openapi.yaml
-# ---
-# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v17
-# generatedGav: com.github.mshin:example-j17-api:1.0.0
-# author: MunChul Shin
-# openApiUrl: openapi.yaml
-# ---
-# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
-# generatedGav: com.github.mshin:example-j21-api:1.0.0
-# author: MunChul Shin
-# openApiUrl: openapi.yaml
-# license:
-#     - licenseFile: licenses/LICENSE.txt
-#       fileTypes:
-#           - .java
-#     - licenseFile: licenses/xmlHi.txt
-#       fileTypes:
-#           - .xml
-# #     - licenseFile: licenses/xmlHi.txt
-# #       fileTypes:
-# #           - .*
-# ---
-id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
-generatedGav: com.github.mshin:example-j21-enums-api:1.0.0
+# APIs
+id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v8.javax
+generatedGav: com.github.mshin:example-j8javax-api:1.0.0
 author: MunChul Shin
-openApiUrl: enum_openapi.yaml
+openapiFile: enum_openapi.yaml
+---
+id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v8.jakarta
+generatedGav: com.github.mshin:example-j8jakarta-api:1.0.0
+author: MunChul Shin
+openapiFile: enum_openapi.yaml
+---
+id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v11
+generatedGav: com.github.mshin:example-j11-api:1.0.0
+author: MunChul Shin
+openapiFile: enum_openapi.yaml
+dependencyGav:
+    - com.github.mshin:example-j8jakarta-api:1.0.0
 license:
-    - licenseFile: licenses/LICENSE.txt
+    - licenseFile: license/LICENSE.txt
       fileTypes:
           - .java
-    - licenseFile: licenses/xmlHi.txt
+    - licenseFile: license/xmlHi.txt
       fileTypes:
           - .xml
 ---
+id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v17
+generatedGav: com.github.mshin:example-j17-api:1.0.0
+author: MunChul Shin
+openapiFile: enum_openapi.yaml
+---
+id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v21
+generatedGav: com.github.mshin:example-j21-rs-api:1.0.0
+author: MunChul Shin
+openapiFile: enum_openapi.yaml
+---
+# Quarkus service impls
 id: com.emprogen.java.maven.service.jaxrs.quarkus.p2.v21
-generatedGav: com.github.mshin:example-j21-enums-rs:1.0.0
-serviceInterfaceGav: com.github.mshin:example-j21-enums-api:1.0.0
-# ---
-# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p5.v25
-# generatedGav: com.github.mshin:example-j25-api:1.0.0
-# author: MunChul Shin
-# openApiUrl: openapi.yaml
-# ---
-# id: com.emprogen.java.maven.service.jaxrs.quarkus.p1.v21
-# generatedGav: com.github.mshin:example-j21-rs:1.0.0
-# author: MunChul Shin
-# serviceInterfaceGav: com.github.mshin:example-j21-api:1.0.0
-# serviceInterface: com.github.mshin.example.j21.api.PetsApi
-# ---
-# id: com.emprogen.java.maven.service.jaxrs.quarkus.p0.v8
-# generatedGav: com.github.mshin:example-p0j8-rs:1.0.0
-# author: MunChul Shin
-# serviceInterfaceGav: com.github.mshin:example-j8jakarta-api:1.0.0
-# serviceInterface: com.github.mshin.example.j8jakarta.api.PetsApi
-# ---
-# id: com.emprogen.java.maven.service.jaxrs.quarkus.p0.v11
-# generatedGav: com.github.mshin:example-p0j11-rs:1.0.0
-# author: MunChul Shin
-# serviceInterfaceGav: com.github.mshin:example-j8jakarta-api:1.0.0
-# serviceInterface: com.github.mshin.example.j8jakarta.api.PetsApi
-# ---
-# id: com.emprogen.java.maven.service.jaxrs.quarkus.p0.v17
-# generatedGav: com.github.mshin:example-p0j17-rs:1.0.0
-# author: MunChul Shin
-# serviceInterfaceGav: com.github.mshin:example-j8jakarta-api:1.0.0
-# serviceInterface: com.github.mshin.example.j8jakarta.api.PetsApi
-# ---
-# id: com.emprogen.java.maven.api.openapi.swagger.jaxrs.p0.v1
-# generatedGav: com.github.mshin:example-api:1.0.0
-# author: MunChul Shin
-# openApiUrl: openapi.yaml
+generatedGav: com.github.mshin:example-j8javax:1.0.0
+serviceInterfaceGav: com.github.mshin:example-j8javax-api:1.0.0
 ---
-id: com.emprogen.java.maven.model.lombok.entity.p0.v1
-generatedGav: com.github.mshin:example-entity
-author: MunChul Shin
-model:
-    - name: AccountEntity
-      pk: id
-      fields:
-          - Long:id
-          - LocalDate:dateCreated
-          - LocalDateTime:lastLoginTimestamp
-          - BigDecimal:accountBalance
-    - name: QuestionnaireEntity
-      pk: id
-      fields:
-          - Long:id
-          - String:field1
-          - Integer:field2
-    - name: FormEntity
-      pk: id
-      fields:
-          - Long:id
-          - String:addressLine1
-          - String:addressLine2
-    - name: UserEntity
-      pk: id
-      fields:
-          - Long:id
-          - String:firstName
-          - String:lastName
-          - LocalDate:birthDate
-          - Boolean:isAdmin
-    - name: TransactionEntity
-      pk: transactionId
-      fields:
-          - BigDecimal:amount
-          - String:transactionId
-          - LocalDateTime:timestampTransactionInitiated
-          - LocalDateTime:timestampTransactionCompleted
-    - name: AppEntity
-      pk: id
-      fields:
-          - Long:id
-          - String:name
-          - Integer:hitsCounter
-# owner is on many side, on reference side if only one, second entity mentioned... in that order
-# < next to an entity means it has a reference to the other.
-# format is "- ${Entity.class} **-** ${OtherEntity.class}" Where first * is <|- second * is 1|n third * is 1|n and fourth star is >|-.
-# valid join instructions are:  <1-1> | -1-1> | <1-1- | <n-1> | <n-1- | <1-n> | -1-n> | <n-n> | -n-n> | <n-n-
-joins:
-    - FormEntity <1-1> AccountEntity
-    - FormEntity <1-1- QuestionnaireEntity
-    - UserEntity <n-1> AccountEntity
-    - FormEntity <1-n> TransactionEntity
-    - AppEntity <n-n> UserEntity
+id: com.emprogen.java.maven.service.jaxrs.quarkus.p2.v21
+generatedGav: com.github.mshin:example-j21-rs:1.0.0
+serviceInterfaceGav: com.github.mshin:example-j21-rs-api:1.0.0
+license:
+    - licenseFile: license/LICENSE.txt
+      fileTypes:
+          - .java
+    - licenseFile: license/xmlHi.txt
+      fileTypes:
+          - .xml
 ---
-id: com.emprogen.java.maven.model.lombok.jaxrs.p0.v1
-generatedGav: com.github.mshin:example-jaxrs-model:1.0.0
-author: MunChul Shin
-model:
-    - name: JaxrsModel0
-      fields:
-          - Map<BigDecimal, List<BigDecimal>>:field3
-          - ArrayList:field2
-          - BigDecimal:field1
-    - name: JaxrsModel1
-      fields:
-          - Integer:field1
-          - String:field2
-          - Date:field3
+id: com.emprogen.java.maven.service.jaxrs.quarkus.p2.v17
+generatedGav: com.github.mshin:example-j17-rs:1.0.0
+serviceInterfaceGav: com.github.mshin:example-j21-rs-api:1.0.0
 ---
+# Spring Boot service impls
 id: com.emprogen.java.maven.service.jaxrs.springboot.camel.p0.v1
-generatedGav: com.github.mshin:example-service-impl
+generatedGav: com.github.mshin:example-springboot-camel-jaxrms-rs
 author: MunChul Shin
-serviceInterfaceGav: com.github.mshin:jaxrms-crud-rs-api:1.0.3
-serviceInterface: com.github.mshin.jaxrms.crud.rs.api.JaxrmsCrudService
+serviceInterfaceGav: com.github.mshin:jaxrms-rs-api:1.0.3
+serviceInterface: com.github.mshin.jaxrms.rs.api.JaxrmsService
 dependencyGav:
     - com.github.mshin:example-domain-model:0.0.1

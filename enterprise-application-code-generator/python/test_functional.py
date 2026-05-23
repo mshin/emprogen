@@ -8,6 +8,7 @@ import com.emprogen.file_functions as filef
 
 # python test_functional.py
 # python test_functional.py -c
+
 # To run this script, call it from the command line and it will try to generate
 # code from the listed generators. To not run a set of generators, comment that
 # generator out. After running the generator, can call the script with the -c
