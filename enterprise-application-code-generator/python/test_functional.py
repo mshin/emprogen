@@ -29,6 +29,7 @@ if __name__ == "__main__":
     if args.clear:
         print('clearing tmp directory')
         filef.clear_directory(TMP_PATH)
+        filef.make_file(TMP_PATH / 'README.md')
         sys.exit(0)
 
     print('clearing tmp directory')
